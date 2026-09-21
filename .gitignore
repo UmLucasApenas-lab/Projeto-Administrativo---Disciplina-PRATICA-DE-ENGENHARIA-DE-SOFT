@@ -1,0 +1,25 @@
+# Ambientes Virtuais
+venv/
+.venv/
+env/
+
+# Configurações sensíveis e variáveis de ambiente
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos do sistema
+Thumbs.db
+Desktop.ini
+.DS_Store

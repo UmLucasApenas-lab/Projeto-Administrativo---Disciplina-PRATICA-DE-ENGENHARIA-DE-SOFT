@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extração de Dados de Nota Fiscal - UniRV IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Barra Superior / Header Institucional -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-group">
+                <div class="brand-badge">UniRV</div>
+                <div class="brand-info">
+                    <span class="brand-title">Prática de Engenharia de Software</span>
+                    <span class="brand-subtitle">Avaliação N2 - Processamento Inteligente com LLM Gemini</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="btn-api-config" id="btnConfigModal" title="Configurar Chave da API Gemini">
+                    <i class="fa-solid fa-key"></i>
+                    <span id="apiStatusText">Configurar API Gemini</span>
+                    <span class="status-indicator" id="apiStatusDot"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="page-container">
+            <!-- Título Principal (Conforme Figura 1 e 2) -->
+            <div class="hero-section">
+                <h1 class="page-title">Extração de Dados de Nota Fiscal</h1>
+                <p class="page-subtitle">Carregue um PDF de nota fiscal e extraia os dados automaticamente usando IA</p>
+            </div>
+
+            <!-- Card de Upload de PDF (Conforme Figura 1) -->
+            <section class="card upload-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        <span>Upload do PDF</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <label class="input-label" for="pdfInput">Selecione o arquivo PDF da nota fiscal</label>
+                    
+                    <!-- Área de Seleção Nativa e Drag & Drop -->
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="pdfInput" accept="application/pdf" class="file-input-hidden">
+                        <div class="drop-zone-prompt">
+                            <i class="fa-regular fa-file-pdf drop-icon"></i>
+                            <div class="drop-text">
+                                <span class="drop-title">Arraste seu arquivo PDF aqui ou</span>
+                                <button type="button" class="btn-browse" id="btnBrowse">Escolher arquivo</button>
+                            </div>
+                            <span class="drop-hint">Formatos aceitos: PDF (DANFE / NF-e / Contas a Pagar)</span>
+                        </div>
+                    </div>
+
+                    <!-- Card de Arquivo Selecionado (Conforme Figura 2) -->
+                    <div class="selected-file-card hidden" id="fileInfoCard">
+                        <div class="file-details">
+                            <div class="file-icon-wrapper">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div class="file-meta">
+                                <span class="file-name" id="fileNameDisplay">NFE.pdf</span>
+                                <span class="file-size" id="fileSizeDisplay">0.00 MB</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remover arquivo">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Botões Rápidos para Carregar Exemplos da Aula -->
+                    <div class="sample-actions">
+                        <span class="sample-label">Ou teste com PDFs de exemplo:</span>
+                        <button type="button" class="btn-sample" id="btnSampleManutencao">
+                            <i class="fa-solid fa-wrench"></i> Exemplo: Peças & Máquinas (DANFE 000.084.682)
+                        </button>
+                        <button type="button" class="btn-sample" id="btnSampleInsumos">
+                            <i class="fa-solid fa-seedling"></i> Exemplo: Insumos Agrícolas (DANFE 000.054.121)
+                        </button>
+                    </div>
+
+                    <!-- Botão de Ação Principal (Conforme Figura 1 e 2) -->
+                    <button type="button" class="btn-extract" id="btnExtract" disabled>
+                        <span class="btn-text">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> EXTRAIR DADOS
+                        </span>
+                        <span class="spinner hidden" id="btnSpinner">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i> Processando com IA...
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Seção de Dados Extraídos (Conforme Figura 2) -->
+            <section class="card results-card hidden" id="resultsSection">
+                <div class="card-header results-header">
+                    <div class="card-title">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Dados Extraídos</span>
+                    </div>
+                    <div class="source-badge" id="extractionSourceBadge">
+                        <i class="fa-solid fa-bolt"></i> Extraído com IA
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Abas de Navegação (Conforme Figura 2) -->
+                    <div class="tabs-nav" role="tablist">
+                        <button type="button" class="tab-btn active" id="tabFormattedBtn" data-target="tabFormatted">
+                            <i class="fa-solid fa-table-cells-large"></i> Visualização Formatada
+                        </button>
+                        <button type="button" class="tab-btn" id="tabJsonBtn" data-target="tabJson">
+                            <i class="fa-solid fa-code"></i> JSON
+                        </button>
+                    </div>
+
+                    <!-- Conteúdo da Aba 1: Visualização Formatada -->
+                    <div class="tab-content active" id="tabFormatted">
+                        <!-- Card Destaque: Classificação da Despesa -->
+                        <div class="classification-banner" id="classificationBanner">
+                            <div class="banner-icon">
+                                <i class="fa-solid fa-tag"></i>
+                            </div>
+                            <div class="banner-body">
+                                <span class="banner-label">Classificação da Despesa (Interpretado pelo Gemini)</span>
+                                <h2 class="banner-category" id="formattedCategoria">MANUTENÇÃO E OPERAÇÃO</h2>
+                                <div class="detected-tags-container">
+                                    <span class="tags-label">Termos detectados que embasaram a classificação:</span>
+                                    <div class="tags-list" id="formattedTermos">
+                                        <!-- Badges geradas dinamicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grade de Informações Estruturadas -->
+                        <div class="info-grid">
+                            <!-- Card Fornecedor -->
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="fa-solid fa-building"></i>
+                                    <h3>Fornecedor / Emitente</h3>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="field-item">
+                                        <span class="field-label">Razão Social:</span>
+                                        <span class="field-value highlight" id="formattedEmitente">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">Nome Fantasia:</span>
+                                        <span class="field-value" id="formattedFantasia">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">CNPJ:</span>
+                                        <span class="field-value mono" id="formattedCnpjEmitente">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Faturado / Destinatário -->
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="fa-solid fa-user-check"></i>
+                                    <h3>Faturado / Destinatário</h3>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="field-item">
+                                        <span class="field-label">Nome Completo:</span>
+                                        <span class="field-value highlight" id="formattedDestinatario">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">CPF / CNPJ:</span>
+                                        <span class="field-value mono" id="formattedCpfDestinatario">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Dados da Fatura / NF -->
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i class="fa-solid fa-receipt"></i>
+                                    <h3>Dados da Nota Fiscal</h3>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="field-item">
+                                        <span class="field-label">Número da NF:</span>
+                                        <span class="field-value bold" id="formattedNumeroNf">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">Data de Emissão:</span>
+                                        <span class="field-value" id="formattedDataEmissao">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">Data de Vencimento:</span>
+                                        <span class="field-value" id="formattedDataVencimento">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">Valor Total:</span>
+                                        <span class="field-value valor-total" id="formattedValorTotal">-</span>
+                                    </div>
+                                    <div class="field-item">
+                                        <span class="field-label">Parcelas:</span>
+                                        <span class="field-value" id="formattedParcelas">1 parcela</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Descrição dos Produtos -->
+                            <div class="info-card full-width">
+                                <div class="info-card-header">
+                                    <i class="fa-solid fa-boxes-stacked"></i>
+                                    <h3>Descrição dos Produtos / Serviços</h3>
+                                </div>
+                                <div class="info-card-body">
+                                    <p class="products-description" id="formattedDescricaoProdutos">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo da Aba 2: JSON (Conforme Figura 2) -->
+                    <div class="tab-content" id="tabJson">
+                        <div class="json-tab-header">
+                            <div class="json-tab-title">
+                                <i class="fa-solid fa-code"></i> Dados em JSON
+                            </div>
+                            <div class="json-actions">
+                                <button type="button" class="btn-copy-json" id="btnCopyJson">
+                                    <i class="fa-regular fa-copy"></i> Copiar JSON
+                                </button>
+                                <button type="button" class="btn-download-json" id="btnDownloadJson">
+                                    <i class="fa-solid fa-download"></i> Baixar .JSON
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="code-container">
+                            <pre><code id="jsonCodeDisplay" class="json-code">// Carregue uma nota fiscal e clique em Extrair Dados para visualizar o JSON</code></pre>
+                        </div>
+                        
+                        <p class="json-footer-note">
+                            Este JSON contém todos os dados extraídos da nota fiscal e pode ser usado para integração com outros sistemas.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Configuração da API Gemini -->
+    <div class="modal-overlay hidden" id="apiModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-key"></i> Configuração da API Google Gemini</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Insira sua chave de API gratuita do Google Gemini para processamento em tempo real online. Se preferir não inserir agora, o sistema usará o modo de processamento inteligente heurístico local.
+                </p>
+                <div class="form-group">
+                    <label for="apiKeyInput">Gemini API Key:</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="form-control">
+                        <button type="button" class="btn-toggle-visibility" id="btnToggleKey">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="form-hint">
+                        Obtenha gratuitamente em <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.
+                    </small>
+                </div>
+                <div class="api-notice" id="apiNoticeBox">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>A chave fica armazenada apenas no seu navegador durante o uso.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" id="btnCancelKey">Cancelar</button>
+                <button type="button" class="btn-modal-save" id="btnSaveKey">Salvar Chave</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificações -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
