@@ -1,6 +1,11 @@
 # UniRV - Prática de Engenharia de Software (6º Período)
 ## Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
 
+![Versão](https://img.shields.io/badge/versão-1.1.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
+![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
+![Deploy](https://img.shields.io/badge/deploy-Render-46E3B7.svg)
+
 Sistema Web para processamento e extração inteligente de dados de Notas Fiscais (Contas a Pagar) com classificação automática de despesas utilizando IA (Google Gemini LLM).
 
 ---
@@ -65,7 +70,8 @@ GEMINI_API_KEY=sua_chave_aqui
 ```bash
 python app.py
 ```
-Acesse no seu navegador: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+- **Acesso no Computador**: **[http://localhost:5000](http://localhost:5000)**
+- **Acesso no Celular (Mesma rede Wi-Fi)**: **`http://<IP_DO_SEU_PC>:5000`** *(ou basta clicar em **"Acesso Mobile"** no cabeçalho da página para escanear o QR Code direto com a câmera do smartphone!)*
 
 ---
 
@@ -95,3 +101,20 @@ Acesse no seu navegador: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 A interface foi construída espelhando exatamente os modelos exigidos:
 - **Figura 1**: Área de upload limpa e direta com seleção de PDF e botão **"EXTRAIR DADOS"**.
 - **Figura 2**: Card com dados do arquivo carregado, abas **"Visualização Formatada"** e **"JSON"**, exibindo os dados estruturados e botão funcional **"Copiar JSON"**.
+
+---
+
+## 🏷️ Versionamento da Aplicação
+
+Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https://semver.org/lang/pt-BR/):
+
+- **`v1.1.0` (Versão Atual - Deploy & Produção)**
+  - Adição do servidor WSGI **`gunicorn`** para execução em ambiente de produção no [Render](https://render.com).
+  - Implementação de modal e gerador de **QR Code** para acesso mobile facilitado via rede Wi-Fi local.
+  - Endpoint de descoberta de IP local (`/api/network-info`).
+- **`v1.0.0` (Lançamento Inicial - Etapa 1 da N2)**
+  - Implementação do agente de extração multimodal (`agent_extracadados.py`) integrado à API Google Gemini.
+  - Classificação automática de despesas nas 9 categorias padrão do agronegócio/financeiro.
+  - Processamento e leitura de PDFs com fallback heurístico.
+  - Interface web responsiva em HTML5/CSS3/Vanilla JS (espelhando Figuras 1 e 2 da especificação N2).
+

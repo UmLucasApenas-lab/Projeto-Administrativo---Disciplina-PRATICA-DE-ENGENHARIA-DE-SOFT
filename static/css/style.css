@@ -126,6 +126,33 @@ body {
     color: var(--text-muted);
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-mobile-access {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 600;
+    color: #065f46;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-mobile-access:hover {
+    background: #d1fae5;
+    color: #047857;
+    border-color: #6ee7b7;
+}
+
 .btn-api-config {
     display: inline-flex;
     align-items: center;
@@ -1000,17 +1027,310 @@ body {
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Responsividade */
-@media (max-width: 640px) {
+/* Modal de Acesso Mobile (QR Code) */
+.mobile-modal-box {
+    max-width: 440px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.qr-code-wrapper {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px auto 14px;
+}
+
+#qrcode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#qrcode img,
+#qrcode canvas {
+    max-width: 170px !important;
+    max-height: 170px !important;
+    display: block;
+    margin: 0 auto;
+}
+
+.mobile-url-box {
+    margin: 12px 0 16px;
+    text-align: left;
+}
+
+.mobile-url-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.mobile-url-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.mobile-url-input {
+    background: var(--bg-muted);
+    font-size: 13px;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+}
+
+.btn-copy-url {
+    background: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-copy-url:hover {
+    background: var(--primary-dark);
+}
+
+/* ==========================================================================
+   Responsividade Completa para Mobile e Tablet
+   ========================================================================== */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+@media (max-width: 768px) {
     .header-container {
         flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
+        gap: 12px;
+        align-items: stretch;
+        padding: 12px 16px;
     }
-    .hero-section .page-title {
+
+    .brand-group {
+        justify-content: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-mobile-access,
+    .btn-api-config {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .main-content {
+        padding: 20px 12px 48px;
+    }
+
+    .page-container {
+        gap: 16px;
+    }
+
+    .hero-section {
+        margin-bottom: 4px;
+    }
+
+    .page-title {
         font-size: 22px;
+        line-height: 1.25;
     }
+
+    .page-subtitle {
+        font-size: 13px;
+    }
+
+    .card-header {
+        padding: 12px 16px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .drop-zone {
+        padding: 24px 14px;
+    }
+
+    .drop-icon {
+        font-size: 36px;
+    }
+
+    .drop-title {
+        font-size: 13px;
+    }
+
+    .btn-browse {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .selected-file-card {
+        padding: 10px 12px;
+    }
+
+    .file-name {
+        max-width: 200px;
+        font-size: 13px;
+    }
+
+    .sample-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .sample-label {
+        margin-bottom: 2px;
+    }
+
+    .btn-sample {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .btn-extract {
+        padding: 13px 18px;
+        font-size: 14px;
+    }
+
+    .tabs-nav {
+        gap: 4px;
+        margin-bottom: 16px;
+    }
+
+    .tab-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 6px;
+        font-size: 13px;
+        text-align: center;
+    }
+
     .classification-banner {
         flex-direction: column;
+        padding: 14px;
+        gap: 10px;
+    }
+
+    .banner-category {
+        font-size: 17px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .info-card {
+        padding: 12px 14px;
+    }
+
+    .json-tab-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .json-actions {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-copy-json,
+    .btn-download-json {
+        flex: 1;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .code-container {
+        padding: 12px;
+        max-height: 380px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .json-code {
+        font-size: 12px;
+    }
+
+    .modal-container {
+        margin: 12px;
+        width: calc(100% - 24px);
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .toast-container {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .toast {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Prevenir auto-zoom do Safari no iOS */
+    .form-control {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .brand-title {
+        font-size: 13px;
+    }
+
+    .brand-subtitle {
+        font-size: 11px;
+    }
+
+    .brand-badge {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .file-name {
+        max-width: 150px;
+    }
+
+    .tab-btn {
+        font-size: 12px;
+        padding: 8px 4px;
+        gap: 4px;
     }
 }

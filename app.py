@@ -1,4 +1,5 @@
 import os
+import socket
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 from agents.agent_extracadados import Agent1
@@ -11,6 +12,22 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limite de 16MB para uploa
 
 # Instância padrão do agente de extração
 agent = Agent1()
+
+def get_local_ip():
+    """Obtém o endereço IP local na rede Wi-Fi / Ethernet ativa."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Conexão UDP sem envio de dados reais para descobrir a interface de saída
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        try:
+            ip = socket.gethostbyname(socket.gethostname())
+        except Exception:
+            ip = '127.0.0.1'
+    finally:
+        s.close()
+    return ip
 
 @app.route('/')
 def index():
@@ -26,7 +43,22 @@ def api_status():
         "status": "online",
         "has_gemini_key": has_key,
         "framework": "Flask (Python)",
-        "version": "1.0.0"
+        "version": "1.1.0"
+    })
+
+@app.route('/api/network-info', methods=['GET'])
+def api_network_info():
+    """
+    Retorna o IP da rede local e a porta para que celulares e outros
+    dispositivos na mesma rede Wi-Fi possam se conectar e gerar o QR Code.
+    """
+    port = int(os.getenv('PORT', 5000))
+    local_ip = get_local_ip()
+    return jsonify({
+        "local_ip": local_ip,
+        "port": port,
+        "mobile_url": f"http://{local_ip}:{port}",
+        "localhost_url": f"http://127.0.0.1:{port}"
     })
 
 @app.route('/api/extract', methods=['POST'])
@@ -66,7 +98,22 @@ def serve_sample_pdf(filename):
     return send_from_directory(samples_dir, filename)
 
 if __name__ == '__main__':
+    import sys
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('DEBUG', 'True').lower() == 'true'
-    print(f"[*] Iniciando Servidor UniRV - Processador de Notas Fiscais na porta {port}...")
+    local_ip = get_local_ip()
+
+    print("\n" + "=" * 62)
+    print("  [>] UniRV - Processador Inteligente de Notas Fiscais (N2)")
+    print("=" * 62)
+    print(f"  [PC] Acesso no Computador:      http://localhost:{port}")
+    print(f"  [MOBILE] Acesso Celular (Wi-Fi): http://{local_ip}:{port}")
+    print("=" * 62 + "\n")
+
     app.run(host='0.0.0.0', port=port, debug=debug)

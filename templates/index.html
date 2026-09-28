@@ -22,9 +22,13 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button type="button" class="btn-mobile-access" id="btnMobileModal" title="Acessar no Celular (QR Code)">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Acesso Mobile</span>
+                </button>
                 <button type="button" class="btn-api-config" id="btnConfigModal" title="Configurar Chave da API Gemini">
                     <i class="fa-solid fa-key"></i>
-                    <span id="apiStatusText">Configurar API Gemini</span>
+                    <span id="apiStatusText">Configurar API</span>
                     <span class="status-indicator" id="apiStatusDot"></span>
                 </button>
             </div>
@@ -53,7 +57,7 @@
                     
                     <!-- Área de Seleção Nativa e Drag & Drop -->
                     <div class="drop-zone" id="dropZone">
-                        <input type="file" id="pdfInput" accept="application/pdf" class="file-input-hidden">
+                        <input type="file" id="pdfInput" accept=".pdf,application/pdf" class="file-input-hidden">
                         <div class="drop-zone-prompt">
                             <i class="fa-regular fa-file-pdf drop-icon"></i>
                             <div class="drop-text">
@@ -296,9 +300,49 @@
         </div>
     </div>
 
+    <!-- Modal de Acesso Mobile (QR Code & Link na Rede Local) -->
+    <div class="modal-overlay hidden" id="mobileModal">
+        <div class="modal-container mobile-modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-mobile-screen-button"></i> Acesso pelo Celular</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseMobileModal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="modal-desc">
+                    Aponte a câmera do seu celular para o QR Code abaixo para abrir a aplicação diretamente no seu smartphone:
+                </p>
+                
+                <div class="qr-code-wrapper" id="qrCodeContainer">
+                    <div id="qrcode"></div>
+                </div>
+
+                <div class="mobile-url-box">
+                    <span class="mobile-url-label">Ou acesse pelo navegador do celular:</span>
+                    <div class="mobile-url-input-group">
+                        <input type="text" id="mobileUrlDisplay" readonly class="form-control mobile-url-input" value="Carregando...">
+                        <button type="button" class="btn-copy-url" id="btnCopyMobileUrl" title="Copiar Link">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="api-notice">
+                    <i class="fa-solid fa-wifi"></i>
+                    <span>O celular e o computador devem estar conectados na mesma rede Wi-Fi.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-save" id="btnDoneMobileModal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast de Notificações -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="/static/js/main.js"></script>
 </body>
 </html>
