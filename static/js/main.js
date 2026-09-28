@@ -4,6 +4,11 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Define a URL base: se estiver rodando localmente usa relativo, se estiver na nuvem (Cloudflare Pages) aponta para o Render
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? ''
+        : 'https://fineasy.onrender.com';
+
     // Elementos de Upload
     const dropZone = document.getElementById('dropZone');
     const pdfInput = document.getElementById('pdfInput');
@@ -86,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const resp = await fetch('/api/status');
+            const resp = await fetch(`${API_BASE_URL}/api/status`);
             const data = await resp.json();
             if (data.has_gemini_key) {
                 apiStatusDot.classList.add('active');
@@ -219,15 +224,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/extract', {
+            const response = await fetch(`${API_BASE_URL}/api/extract`, {
                 method: 'POST',
                 headers: headers,
                 body: formData
             });
 
             if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || 'Falha ao processar nota fiscal.');
+                let errorMsg = `Erro ${response.status}: ${response.statusText}`;
+                try {
+                    const errData = await response.json();
+                    errorMsg = errData.error || errorMsg;
+                } catch (_) {}
+                throw new Error(errorMsg);
             }
 
             const data = await response.json();
@@ -448,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadNetworkInfo() {
         if (cachedMobileUrl) return cachedMobileUrl;
         try {
-            const resp = await fetch('/api/network-info');
+            const resp = await fetch(`${API_BASE_URL}/api/network-info`);
             const data = await resp.json();
             cachedMobileUrl = data.mobile_url;
             return data.mobile_url;

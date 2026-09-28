@@ -1,6 +1,7 @@
 import os
 import socket
 from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask_cors import CORS
 from dotenv import load_dotenv
 from agents.agent_extracadados import Agent1
 
@@ -9,6 +10,9 @@ load_dotenv()
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limite de 16MB para uploads
+
+# Habilitar CORS para permitir requisições do Cloudflare Pages e cabeçalhos como X-Gemini-Key
+CORS(app, resources={r"/api/*": {"origins": "*"}}, allow_headers=["Content-Type", "X-Gemini-Key", "Authorization"])
 
 # Instância padrão do agente de extração
 agent = Agent1()
