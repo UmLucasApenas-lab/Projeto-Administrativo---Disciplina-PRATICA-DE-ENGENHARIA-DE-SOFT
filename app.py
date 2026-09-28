@@ -1,5 +1,8 @@
 import os
 import socket
+import datetime
+from functools import wraps
+import jwt
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -11,8 +14,47 @@ load_dotenv()
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Limite de 16MB para uploads
 
-# Habilitar CORS para permitir requisições do Cloudflare Pages e cabeçalhos como X-Gemini-Key
+# Habilitar CORS para permitir requisições do Cloudflare Pages e cabeçalhos como X-Gemini-Key e Authorization
 CORS(app, resources={r"/api/*": {"origins": "*"}}, allow_headers=["Content-Type", "X-Gemini-Key", "Authorization"])
+
+# Configurações de Autenticação JWT
+JWT_SECRET = os.getenv("JWT_SECRET", "unirv-secret-jwt-key-n2-avaliacao-2026-super-segura")
+JWT_ALGORITHM = "HS256"
+AUTH_EMAIL = os.getenv("AUTH_EMAIL", "admin@unirv.edu.br")
+AUTH_PASSWORD = os.getenv("AUTH_PASSWORD", "admin123")
+
+def generate_token(email):
+    """Gera um token JWT com validade de 24 horas."""
+    payload = {
+        "sub": email,
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+def token_required(f):
+    """Decorator para proteger endpoints exigindo token Bearer JWT válido."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return jsonify({"error": "Token de autenticação não fornecido."}), 401
+
+        parts = auth_header.split()
+        if len(parts) != 2 or parts[0].lower() != "bearer":
+            return jsonify({"error": "Formato de token inválido. Use 'Bearer <token>'."}), 401
+
+        token = parts[1]
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            request.user_email = payload.get("sub")
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Sessão expirada. Faça login novamente."}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Token inválido ou não autorizado."}), 401
+
+        return f(*args, **kwargs)
+    return decorated
 
 # Instância padrão do agente de extração
 agent = Agent1()
@@ -38,6 +80,37 @@ def index():
     """Renderiza a interface web principal conforme especificações da N2."""
     return render_template('index.html')
 
+@app.route('/login')
+def login_page():
+    """Renderiza a interface web de login."""
+    return render_template('login.html')
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    """
+    Endpoint que autentica as credenciais e devolve o token JWT para o front-end.
+    """
+    data = request.get_json(silent=True) or request.form
+    email = data.get('email', '').strip()
+    password = data.get('password', '').strip()
+
+    if not email or not password:
+        return jsonify({"error": "E-mail e senha são obrigatórios."}), 400
+
+    if email.lower() == AUTH_EMAIL.lower() and password == AUTH_PASSWORD:
+        token = generate_token(email)
+        return jsonify({
+            "success": True,
+            "message": "Login realizado com sucesso!",
+            "token": token,
+            "user": {
+                "email": email,
+                "name": "Administrador UniRV"
+            }
+        }), 200
+    else:
+        return jsonify({"error": "Credenciais inválidas. Verifique seu e-mail e senha."}), 401
+
 @app.route('/api/status', methods=['GET'])
 def api_status():
     """Retorna o status da aplicação e da integração com a API Gemini."""
@@ -47,7 +120,7 @@ def api_status():
         "status": "online",
         "has_gemini_key": has_key,
         "framework": "Flask (Python)",
-        "version": "1.1.0"
+        "version": "1.2.0"
     })
 
 @app.route('/api/network-info', methods=['GET'])
@@ -66,6 +139,7 @@ def api_network_info():
     })
 
 @app.route('/api/extract', methods=['POST'])
+@token_required
 def extract_pdf():
     """
     Endpoint que recebe o arquivo PDF da Nota Fiscal,

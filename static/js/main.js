@@ -4,6 +4,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Verificação de Autenticação: se não houver token, redireciona para a página de login
+    const authToken = localStorage.getItem('AUTH_TOKEN');
+    if (!authToken) {
+        window.location.href = 'login.html';
+        return;
+    }
+
     // Define a URL base: se estiver rodando localmente usa relativo, se estiver na nuvem (Cloudflare Pages) aponta para o Render
     const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? ''
@@ -218,7 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('pdf_file', currentSelectedFile);
 
         const customKey = localStorage.getItem('GEMINI_USER_API_KEY');
-        const headers = {};
+        const headers = {
+            'Authorization': `Bearer ${authToken}`
+        };
         if (customKey) {
             headers['X-Gemini-Key'] = customKey;
         }
@@ -231,6 +240,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('AUTH_TOKEN');
+                    localStorage.removeItem('AUTH_USER');
+                    showToast('Sessão expirada. Redirecionando para login...', 'error');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                    return;
+                }
                 let errorMsg = `Erro ${response.status}: ${response.statusText}`;
                 try {
                     const errData = await response.json();
@@ -541,5 +557,20 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.style.transform = 'translateY(10px)';
             setTimeout(() => toast.remove(), 300);
         }, 3500);
+    }
+
+    // =========================================================================
+    // Controle de Logout / Encerramento de Sessão
+    // =========================================================================
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('AUTH_TOKEN');
+            localStorage.removeItem('AUTH_USER');
+            showToast('Sessão encerrada com sucesso.', 'info');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 400);
+        });
     }
 });
