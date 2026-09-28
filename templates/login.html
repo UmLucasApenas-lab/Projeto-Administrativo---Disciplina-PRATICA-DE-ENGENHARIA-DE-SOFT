@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acesso ao Sistema - Extração de Notas Fiscais | UniRV</title>
-    <!-- Verificação imediata: se já estiver logado, vai direto para a aplicação -->
+    <!-- Verificação imediata: se já estiver logado e na tela de login, vai direto para a aplicação -->
     <script>
-        if (localStorage.getItem('AUTH_TOKEN')) {
-            window.location.replace('/index.html');
-        }
+        (function() {
+            var token = localStorage.getItem('AUTH_TOKEN');
+            var path = window.location.pathname.toLowerCase();
+            var isLogin = path.endsWith('/login.html') || path.endsWith('/login');
+            if (token && isLogin) {
+                window.location.replace('/index.html');
+            }
+        })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

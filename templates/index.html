@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extração de Dados de Nota Fiscal - UniRV IA</title>
-    <!-- Verificação imediata de autenticação no head para redirecionar antes de renderizar -->
+    <!-- Trava no Redirecionamento: só redireciona se não tiver token e não estiver nas páginas de login ou registro -->
     <script>
-        if (!localStorage.getItem('AUTH_TOKEN')) {
-            window.location.replace('/login.html');
-        }
+        (function() {
+            var token = localStorage.getItem('AUTH_TOKEN');
+            var path = window.location.pathname.toLowerCase();
+            var isAuthPage = path.endsWith('/login.html') || 
+                             path.endsWith('/register.html') || 
+                             path.endsWith('/login') || 
+                             path.endsWith('/register');
+            if (!token && !isAuthPage) {
+                window.location.replace('/login.html');
+            }
+        })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -4,9 +4,15 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificação de Autenticação: se não houver token, redireciona para a página de login
+    // Trava no Redirecionamento: só redireciona para login se o usuário não tiver token e não estiver nas páginas de login ou registro
     const authToken = localStorage.getItem('AUTH_TOKEN');
-    if (!authToken) {
+    const path = window.location.pathname.toLowerCase();
+    const isAuthPage = path.endsWith('/login.html') || 
+                       path.endsWith('/register.html') || 
+                       path.endsWith('/login') || 
+                       path.endsWith('/register');
+
+    if (!authToken && !isAuthPage) {
         window.location.replace('/login.html');
         return;
     }

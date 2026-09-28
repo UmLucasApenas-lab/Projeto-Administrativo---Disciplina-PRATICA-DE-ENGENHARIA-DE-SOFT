@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Nova Conta - Extração de Notas Fiscais | UniRV</title>
-    <!-- Verificação imediata: se já estiver logado, vai direto para a aplicação -->
+    <!-- Verificação imediata: se já estiver logado e na tela de registro, vai direto para a aplicação -->
     <script>
-        if (localStorage.getItem('AUTH_TOKEN')) {
-            window.location.replace('/index.html');
-        }
+        (function() {
+            var token = localStorage.getItem('AUTH_TOKEN');
+            var path = window.location.pathname.toLowerCase();
+            var isRegister = path.endsWith('/register.html') || path.endsWith('/register');
+            if (token && isRegister) {
+                window.location.replace('/index.html');
+            }
+        })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
