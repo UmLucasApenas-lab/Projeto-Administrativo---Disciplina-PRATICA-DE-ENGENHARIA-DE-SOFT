@@ -160,7 +160,7 @@ def api_status():
         "status": "online",
         "has_gemini_key": has_key,
         "framework": "Flask (Python)",
-        "version": "1.3.0"
+        "version": "1.4.0"
     })
 
 @app.route('/api/network-info', methods=['GET'])

@@ -1492,3 +1492,239 @@ html, body {
     text-decoration: underline;
 }
 
+/* ==========================================================================
+   Botão de Alternância de Tema (Modo Noturno / Claro)
+   ========================================================================== */
+.btn-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--bg-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-size: 15px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-theme-toggle:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: rotate(15deg);
+}
+
+/* ==========================================================================
+   Design System - Modo Noturno ([data-theme="dark"])
+   ========================================================================== */
+[data-theme="dark"] {
+    --primary-color: #14b8a6;
+    --primary-dark: #0d9488;
+    --primary-light: rgba(20, 184, 166, 0.18);
+    --primary-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #2dd4bf 100%);
+
+    --secondary-color: #f8fafc;
+    --secondary-light: #cbd5e1;
+
+    /* Superfícies e Fundos Noturnos */
+    --bg-main: #0b0f19;
+    --bg-card: #131b2e;
+    --bg-muted: #1c263f;
+    --bg-code: #070a12;
+
+    /* Bordas e Divisórias Noturnas */
+    --border-color: #24314c;
+    --border-focus: #14b8a6;
+
+    /* Tipografia Noturna */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-inverse: #0b0f19;
+
+    /* Sombras Noturnas */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.7);
+}
+
+[data-theme="dark"] .app-header {
+    background: #111827;
+    border-bottom-color: #24314c;
+}
+
+[data-theme="dark"] .card {
+    background: #131b2e;
+    border-color: #24314c;
+}
+
+[data-theme="dark"] .card-header {
+    background: #182239;
+    border-bottom-color: #24314c;
+}
+
+[data-theme="dark"] .drop-zone {
+    background: #151f35;
+    border-color: #2d3d5e;
+}
+
+[data-theme="dark"] .drop-zone:hover,
+[data-theme="dark"] .drop-zone.dragover {
+    background: #112833;
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-browse {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .btn-browse:hover {
+    background: #334155;
+}
+
+[data-theme="dark"] .selected-file-card {
+    background: #182239;
+    border-color: #2d3d5e;
+}
+
+[data-theme="dark"] .btn-sample {
+    background: #182239;
+    border-color: #2d3d5e;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-sample:hover {
+    background: #24314c;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .classification-banner {
+    background: linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, rgba(6, 95, 70, 0.3) 100%);
+    border-color: #065f46;
+}
+
+[data-theme="dark"] .banner-category {
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .banner-label {
+    color: #34d399;
+}
+
+[data-theme="dark"] .info-card {
+    background: #182239;
+    border-color: #24314c;
+}
+
+[data-theme="dark"] .info-card-header {
+    border-bottom-color: #24314c;
+}
+
+[data-theme="dark"] .field-value.highlight {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .field-value.valor-total {
+    color: #2dd4bf;
+}
+
+[data-theme="dark"] .products-description {
+    background: #0f172a;
+    border-color: #24314c;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-copy-json,
+[data-theme="dark"] .btn-download-json {
+    background: #182239;
+    border-color: #24314c;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-copy-json:hover,
+[data-theme="dark"] .btn-download-json:hover {
+    background: #24314c;
+    color: #ffffff;
+}
+
+[data-theme="dark"] .tag-badge {
+    background: #064e3b;
+    border-color: #059669;
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .login-wrapper {
+    background: radial-gradient(circle at 50% 20%, #112433 0%, #0b0f19 75%);
+}
+
+[data-theme="dark"] .login-card {
+    background: #131b2e;
+    border-color: #24314c;
+}
+
+[data-theme="dark"] .login-header {
+    background: #182239;
+    border-bottom-color: #24314c;
+}
+
+[data-theme="dark"] .form-control {
+    background: #182239;
+    border-color: #2d3d5e;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .form-control:focus {
+    background: #1a253e;
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .demo-credentials-box {
+    background: rgba(6, 78, 59, 0.25);
+    border-color: #059669;
+    color: #a7f3d0;
+}
+
+[data-theme="dark"] .modal-container {
+    background: #131b2e;
+    border-color: #24314c;
+}
+
+[data-theme="dark"] .modal-header {
+    background: #182239;
+    border-bottom-color: #24314c;
+}
+
+[data-theme="dark"] .modal-footer {
+    background: #182239;
+    border-top-color: #24314c;
+}
+
+[data-theme="dark"] .btn-modal-cancel {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-mobile-access {
+    background: rgba(6, 78, 59, 0.25);
+    border-color: #065f46;
+    color: #6ee7b7;
+}
+
+[data-theme="dark"] .btn-api-config {
+    background: #182239;
+    border-color: #24314c;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .qr-code-wrapper {
+    background: #ffffff; /* Garante fundo branco para contraste da câmera ao ler QR Code */
+}
+
+

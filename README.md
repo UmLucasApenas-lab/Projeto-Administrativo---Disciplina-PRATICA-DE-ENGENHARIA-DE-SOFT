@@ -1,7 +1,7 @@
 # UniRV - Prática de Engenharia de Software (6º Período)
 ## Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
 
-![Versão](https://img.shields.io/badge/versão-1.3.0-blue.svg)
+![Versão](https://img.shields.io/badge/versão-1.4.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
 ![Deploy](https://img.shields.io/badge/deploy-Render-46E3B7.svg)
@@ -108,7 +108,11 @@ A interface foi construída espelhando exatamente os modelos exigidos:
 
 Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https://semver.org/lang/pt-BR/):
 
-- **`v1.3.0` (Versão Atual - Banco SQLite & Registro de Usuários)**
+- **`v1.4.0` (Versão Atual - Suporte a Modo Noturno / Dark Mode)**
+  - Implementação de alternância de tema Claro/Noturno com persistência em `localStorage` e detecção de preferência do sistema operacional (`prefers-color-scheme`).
+  - Paleta de cores escuras de alto contraste com foco em acessibilidade e conforto visual.
+  - Disponível em todas as telas: Extrator Principal, Login e Cadastro de Usuários.
+- **`v1.3.0` (Banco SQLite & Registro de Usuários)**
   - Migração de credenciais fixas para banco de dados relacional **SQLite** com senhas criptografadas (`werkzeug.security`).
   - Nova funcionalidade e tela de cadastro de novos usuários (`templates/register.html` e `/api/register`).
   - Correção de fluxo no front-end com guardas imediatos no `<head>` para evitar loops de redirecionamento ou telas em branco.

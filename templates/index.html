@@ -23,6 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="/static/js/theme.js"></script>
 </head>
 <body>
     <!-- Barra Superior / Header Institucional -->
@@ -44,6 +45,9 @@
                     <i class="fa-solid fa-key"></i>
                     <span id="apiStatusText">Configurar API</span>
                     <span class="status-indicator" id="apiStatusDot"></span>
+                </button>
+                <button type="button" class="btn-theme-toggle" id="btnThemeToggle" title="Alternar Modo Noturno / Claro">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
                 </button>
                 <button type="button" class="btn-logout" id="btnLogout" title="Sair do Sistema">
                     <i class="fa-solid fa-right-from-bracket"></i>
