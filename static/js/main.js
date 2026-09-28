@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificação de Autenticação: se não houver token, redireciona para a página de login
     const authToken = localStorage.getItem('AUTH_TOKEN');
     if (!authToken) {
-        window.location.href = 'login.html';
+        window.location.replace('/login.html');
         return;
     }
 
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.removeItem('AUTH_TOKEN');
                     localStorage.removeItem('AUTH_USER');
                     showToast('Sessão expirada. Redirecionando para login...', 'error');
-                    setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                    setTimeout(() => { window.location.replace('/login.html'); }, 1200);
                     return;
                 }
                 let errorMsg = `Erro ${response.status}: ${response.statusText}`;
@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('AUTH_USER');
             showToast('Sessão encerrada com sucesso.', 'info');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.replace('/login.html');
             }, 400);
         });
     }

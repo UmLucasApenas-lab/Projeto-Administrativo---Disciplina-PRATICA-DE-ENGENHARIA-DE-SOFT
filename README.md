@@ -1,7 +1,7 @@
 # UniRV - Prática de Engenharia de Software (6º Período)
 ## Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
 
-![Versão](https://img.shields.io/badge/versão-1.2.0-blue.svg)
+![Versão](https://img.shields.io/badge/versão-1.3.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
 ![Deploy](https://img.shields.io/badge/deploy-Render-46E3B7.svg)
@@ -108,7 +108,11 @@ A interface foi construída espelhando exatamente os modelos exigidos:
 
 Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https://semver.org/lang/pt-BR/):
 
-- **`v1.2.0` (Versão Atual - Sistema de Autenticação JWT)**
+- **`v1.3.0` (Versão Atual - Banco SQLite & Registro de Usuários)**
+  - Migração de credenciais fixas para banco de dados relacional **SQLite** com senhas criptografadas (`werkzeug.security`).
+  - Nova funcionalidade e tela de cadastro de novos usuários (`templates/register.html` e `/api/register`).
+  - Correção de fluxo no front-end com guardas imediatos no `<head>` para evitar loops de redirecionamento ou telas em branco.
+- **`v1.2.0` (Sistema de Autenticação JWT)**
   - Implementação de tela e sistema de autenticação segura via tokens JWT (`pyjwt`).
   - Proteção da rota `/api/extract` com decorator `@token_required` (Bearer Token).
   - Front-end de login responsivo (`templates/login.html`) integrado à identidade visual da UniRV.

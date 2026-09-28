@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Nova Conta - Extração de Notas Fiscais | UniRV</title>
+    <!-- Verificação imediata: se já estiver logado, vai direto para a aplicação -->
+    <script>
+        if (localStorage.getItem('AUTH_TOKEN')) {
+            window.location.replace('/index.html');
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Barra Superior / Header Institucional -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-group">
+                <div class="brand-badge">UniRV</div>
+                <div class="brand-info">
+                    <span class="brand-title">Prática de Engenharia de Software</span>
+                    <span class="brand-subtitle">Avaliação N2 - Processamento Inteligente com LLM Gemini</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="auth-status-badge">
+                    <i class="fa-solid fa-user-plus"></i> Cadastro de Usuário
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Área Central de Cadastro -->
+    <main class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon-badge">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h1 class="login-title">Criar Nova Conta</h1>
+                <p class="login-subtitle">Cadastre-se para acessar o sistema de processamento de notas fiscais</p>
+            </div>
+
+            <form class="login-body" id="registerForm">
+                <!-- Campo de Nome Completo -->
+                <div class="form-group">
+                    <label for="registerName">Nome Completo</label>
+                    <div class="input-with-icon">
+                        <input 
+                            type="text" 
+                            id="registerName" 
+                            class="form-control" 
+                            placeholder="Seu nome" 
+                            required
+                            autocomplete="name"
+                        >
+                        <i class="fa-regular fa-user input-leading-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Campo de E-mail -->
+                <div class="form-group">
+                    <label for="registerEmail">E-mail</label>
+                    <div class="input-with-icon">
+                        <input 
+                            type="email" 
+                            id="registerEmail" 
+                            class="form-control" 
+                            placeholder="seu.email@exemplo.com" 
+                            required
+                            autocomplete="email"
+                        >
+                        <i class="fa-regular fa-envelope input-leading-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Campo de Senha -->
+                <div class="form-group">
+                    <label for="registerPassword">Senha de Acesso (Mínimo 6 caracteres)</label>
+                    <div class="input-with-icon">
+                        <input 
+                            type="password" 
+                            id="registerPassword" 
+                            class="form-control" 
+                            placeholder="••••••••" 
+                            minlength="6"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="btn-toggle-visibility" id="btnToggleRegisterPassword" title="Exibir/Ocultar Senha">
+                            <i class="fa-regular fa-eye" id="toggleRegisterPasswordIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Campo de Confirmação de Senha -->
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar Senha</label>
+                    <div class="input-with-icon">
+                        <input 
+                            type="password" 
+                            id="registerConfirmPassword" 
+                            class="form-control" 
+                            placeholder="••••••••" 
+                            minlength="6"
+                            required
+                            autocomplete="new-password"
+                        >
+                    </div>
+                </div>
+
+                <!-- Botão de Registro -->
+                <button type="submit" class="btn-extract login-btn" id="btnRegister">
+                    <span class="btn-text">
+                        <i class="fa-solid fa-check"></i> Cadastrar Conta
+                    </span>
+                    <span class="btn-spinner hidden" id="registerSpinner">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Cadastrando...
+                    </span>
+                </button>
+
+                <!-- Link para Login -->
+                <div class="auth-switch-link">
+                    Já possui uma conta? <a href="/login.html">Fazer login</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            const registerName = document.getElementById('registerName');
+            const registerEmail = document.getElementById('registerEmail');
+            const registerPassword = document.getElementById('registerPassword');
+            const registerConfirmPassword = document.getElementById('registerConfirmPassword');
+            const btnRegister = document.getElementById('btnRegister');
+            const registerSpinner = document.getElementById('registerSpinner');
+            const btnToggleRegisterPassword = document.getElementById('btnToggleRegisterPassword');
+            const toggleRegisterPasswordIcon = document.getElementById('toggleRegisterPasswordIcon');
+
+            // Determina a URL base da API
+            const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                ? ''
+                : 'https://fineasy.onrender.com';
+
+            // Alternar visibilidade da senha
+            if (btnToggleRegisterPassword) {
+                btnToggleRegisterPassword.addEventListener('click', () => {
+                    const isPassword = registerPassword.type === 'password';
+                    registerPassword.type = isPassword ? 'text' : 'password';
+                    toggleRegisterPasswordIcon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+                });
+            }
+
+            // Envio do Formulário de Registro
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = registerName.value.trim();
+                const email = registerEmail.value.trim();
+                const password = registerPassword.value.trim();
+                const confirmPassword = registerConfirmPassword.value.trim();
+
+                if (!email || !password) {
+                    showToast('Preencha todos os campos obrigatórios.', 'error');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showToast('A senha deve conter no mínimo 6 caracteres.', 'error');
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    showToast('As senhas não coincidem. Verifique e tente novamente.', 'error');
+                    return;
+                }
+
+                btnRegister.disabled = true;
+                btnRegister.querySelector('.btn-text').classList.add('hidden');
+                registerSpinner.classList.remove('hidden');
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, email, password })
+                    });
+
+                    let data;
+                    try {
+                        data = await response.json();
+                    } catch (_) {
+                        throw new Error(`Falha na resposta do servidor (HTTP ${response.status})`);
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Erro ao realizar cadastro.');
+                    }
+
+                    showToast('Conta criada com sucesso! Redirecionando para login...', 'success');
+
+                    setTimeout(() => {
+                        window.location.replace('/login.html');
+                    }, 1200);
+
+                } catch (error) {
+                    console.error('Erro no registro:', error);
+                    showToast(error.message, 'error');
+                } finally {
+                    btnRegister.disabled = false;
+                    btnRegister.querySelector('.btn-text').classList.remove('hidden');
+                    registerSpinner.classList.add('hidden');
+                }
+            });
+
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                let icon = 'fa-circle-info';
+                if (type === 'success') icon = 'fa-circle-check';
+                if (type === 'error') icon = 'fa-circle-exclamation';
+
+                toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(10px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+        });
+    </script>
+</body>
+</html>

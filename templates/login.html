@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acesso ao Sistema - Extração de Notas Fiscais | UniRV</title>
+    <!-- Verificação imediata: se já estiver logado, vai direto para a aplicação -->
+    <script>
+        if (localStorage.getItem('AUTH_TOKEN')) {
+            window.location.replace('/index.html');
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,7 +29,7 @@
             </div>
             <div class="header-actions">
                 <span class="auth-status-badge">
-                    <i class="fa-solid fa-shield-halved"></i> Ambiente Autenticado
+                    <i class="fa-solid fa-shield-halved"></i> Ambiente Protegido
                 </span>
             </div>
         </div>
@@ -36,7 +42,7 @@
                 <div class="login-icon-badge">
                     <i class="fa-solid fa-lock"></i>
                 </div>
-                <h1 class="login-title">Acesso Restrito</h1>
+                <h1 class="login-title">Acesso ao Sistema</h1>
                 <p class="login-subtitle">Entre com suas credenciais para acessar o extrator de notas fiscais</p>
             </div>
 
@@ -49,7 +55,7 @@
                             type="email" 
                             id="loginEmail" 
                             class="form-control" 
-                            placeholder="admin@unirv.edu.br" 
+                            placeholder="seu.email@unirv.edu.br" 
                             value="admin@unirv.edu.br"
                             required
                             autocomplete="email"
@@ -77,7 +83,7 @@
                     </div>
                 </div>
 
-                <!-- Credenciais de Demonstração (Para facilitar a avaliação da N2) -->
+                <!-- Credenciais de Demonstração (Para avaliação da N2) -->
                 <div class="demo-credentials-box">
                     <div class="demo-credentials-title">
                         <i class="fa-solid fa-circle-info"></i>
@@ -96,6 +102,11 @@
                         <i class="fa-solid fa-circle-notch fa-spin"></i> Autenticando...
                     </span>
                 </button>
+
+                <!-- Link para Cadastro -->
+                <div class="auth-switch-link">
+                    Não tem uma conta? <a href="/register.html">Criar conta</a>
+                </div>
             </form>
         </div>
     </main>
@@ -105,14 +116,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Se já possuir token válido, redireciona direto para o painel principal
-            const existingToken = localStorage.getItem('AUTH_TOKEN');
-            if (existingToken) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            // Elementos
             const loginForm = document.getElementById('loginForm');
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
@@ -121,17 +124,19 @@
             const btnTogglePassword = document.getElementById('btnTogglePassword');
             const togglePasswordIcon = document.getElementById('togglePasswordIcon');
 
-            // Determina a URL base da API (local vs nuvem Render)
+            // Determina a URL base da API
             const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
                 ? ''
                 : 'https://fineasy.onrender.com';
 
             // Alternar visibilidade da senha
-            btnTogglePassword.addEventListener('click', () => {
-                const isPassword = loginPassword.type === 'password';
-                loginPassword.type = isPassword ? 'text' : 'password';
-                togglePasswordIcon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
-            });
+            if (btnTogglePassword) {
+                btnTogglePassword.addEventListener('click', () => {
+                    const isPassword = loginPassword.type === 'password';
+                    loginPassword.type = isPassword ? 'text' : 'password';
+                    togglePasswordIcon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+                });
+            }
 
             // Envio do Formulário de Login
             loginForm.addEventListener('submit', async (e) => {
@@ -145,7 +150,6 @@
                     return;
                 }
 
-                // Estado de carregamento
                 btnLogin.disabled = true;
                 btnLogin.querySelector('.btn-text').classList.add('hidden');
                 loginSpinner.classList.remove('hidden');
@@ -178,10 +182,9 @@
 
                     showToast('Autenticado com sucesso! Redirecionando...', 'success');
 
-                    // Redireciona para o extrator
                     setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 600);
+                        window.location.replace('/index.html');
+                    }, 500);
 
                 } catch (error) {
                     console.error('Erro de autenticação:', error);

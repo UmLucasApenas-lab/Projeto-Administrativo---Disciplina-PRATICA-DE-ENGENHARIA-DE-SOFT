@@ -56,8 +56,13 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
+from utils.database import init_db, create_user, verify_user_credentials
+
 # Instância padrão do agente de extração
 agent = Agent1()
+
+# Inicializar banco de dados SQLite e criar usuário padrão
+init_db()
 
 def get_local_ip():
     """Obtém o endereço IP local na rede Wi-Fi / Ethernet ativa."""
@@ -85,10 +90,43 @@ def login_page():
     """Renderiza a interface web de login."""
     return render_template('login.html')
 
+@app.route('/register')
+def register_page():
+    """Renderiza a interface web de cadastro."""
+    return render_template('register.html')
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    """
+    Endpoint para cadastro de novos usuários no banco SQLite com hash seguro de senha.
+    """
+    data = request.get_json(silent=True) or request.form
+    email = data.get('email', '').strip()
+    password = data.get('password', '').strip()
+    name = data.get('name', '').strip()
+
+    if not email or not password:
+        return jsonify({"error": "E-mail e senha são obrigatórios."}), 400
+
+    if len(password) < 6:
+        return jsonify({"error": "A senha deve ter no mínimo 6 caracteres."}), 400
+
+    if '@' not in email or '.' not in email:
+        return jsonify({"error": "Por favor, informe um e-mail válido."}), 400
+
+    user_id, error = create_user(email, password, name)
+    if error:
+        return jsonify({"error": error}), 400
+
+    return jsonify({
+        "success": True,
+        "message": "Conta criada com sucesso! Faça login para continuar."
+    }), 201
+
 @app.route('/api/login', methods=['POST'])
 def api_login():
     """
-    Endpoint que autentica as credenciais e devolve o token JWT para o front-end.
+    Endpoint que autentica as credenciais no SQLite e devolve o token JWT para o front-end.
     """
     data = request.get_json(silent=True) or request.form
     email = data.get('email', '').strip()
@@ -97,19 +135,21 @@ def api_login():
     if not email or not password:
         return jsonify({"error": "E-mail e senha são obrigatórios."}), 400
 
-    if email.lower() == AUTH_EMAIL.lower() and password == AUTH_PASSWORD:
-        token = generate_token(email)
+    user = verify_user_credentials(email, password)
+    if user:
+        token = generate_token(user['email'])
         return jsonify({
             "success": True,
             "message": "Login realizado com sucesso!",
             "token": token,
             "user": {
-                "email": email,
-                "name": "Administrador UniRV"
+                "email": user['email'],
+                "name": user['name'] or user['email']
             }
         }), 200
     else:
         return jsonify({"error": "Credenciais inválidas. Verifique seu e-mail e senha."}), 401
+
 
 @app.route('/api/status', methods=['GET'])
 def api_status():
@@ -120,7 +160,7 @@ def api_status():
         "status": "online",
         "has_gemini_key": has_key,
         "framework": "Flask (Python)",
-        "version": "1.2.0"
+        "version": "1.3.0"
     })
 
 @app.route('/api/network-info', methods=['GET'])
