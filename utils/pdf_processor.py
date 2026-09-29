@@ -3,10 +3,6 @@ import pypdf
 import pymupdf as fitz
 
 def extract_text_from_pdf(pdf_path_or_bytes):
-    """
-    Extrai o texto legível de um arquivo PDF usando PyPDF e PyMuPDF como fallback.
-    Retorna o texto concatenado de todas as páginas.
-    """
     text = ""
     try:
         if isinstance(pdf_path_or_bytes, (str, bytes, bytearray)):
@@ -30,9 +26,6 @@ def extract_text_from_pdf(pdf_path_or_bytes):
     return text.strip()
 
 def get_pdf_metadata(pdf_path_or_bytes):
-    """
-    Obtém metadados do PDF (número de páginas, etc.).
-    """
     try:
         if isinstance(pdf_path_or_bytes, (bytes, bytearray)):
             doc = fitz.open(stream=pdf_path_or_bytes, filetype="pdf")

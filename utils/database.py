@@ -1,27 +1,16 @@
-"""
-Módulo de Banco de Dados SQLite para Gestão de Usuários e Autenticação
-UniRV - Prática de Engenharia de Software (N2)
-"""
-
 import os
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Caminho do banco de dados na raiz do projeto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'database.db')
 
 def get_db_connection():
-    """Retorna uma conexão ativa com o banco SQLite."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    """
-    Inicializa a tabela de usuários caso não exista e cadastra
-    o usuário administrador padrão para acesso acadêmico.
-    """
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -36,7 +25,6 @@ def init_db():
     ''')
     conn.commit()
 
-    # Criar usuário padrão se o banco estiver vazio ou sem o admin
     default_email = os.getenv("AUTH_EMAIL", "admin@unirv.edu.br").strip().lower()
     default_password = os.getenv("AUTH_PASSWORD", "admin123").strip()
 
@@ -55,15 +43,10 @@ def init_db():
     conn.close()
 
 def create_user(email: str, password: str, name: str = None):
-    """
-    Cadastra um novo usuário no banco com hash seguro.
-    Retorna (user_id, error_message).
-    """
     email_clean = email.strip().lower()
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Verificar se o e-mail já existe
     cursor.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email_clean,))
     if cursor.fetchone():
         conn.close()
@@ -85,7 +68,6 @@ def create_user(email: str, password: str, name: str = None):
         return None, f"Erro ao criar usuário: {str(e)}"
 
 def get_user_by_email(email: str):
-    """Busca um usuário pelo e-mail (case-insensitive)."""
     email_clean = email.strip().lower()
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -103,10 +85,6 @@ def get_user_by_email(email: str):
     return None
 
 def verify_user_credentials(email: str, password: str):
-    """
-    Verifica se o e-mail e a senha correspondem a um usuário válido.
-    Retorna o dicionário do usuário ou None.
-    """
     user = get_user_by_email(email)
     if not user:
         return None

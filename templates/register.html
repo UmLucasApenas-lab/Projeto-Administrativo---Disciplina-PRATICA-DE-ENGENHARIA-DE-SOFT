@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEASY - Cadastro de Usuário</title>
-    <!-- Verificação imediata: se já estiver logado e na tela de registro, vai direto para a aplicação -->
     <script>
         (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
@@ -23,7 +22,6 @@
     <script src="/static/js/theme.js"></script>
 </head>
 <body>
-    <!-- Barra Superior / Header Institucional -->
     <header class="app-header">
         <div class="header-container">
             <div class="brand-group">
@@ -44,7 +42,6 @@
         </div>
     </header>
 
-    <!-- Área Central de Cadastro -->
     <main class="login-wrapper">
         <div class="login-card">
             <div class="login-header">
@@ -56,7 +53,6 @@
             </div>
 
             <form class="login-body" id="registerForm">
-                <!-- Campo de Nome Completo -->
                 <div class="form-group">
                     <label for="registerName">Nome Completo</label>
                     <div class="input-with-icon">
@@ -72,7 +68,6 @@
                     </div>
                 </div>
 
-                <!-- Campo de E-mail -->
                 <div class="form-group">
                     <label for="registerEmail">E-mail</label>
                     <div class="input-with-icon">
@@ -88,7 +83,6 @@
                     </div>
                 </div>
 
-                <!-- Campo de Senha -->
                 <div class="form-group">
                     <label for="registerPassword">Senha de Acesso (Mínimo 6 caracteres)</label>
                     <div class="input-with-icon">
@@ -107,7 +101,6 @@
                     </div>
                 </div>
 
-                <!-- Campo de Confirmação de Senha -->
                 <div class="form-group">
                     <label for="registerConfirmPassword">Confirmar Senha</label>
                     <div class="input-with-icon">
@@ -123,7 +116,6 @@
                     </div>
                 </div>
 
-                <!-- Botão de Registro -->
                 <button type="submit" class="btn-extract login-btn" id="btnRegister">
                     <span class="btn-text">
                         <i class="fa-solid fa-check"></i> Cadastrar Conta
@@ -133,7 +125,6 @@
                     </span>
                 </button>
 
-                <!-- Link para Login -->
                 <div class="auth-switch-link">
                     Já possui uma conta? <a href="/login.html">Fazer login</a>
                 </div>
@@ -141,7 +132,6 @@
         </div>
     </main>
 
-    <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>

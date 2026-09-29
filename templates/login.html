@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEASY - Acesso ao Sistema</title>
-    <!-- Verificação imediata: se já estiver logado e na tela de login, vai direto para a aplicação -->
     <script>
         (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
@@ -23,7 +22,6 @@
     <script src="/static/js/theme.js"></script>
 </head>
 <body>
-    <!-- Barra Superior / Header Institucional -->
     <header class="app-header">
         <div class="header-container">
             <div class="brand-group">
@@ -44,7 +42,6 @@
         </div>
     </header>
 
-    <!-- Área Central de Login -->
     <main class="login-wrapper">
         <div class="login-card">
             <div class="login-header">
@@ -56,7 +53,6 @@
             </div>
 
             <form class="login-body" id="loginForm">
-                <!-- Campo de E-mail -->
                 <div class="form-group">
                     <label for="loginEmail">E-mail Institucional</label>
                     <div class="input-with-icon">
@@ -73,7 +69,6 @@
                     </div>
                 </div>
 
-                <!-- Campo de Senha -->
                 <div class="form-group">
                     <label for="loginPassword">Senha de Acesso</label>
                     <div class="input-with-icon">
@@ -92,7 +87,6 @@
                     </div>
                 </div>
 
-                <!-- Credenciais de Demonstração (Para avaliação da N2) -->
                 <div class="demo-credentials-box">
                     <div class="demo-credentials-title">
                         <i class="fa-solid fa-circle-info"></i>
@@ -102,7 +96,6 @@
                     <span><strong>Senha:</strong> admin123</span>
                 </div>
 
-                <!-- Botão de Login -->
                 <button type="submit" class="btn-extract login-btn" id="btnLogin">
                     <span class="btn-text">
                         <i class="fa-solid fa-right-to-bracket"></i> Entrar no Sistema
@@ -112,7 +105,6 @@
                     </span>
                 </button>
 
-                <!-- Link para Cadastro -->
                 <div class="auth-switch-link">
                     Não tem uma conta? <a href="/register.html">Criar conta</a>
                 </div>
@@ -120,7 +112,6 @@
         </div>
     </main>
 
-    <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>

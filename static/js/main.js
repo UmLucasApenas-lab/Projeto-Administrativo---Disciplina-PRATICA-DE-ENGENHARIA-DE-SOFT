@@ -1,10 +1,4 @@
-/**
- * UniRV - Prática de Engenharia de Software (N2 - Etapa 1)
- * Script de Controle do Frontend para Extração de Notas Fiscais
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Trava no Redirecionamento: só redireciona para login se o usuário não tiver token e não estiver nas páginas de login ou registro
     const authToken = localStorage.getItem('AUTH_TOKEN');
     const path = window.location.pathname.toLowerCase();
     const isAuthPage = path.endsWith('/login.html') || 
@@ -17,12 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Define a URL base: se estiver rodando localmente usa relativo, se estiver na nuvem (Cloudflare Pages) aponta para o Render
     const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? ''
         : 'https://fineasy.onrender.com';
 
-    // Elementos de Upload
     const dropZone = document.getElementById('dropZone');
     const pdfInput = document.getElementById('pdfInput');
     const btnBrowse = document.getElementById('btnBrowse');
@@ -33,11 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnExtract = document.getElementById('btnExtract');
     const btnSpinner = document.getElementById('btnSpinner');
 
-    // Exemplos rápidos
     const btnSampleManutencao = document.getElementById('btnSampleManutencao');
     const btnSampleInsumos = document.getElementById('btnSampleInsumos');
 
-    // Elementos de Resultado
     const resultsSection = document.getElementById('resultsSection');
     const extractionSourceBadge = document.getElementById('extractionSourceBadge');
     const tabFormattedBtn = document.getElementById('tabFormattedBtn');
@@ -45,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabFormatted = document.getElementById('tabFormatted');
     const tabJson = document.getElementById('tabJson');
 
-    // Elementos de Visualização Formatada
     const formattedCategoria = document.getElementById('formattedCategoria');
     const formattedTermos = document.getElementById('formattedTermos');
     const formattedEmitente = document.getElementById('formattedEmitente');
@@ -60,12 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const formattedParcelas = document.getElementById('formattedParcelas');
     const formattedDescricaoProdutos = document.getElementById('formattedDescricaoProdutos');
 
-    // Elementos da Aba JSON
     const jsonCodeDisplay = document.getElementById('jsonCodeDisplay');
     const btnCopyJson = document.getElementById('btnCopyJson');
     const btnDownloadJson = document.getElementById('btnDownloadJson');
 
-    // Modal de Configuração da Chave da API
     const btnConfigModal = document.getElementById('btnConfigModal');
     const apiModal = document.getElementById('apiModal');
     const btnCloseModal = document.getElementById('btnCloseModal');
@@ -76,13 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiStatusText = document.getElementById('apiStatusText');
     const apiStatusDot = document.getElementById('apiStatusDot');
 
-    // Estado da Aplicação
     let currentSelectedFile = null;
     let latestExtractedJson = null;
 
-    // =========================================================================
-    // Inicialização e Verificação de Status da API
-    // =========================================================================
     async function checkApiStatus() {
         const savedKey = localStorage.getItem('GEMINI_USER_API_KEY');
         if (savedKey) {
@@ -108,9 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkApiStatus();
 
-    // =========================================================================
-    // Manipulação de Arquivos e Drag & Drop
-    // =========================================================================
     function handleFile(file) {
         if (!file) return;
 
@@ -130,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(`Arquivo "${file.name}" carregado.`, 'info');
     }
 
-    // Clique para buscar arquivo
     btnBrowse.addEventListener('click', (e) => {
         e.stopPropagation();
         pdfInput.click();
@@ -146,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Eventos Drag & Drop
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -170,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Remover arquivo selecionado
     btnRemoveFile.addEventListener('click', () => {
         currentSelectedFile = null;
         pdfInput.value = '';
@@ -178,9 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnExtract.disabled = true;
     });
 
-    // =========================================================================
-    // Carregar PDFs de Exemplo para Teste Imediato
-    // =========================================================================
     async function loadSamplePdf(samplePath, defaultName) {
         try {
             showToast('Carregando arquivo de exemplo...', 'info');
@@ -202,16 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSamplePdf('/sample_notas/nota_fiscal_insumos_exemplo.pdf', 'NFE-52260110998877000123550010000054121122334455.pdf');
     });
 
-    // =========================================================================
-    // Extração de Dados via API
-    // =========================================================================
     btnExtract.addEventListener('click', async () => {
         if (!currentSelectedFile) {
             showToast('Selecione um arquivo PDF antes de extrair.', 'error');
             return;
         }
 
-        // Estado de Carregamento
         btnExtract.disabled = true;
         btnExtract.querySelector('.btn-text').classList.add('hidden');
         btnSpinner.classList.remove('hidden');
@@ -256,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderResults(data);
             showToast('Dados extraídos com sucesso!', 'success');
 
-            // Scroll suave até a seção de resultados
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         } catch (error) {
@@ -269,18 +238,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =========================================================================
-    // Renderização dos Resultados na Interface
-    // =========================================================================
     function renderResults(data) {
         resultsSection.classList.remove('hidden');
 
-        // Badge de Origem
         if (data._metadados && data._metadados.origem) {
             extractionSourceBadge.innerHTML = `<i class="fa-solid fa-microchip"></i> ${data._metadados.origem}`;
         }
 
-        // 1. Classificação da Despesa
         const classif = data['CLASSIFICAÇÃO'] || data['classificacao'] || {};
         const categoria = classif.categoria || 'Não Classificado';
         const termos = classif.termos_detectados || [];
@@ -298,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
             formattedTermos.innerHTML = '<span class="tag-badge">Nenhum termo específico detectado</span>';
         }
 
-        // 2. Fornecedor / Emitente
         const fornecedor = data['Fornecedor'] || {};
         const emitente = data['Nome do Emitente'] || fornecedor['Razão Social'] || '-';
         const fantasia = data['Nome Fantasia do Emitente'] || fornecedor['Fantasia'] || emitente;
@@ -308,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formattedFantasia.textContent = fantasia;
         formattedCnpjEmitente.textContent = cnpjEmit;
 
-        // 3. Faturado / Destinatário
         const faturado = data['Faturado'] || {};
         const destNome = data['Nome do Destinatário'] || faturado['Nome Completo'] || '-';
         const destDoc = data['CPF/CNPJ do Destinatário'] || data['CNPJ do Destinatário'] || faturado['CPF'] || '-';
@@ -316,7 +278,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formattedDestinatario.textContent = destNome;
         formattedCpfDestinatario.textContent = destDoc;
 
-        // 4. Dados da NF
         formattedNumeroNf.textContent = data['Número da Nota Fiscal'] || '-';
         formattedDataEmissao.textContent = data['Data de Emissão'] || '-';
         formattedDataVencimento.textContent = data['Data de Vencimento'] || data['Data de Emissão'] || '-';
@@ -329,17 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const qtdParcelas = data['Quantidade de Parcelas'] || parcelas['Quantidade de Parcelas'] || 1;
         formattedParcelas.textContent = `${qtdParcelas} parcela(s)`;
 
-        // 5. Descrição dos Produtos
         formattedDescricaoProdutos.textContent = data['Descrição dos Produtos'] || 'Descrição não informada no documento.';
 
-        // 6. Aba JSON com Syntax Highlighting
         const jsonString = JSON.stringify(data, null, 2);
         jsonCodeDisplay.innerHTML = syntaxHighlightJson(jsonString);
     }
 
-    // =========================================================================
-    // Destaque de Sintaxe JSON
-    // =========================================================================
     function syntaxHighlightJson(json) {
         if (!json) return '';
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -360,9 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================================
-    // Alternância de Abas (Visualização Formatada / JSON)
-    // =========================================================================
     tabFormattedBtn.addEventListener('click', () => {
         tabFormattedBtn.classList.add('active');
         tabJsonBtn.classList.remove('active');
@@ -377,9 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tabFormatted.classList.remove('active');
     });
 
-    // =========================================================================
-    // Ações de Cópia e Download de JSON
-    // =========================================================================
     btnCopyJson.addEventListener('click', async () => {
         if (!latestExtractedJson) return;
 
@@ -419,9 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Download do JSON iniciado.', 'info');
     });
 
-    // =========================================================================
-    // Modal da Chave de API
-    // =========================================================================
     btnConfigModal.addEventListener('click', () => {
         apiModal.classList.remove('hidden');
     });
@@ -462,9 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // =========================================================================
-    // Toast Notification System
-    // =========================================================================
     function showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
         const toast = document.createElement('div');
@@ -484,9 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3500);
     }
 
-    // =========================================================================
-    // Controle de Logout / Encerramento de Sessão
-    // =========================================================================
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.addEventListener('click', () => {

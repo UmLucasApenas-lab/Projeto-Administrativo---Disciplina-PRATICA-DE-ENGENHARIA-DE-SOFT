@@ -1,11 +1,6 @@
-/* ==========================================================================
-   UniRV - Prática de Engenharia de Software (N2 - Etapa 1)
-   Design System & Estilos da Interface de Extração de Notas Fiscais
-   ========================================================================== */
 
 :root {
-    /* Cores Principais */
-    --primary-color: #0d9488;
+        --primary-color: #0d9488;
     --primary-dark: #0f766e;
     --primary-light: #ccfbf1;
     --primary-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
@@ -18,43 +13,35 @@
     --accent-amber: #f59e0b;
     --accent-rose: #f43f5e;
     
-    /* Superfícies e Fundos */
-    --bg-main: #f8fafc;
+        --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-muted: #f1f5f9;
     --bg-code: #0f172a;
     
-    /* Bordas e Divisórias */
-    --border-color: #e2e8f0;
+        --border-color: #e2e8f0;
     --border-focus: #0d9488;
     
-    /* Tipografia */
-    --text-primary: #0f172a;
+        --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #64748b;
     --text-inverse: #ffffff;
     
-    /* Fontes */
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
     
-    /* Sombras */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.08);
 
-    /* Raios de Borda */
-    --radius-sm: 6px;
+        --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-full: 9999px;
     
-    /* Transições */
-    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset Global */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -72,9 +59,6 @@ body {
     flex-direction: column;
 }
 
-/* ==========================================================================
-   Header Institucional
-   ========================================================================== */
 .app-header {
     background: #ffffff;
     border-bottom: 1px solid var(--border-color);
@@ -166,9 +150,6 @@ body {
     box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
-/* ==========================================================================
-   Conteúdo e Container
-   ========================================================================== */
 .main-content {
     flex: 1;
     padding: 36px 16px 64px;
@@ -182,7 +163,6 @@ body {
     gap: 24px;
 }
 
-/* Hero Section (Figuras 1 e 2) */
 .hero-section {
     text-align: center;
     margin-bottom: 8px;
@@ -201,9 +181,6 @@ body {
     color: var(--text-muted);
 }
 
-/* ==========================================================================
-   Cards Genéricos
-   ========================================================================== */
 .card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -243,9 +220,6 @@ body {
     padding: 24px;
 }
 
-/* ==========================================================================
-   Área de Upload e Dropzone
-   ========================================================================== */
 .input-label {
     display: block;
     font-size: 14px;
@@ -328,7 +302,6 @@ body {
     color: var(--text-muted);
 }
 
-/* Card do Arquivo Selecionado (Conforme Figura 2) */
 .selected-file-card {
     display: flex;
     align-items: center;
@@ -391,7 +364,6 @@ body {
     background: #fee2e2;
 }
 
-/* Atalhos de Exemplo */
 .sample-actions {
     margin-top: 16px;
     display: flex;
@@ -427,7 +399,6 @@ body {
     border-color: #cbd5e1;
 }
 
-/* Botão Extrair Dados (Conforme Figuras 1 e 2) */
 .btn-extract {
     width: 100%;
     margin-top: 20px;
@@ -460,9 +431,6 @@ body {
     background: #94a3b8;
 }
 
-/* ==========================================================================
-   Seção de Resultados (Figura 2)
-   ========================================================================== */
 .results-header {
     background: #ffffff;
 }
@@ -479,7 +447,6 @@ body {
     gap: 5px;
 }
 
-/* Abas de Navegação (Conforme Figura 2) */
 .tabs-nav {
     display: flex;
     border-bottom: 1px solid var(--border-color);
@@ -520,7 +487,6 @@ body {
     display: block;
 }
 
-/* Banner de Destaque da Classificação */
 .classification-banner {
     background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
     border: 1px solid #bbf7d0;
@@ -587,7 +553,6 @@ body {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-/* Grid de Informações Formatadas */
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -682,9 +647,6 @@ body {
     padding: 12px;
 }
 
-/* ==========================================================================
-   Aba JSON (Conforme Figura 2)
-   ========================================================================== */
 .json-tab-header {
     display: flex;
     align-items: center;
@@ -746,7 +708,6 @@ body {
     word-break: break-word;
 }
 
-/* Destaque de Sintaxe JSON */
 .json-key {
     color: #38bdf8;
     font-weight: 600;
@@ -771,9 +732,6 @@ body {
     font-style: italic;
 }
 
-/* ==========================================================================
-   Modal da API
-   ========================================================================== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -945,9 +903,6 @@ body {
     background: var(--primary-dark);
 }
 
-/* ==========================================================================
-   Toast Notifications
-   ========================================================================== */
 .toast-container {
     position: fixed;
     bottom: 24px;
@@ -984,9 +939,6 @@ body {
     border-left: 4px solid var(--accent-blue);
 }
 
-/* ==========================================================================
-   Classes Utilitárias e Animações
-   ========================================================================== */
 .hidden {
     display: none !important;
 }
@@ -1010,9 +962,6 @@ body {
     text-align: center;
 }
 
-/* ==========================================================================
-   Responsividade Completa para Mobile e Tablet
-   ========================================================================== */
 html, body {
     overflow-x: hidden;
     max-width: 100vw;
@@ -1204,8 +1153,7 @@ html, body {
         justify-content: center;
     }
 
-    /* Prevenir auto-zoom do Safari no iOS */
-    .form-control {
+        .form-control {
         font-size: 16px;
     }
 }
@@ -1239,9 +1187,6 @@ html, body {
     }
 }
 
-/* ==========================================================================
-   Estilos da Página de Login & Autenticação
-   ========================================================================== */
 .login-wrapper {
     min-height: calc(100vh - 80px);
     display: flex;
@@ -1396,9 +1341,6 @@ html, body {
     text-decoration: underline;
 }
 
-/* ==========================================================================
-   Botão de Alternância de Tema (Modo Noturno / Claro)
-   ========================================================================== */
 .btn-theme-toggle {
     display: inline-flex;
     align-items: center;
@@ -1421,9 +1363,6 @@ html, body {
     transform: rotate(15deg);
 }
 
-/* ==========================================================================
-   Design System - Modo Noturno ([data-theme="dark"])
-   ========================================================================== */
 [data-theme="dark"] {
     --primary-color: #14b8a6;
     --primary-dark: #0d9488;
@@ -1433,24 +1372,20 @@ html, body {
     --secondary-color: #f8fafc;
     --secondary-light: #cbd5e1;
 
-    /* Superfícies e Fundos Noturnos */
-    --bg-main: #0b0f19;
+        --bg-main: #0b0f19;
     --bg-card: #131b2e;
     --bg-muted: #1c263f;
     --bg-code: #070a12;
 
-    /* Bordas e Divisórias Noturnas */
-    --border-color: #24314c;
+        --border-color: #24314c;
     --border-focus: #14b8a6;
 
-    /* Tipografia Noturna */
-    --text-primary: #f8fafc;
+        --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     --text-inverse: #0b0f19;
 
-    /* Sombras Noturnas */
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.7);

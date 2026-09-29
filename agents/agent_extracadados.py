@@ -8,12 +8,6 @@ from utils.danfe_parser import parse_danfe_text
 load_dotenv()
 
 class Agent1:
-    """
-    Agente de Extração e Classificação de Dados de Notas Fiscais (PDF).
-    Implementa a especificação da N2 - Etapa 1 (UniRV - Prática de Engenharia de Software)
-    unindo a inteligência multimodal do Google Gemini à precisão determinística do Parser SEFAZ DANFE.
-    """
-
     def __init__(self, api_key=None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
 
@@ -29,11 +23,6 @@ class Agent1:
             return None, str(e)
 
     def extract_pdf_data(self, pdf_file, custom_api_key=None):
-        """
-        Extrai informações estruturadas e classifica a despesa do PDF da Nota Fiscal.
-        Suporta caminho de arquivo (str), bytes ou objeto de arquivo (FileStorage).
-        """
-        # 1. Obter texto e bytes do PDF
         pdf_bytes = None
         pdf_text = ""
         filename = "nota_fiscal.pdf"
@@ -52,10 +41,8 @@ class Agent1:
                 pdf_bytes = f.read()
             pdf_text = extract_text_from_pdf(pdf_file)
 
-        # 2. Executar extração determinística robusta diretamente no documento
         deterministic_data = parse_danfe_text(pdf_text)
 
-        # 3. Prompt para o Gemini com as regras da N2
         prompt = f"""
 Você é um sistema especialista em extração de Notas Fiscais Eletrônicas brasileiras (DANFE - Contas a Pagar).
 Por favor, analise cuidadosamente o documento fornecido e extraia as seguintes informações, retornando-as estritamente em formato JSON:
@@ -100,7 +87,6 @@ Texto extraído do documento:
 Retorne apenas UM JSON válido sem markdown ou explicações.
 """
 
-        # 4. Tentar chamar a LLM Gemini se houver cliente configurado
         client, err = self._get_client(override_key=custom_api_key)
         if client:
             try:
@@ -141,7 +127,6 @@ Retorne apenas UM JSON válido sem markdown ou explicações.
                     cleaned_json = self._clean_json_string(response_text)
                     parsed_data = json.loads(cleaned_json)
 
-                    # Reconciliar com a extração determinística para garantir 100% de precisão nos campos
                     for key in ["Número da Nota Fiscal", "Data de Emissão", "Data de Vencimento", "Valor Total", "CNPJ do Emitente", "Nome do Emitente", "Nome do Destinatário", "CPF/CNPJ do Destinatário", "Descrição dos Produtos"]:
                         if not parsed_data.get(key) or parsed_data[key] in ("-", "", "Não informado", "None", None):
                             if deterministic_data.get(key):
@@ -166,7 +151,6 @@ Retorne apenas UM JSON válido sem markdown ou explicações.
             except Exception as gemini_error:
                 print(f"Aviso Gemini (usando SEFAZ Parser direto): {gemini_error}")
 
-        # 5. Se não houver chave ou a API falhar, o parser SEFAZ garante 100% de exatidão dos dados reais
         deterministic_data["_metadados"] = {
             "origem": "FINEASY Engine Fiscal (DANFE SEFAZ Parser)",
             "arquivo": filename,
@@ -175,7 +159,6 @@ Retorne apenas UM JSON válido sem markdown ou explicações.
         return deterministic_data
 
     def _clean_json_string(self, text):
-        """Remove blocos de formatação markdown ```json ... ``` se existirem."""
         text = text.strip()
         if text.startswith("```json"):
             text = text[7:]
@@ -186,7 +169,6 @@ Retorne apenas UM JSON válido sem markdown ou explicações.
         return text.strip()
 
     def _fallback_extraction(self, text, filename, erro_api=None):
-        """Extração determinística de compatibilidade."""
         res = parse_danfe_text(text)
         res["_metadados"] = {
             "origem": "FINEASY Engine Fiscal (DANFE SEFAZ)",
