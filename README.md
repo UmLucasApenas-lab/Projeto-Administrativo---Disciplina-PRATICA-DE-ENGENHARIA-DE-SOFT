@@ -11,6 +11,9 @@
 
 **FINEASY** é um sistema Web completo para processamento e extração inteligente de dados de Notas Fiscais (Contas a Pagar) com classificação automática de despesas utilizando Inteligência Artificial (Google Gemini LLM).
 
+
+link para acesso: https://fineasyaiproject.pages.dev/
+
 ---
 
 ## 🌐 Ambientes Hospedados em Produção
@@ -22,7 +25,7 @@
 
 ## 🛠️ Tecnologias e Linguagens Utilizadas
 
-Conforme orientado em aula e detalhado no anexo da lousa (**`linguagens.jpeg`**):
+
 - **Linguagem Backend**: Python 3
 - **Framework Web**: Flask
 - **Linguagem Frontend**: JavaScript (ES6+), HTML5, CSS3 Moderno
@@ -34,7 +37,6 @@ Conforme orientado em aula e detalhado no anexo da lousa (**`linguagens.jpeg`**)
 
 ## 📋 Regras de Negócio e Campos Obrigatórios Atendidos
 
-Conforme o documento **`PROJETO ADMINISTRATIVO - N2 - Etapa 1.pdf`**:
 
 | Campo Obrigatório | Detalhe |
 | :--- | :--- |
@@ -89,7 +91,7 @@ python app.py
 ```text
 ├── agents/
 │   ├── agent_extracadados.py    # Agente de extração com prompt do professor e Gemini
-│   └── agent1/                  # Estrutura modular compatível com o slide do professor
+│   └── agent1/                  # Estrutura modular compatível com material
 ├── sample_notas/                # PDFs de notas fiscais prontas para teste imediato
 ├── static/
 │   ├── css/style.css            # Estilos refinados com design system moderno e Dark Mode
@@ -111,12 +113,6 @@ python app.py
 
 ---
 
-## 🖥️ Interface Gráfica Web
-A interface foi construída espelhando exatamente os modelos exigidos:
-- **Figura 1**: Área de upload limpa e direta com seleção de PDF e botão **"EXTRAIR DADOS"**.
-- **Figura 2**: Card com dados do arquivo carregado, abas **"Visualização Formatada"** e **"JSON"**, exibindo os dados estruturados e botão funcional **"Copiar JSON"**.
-
----
 
 ## 🏷️ Versionamento da Aplicação
 
