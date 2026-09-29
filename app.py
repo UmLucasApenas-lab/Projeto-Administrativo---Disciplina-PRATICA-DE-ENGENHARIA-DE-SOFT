@@ -64,22 +64,6 @@ agent = Agent1()
 # Inicializar banco de dados SQLite e criar usuário padrão
 init_db()
 
-def get_local_ip():
-    """Obtém o endereço IP local na rede Wi-Fi / Ethernet ativa."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        # Conexão UDP sem envio de dados reais para descobrir a interface de saída
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-    except Exception:
-        try:
-            ip = socket.gethostbyname(socket.gethostname())
-        except Exception:
-            ip = '127.0.0.1'
-    finally:
-        s.close()
-    return ip
-
 @app.route('/')
 def index():
     """Renderiza a interface web principal conforme especificações da N2."""
@@ -157,25 +141,11 @@ def api_status():
     env_key = os.getenv("GEMINI_API_KEY")
     has_key = bool(env_key and env_key.strip() != "sua_chave_gemini_aqui")
     return jsonify({
+        "app_name": "FINEASY",
         "status": "online",
         "has_gemini_key": has_key,
         "framework": "Flask (Python)",
-        "version": "1.4.0"
-    })
-
-@app.route('/api/network-info', methods=['GET'])
-def api_network_info():
-    """
-    Retorna o IP da rede local e a porta para que celulares e outros
-    dispositivos na mesma rede Wi-Fi possam se conectar e gerar o QR Code.
-    """
-    port = int(os.getenv('PORT', 5000))
-    local_ip = get_local_ip()
-    return jsonify({
-        "local_ip": local_ip,
-        "port": port,
-        "mobile_url": f"http://{local_ip}:{port}",
-        "localhost_url": f"http://127.0.0.1:{port}"
+        "version": "1.5.0"
     })
 
 @app.route('/api/extract', methods=['POST'])
@@ -225,13 +195,12 @@ if __name__ == '__main__':
 
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('DEBUG', 'True').lower() == 'true'
-    local_ip = get_local_ip()
 
     print("\n" + "=" * 62)
-    print("  [>] UniRV - Processador Inteligente de Notas Fiscais (N2)")
+    print("  [>] FINEASY - Processador Inteligente de Notas Fiscais (N2)")
     print("=" * 62)
-    print(f"  [PC] Acesso no Computador:      http://localhost:{port}")
-    print(f"  [MOBILE] Acesso Celular (Wi-Fi): http://{local_ip}:{port}")
+    print(f"  [WEB] Servidor Flask Ativo:     http://localhost:{port}")
+    print(f"  [DOCS] API Base:                 http://localhost:{port}/api/status")
     print("=" * 62 + "\n")
 
     app.run(host='0.0.0.0', port=port, debug=debug)

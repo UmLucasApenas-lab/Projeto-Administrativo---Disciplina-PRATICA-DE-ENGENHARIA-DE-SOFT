@@ -132,27 +132,6 @@ body {
     gap: 10px;
 }
 
-.btn-mobile-access {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    padding: 8px 14px;
-    border-radius: var(--radius-full);
-    font-size: 13px;
-    font-weight: 600;
-    color: #065f46;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-mobile-access:hover {
-    background: #d1fae5;
-    color: #047857;
-    border-color: #6ee7b7;
-}
-
 .btn-api-config {
     display: inline-flex;
     align-items: center;
@@ -1027,82 +1006,8 @@ body {
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Modal de Acesso Mobile (QR Code) */
-.mobile-modal-box {
-    max-width: 440px;
-}
-
 .text-center {
     text-align: center;
-}
-
-.qr-code-wrapper {
-    background: #ffffff;
-    padding: 16px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 8px auto 14px;
-}
-
-#qrcode {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#qrcode img,
-#qrcode canvas {
-    max-width: 170px !important;
-    max-height: 170px !important;
-    display: block;
-    margin: 0 auto;
-}
-
-.mobile-url-box {
-    margin: 12px 0 16px;
-    text-align: left;
-}
-
-.mobile-url-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    display: block;
-    margin-bottom: 6px;
-}
-
-.mobile-url-input-group {
-    display: flex;
-    gap: 8px;
-}
-
-.mobile-url-input {
-    background: var(--bg-muted);
-    font-size: 13px;
-    font-family: var(--font-mono);
-    color: var(--text-primary);
-}
-
-.btn-copy-url {
-    background: var(--primary-color);
-    color: #ffffff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-copy-url:hover {
-    background: var(--primary-dark);
 }
 
 /* ==========================================================================
@@ -1131,7 +1036,6 @@ html, body {
         gap: 8px;
     }
 
-    .btn-mobile-access,
     .btn-api-config {
         flex: 1;
         justify-content: center;
@@ -1711,20 +1615,10 @@ html, body {
     color: #cbd5e1;
 }
 
-[data-theme="dark"] .btn-mobile-access {
-    background: rgba(6, 78, 59, 0.25);
-    border-color: #065f46;
-    color: #6ee7b7;
-}
-
 [data-theme="dark"] .btn-api-config {
     background: #182239;
     border-color: #24314c;
     color: #cbd5e1;
-}
-
-[data-theme="dark"] .qr-code-wrapper {
-    background: #ffffff; /* Garante fundo branco para contraste da câmera ao ler QR Code */
 }
 
 

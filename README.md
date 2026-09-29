@@ -1,12 +1,22 @@
-# UniRV - Prática de Engenharia de Software (6º Período)
-## Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
+# FINEASY - Processamento Inteligente de Notas Fiscais
+## UniRV - Prática de Engenharia de Software (6º Período)
+### Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
 
-![Versão](https://img.shields.io/badge/versão-1.4.0-blue.svg)
+![Projeto](https://img.shields.io/badge/projeto-FINEASY-0f766e.svg)
+![Versão](https://img.shields.io/badge/versão-1.5.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
-![Deploy](https://img.shields.io/badge/deploy-Render-46E3B7.svg)
+![Cloudflare](https://img.shields.io/badge/frontend-Cloudflare_Pages-orange.svg)
+![Deploy](https://img.shields.io/badge/backend-Render-46E3B7.svg)
 
-Sistema Web para processamento e extração inteligente de dados de Notas Fiscais (Contas a Pagar) com classificação automática de despesas utilizando IA (Google Gemini LLM).
+**FINEASY** é um sistema Web completo para processamento e extração inteligente de dados de Notas Fiscais (Contas a Pagar) com classificação automática de despesas utilizando Inteligência Artificial (Google Gemini LLM).
+
+---
+
+## 🌐 Ambientes Hospedados em Produção
+
+- **Frontend (Cloudflare Pages)**: [https://fineasyaiproject.pages.dev](https://fineasyaiproject.pages.dev)
+- **Backend API (Render)**: [https://fineasy.onrender.com](https://fineasy.onrender.com)
 
 ---
 
@@ -18,7 +28,7 @@ Conforme orientado em aula e detalhado no anexo da lousa (**`linguagens.jpeg`**)
 - **Linguagem Frontend**: JavaScript (ES6+), HTML5, CSS3 Moderno
 - **Inteligência Artificial**: Google Gemini API (`google-genai`)
 - **Processamento de Documentos**: `pypdf`, `pymupdf` (PDF Multimodal e OCR text extraction)
-- **SGBD Planejado para Etapa 2**: PostgreSQL / MySQL
+- **SGBD Planejado para Etapa 2**: PostgreSQL / SQLite / MySQL
 
 ---
 
@@ -51,7 +61,7 @@ Conforme o documento **`PROJETO ADMINISTRATIVO - N2 - Etapa 1.pdf`**:
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Como Executar o Projeto Localmente
 
 ### 1. Instalar as dependências
 Caso não estejam instaladas:
@@ -64,14 +74,13 @@ Você pode adicionar sua chave gratuita no arquivo `.env`:
 ```env
 GEMINI_API_KEY=sua_chave_aqui
 ```
-> *Nota: Você também pode inserir sua chave diretamente pela interface clicando no botão **"Configurar API Gemini"** no canto superior direito, ou utilizar os exemplos incluídos que contam com processamento heurístico local imediato.*
+> *Nota: Você também pode inserir sua chave diretamente pela interface clicando no botão **"Configurar API"** no cabeçalho da página, ou utilizar os exemplos incluídos que contam com processamento heurístico local imediato.*
 
 ### 3. Iniciar a Aplicação
 ```bash
 python app.py
 ```
-- **Acesso no Computador**: **[http://localhost:5000](http://localhost:5000)**
-- **Acesso no Celular (Mesma rede Wi-Fi)**: **`http://<IP_DO_SEU_PC>:5000`** *(ou basta clicar em **"Acesso Mobile"** no cabeçalho da página para escanear o QR Code direto com a câmera do smartphone!)*
+- **Acesso no Navegador**: **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
@@ -83,14 +92,19 @@ python app.py
 │   └── agent1/                  # Estrutura modular compatível com o slide do professor
 ├── sample_notas/                # PDFs de notas fiscais prontas para teste imediato
 ├── static/
-│   ├── css/style.css            # Estilos refinados com design system moderno
-│   └── js/main.js               # Upload, chamadas assíncronas, tabs e cópia de JSON
+│   ├── css/style.css            # Estilos refinados com design system moderno e Dark Mode
+│   └── js/
+│       ├── main.js              # Upload, chamadas assíncronas, tabs e cópia de JSON
+│       └── theme.js             # Gerenciador global de temas (Claro/Escuro)
 ├── templates/
-│   └── index.html               # Interface Web fiel às Figuras 1 e 2 da N2
+│   ├── index.html               # Aplicação Principal de Extração
+│   ├── login.html               # Tela de Autenticação JWT
+│   └── register.html            # Tela de Cadastro de Novos Usuários
 ├── utils/
+│   ├── database.py              # Gestão do banco de dados SQLite e senhas seguras
 │   ├── pdf_processor.py         # Leitura e extração de PDFs
 │   └── generate_sample_nf.py    # Gerador de notas fiscais de teste
-├── app.py                       # Servidor Flask com endpoints da API
+├── app.py                       # Servidor Flask com endpoints REST
 ├── requirements.txt             # Dependências Python
 └── .env                         # Variáveis de ambiente
 ```
@@ -108,7 +122,10 @@ A interface foi construída espelhando exatamente os modelos exigidos:
 
 Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https://semver.org/lang/pt-BR/):
 
-- **`v1.4.0` (Versão Atual - Suporte a Modo Noturno / Dark Mode)**
+- **`v1.5.0` (Versão Atual - Identidade Oficial FINEASY & Simplificação de Acesso)**
+  - Consolidação do nome oficial do projeto: **FINEASY**.
+  - Remoção do modal de rede local / QR Code obsoleto, visto que a aplicação já está totalmente hospedada na nuvem (Cloudflare Pages + Render) e com design 100% responsivo para celulares e computadores via link direto.
+- **`v1.4.0` (Suporte a Modo Noturno / Dark Mode)**
   - Implementação de alternância de tema Claro/Noturno com persistência em `localStorage` e detecção de preferência do sistema operacional (`prefers-color-scheme`).
   - Paleta de cores escuras de alto contraste com foco em acessibilidade e conforto visual.
   - Disponível em todas as telas: Extrator Principal, Login e Cadastro de Usuários.
@@ -119,12 +136,10 @@ Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https:
 - **`v1.2.0` (Sistema de Autenticação JWT)**
   - Implementação de tela e sistema de autenticação segura via tokens JWT (`pyjwt`).
   - Proteção da rota `/api/extract` com decorator `@token_required` (Bearer Token).
-  - Front-end de login responsivo (`templates/login.html`) integrado à identidade visual da UniRV.
-  - Guarda de rota no front-end (`main.js`) com redirecionamento automático e botão de Logout.
+  - Front-end de login responsivo (`templates/login.html`).
+  - Guarda de rota no front-end com redirecionamento automático e botão de Logout.
 - **`v1.1.0` (Deploy & Produção)**
   - Adição do servidor WSGI **`gunicorn`** para execução em ambiente de produção no [Render](https://render.com).
-  - Implementação de modal e gerador de **QR Code** para acesso mobile facilitado via rede Wi-Fi local.
-  - Endpoint de descoberta de IP local (`/api/network-info`).
 - **`v1.0.0` (Lançamento Inicial - Etapa 1 da N2)**
   - Implementação do agente de extração multimodal (`agent_extracadados.py`) integrado à API Google Gemini.
   - Classificação automática de despesas nas 9 categorias padrão do agronegócio/financeiro.

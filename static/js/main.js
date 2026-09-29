@@ -76,17 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiStatusText = document.getElementById('apiStatusText');
     const apiStatusDot = document.getElementById('apiStatusDot');
 
-    // Modal de Acesso Mobile (QR Code)
-    const btnMobileModal = document.getElementById('btnMobileModal');
-    const mobileModal = document.getElementById('mobileModal');
-    const btnCloseMobileModal = document.getElementById('btnCloseMobileModal');
-    const btnDoneMobileModal = document.getElementById('btnDoneMobileModal');
-    const mobileUrlDisplay = document.getElementById('mobileUrlDisplay');
-    const btnCopyMobileUrl = document.getElementById('btnCopyMobileUrl');
-    const qrcodeContainer = document.getElementById('qrcode');
-    let qrCodeInstance = null;
-    let cachedMobileUrl = null;
-
     // Estado da Aplicação
     let currentSelectedFile = null;
     let latestExtractedJson = null;
@@ -472,76 +461,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         closeModal();
     });
-
-    // =========================================================================
-    // Controle do Modal de Acesso Mobile e QR Code
-    // =========================================================================
-    async function loadNetworkInfo() {
-        if (cachedMobileUrl) return cachedMobileUrl;
-        try {
-            const resp = await fetch(`${API_BASE_URL}/api/network-info`);
-            const data = await resp.json();
-            cachedMobileUrl = data.mobile_url;
-            return data.mobile_url;
-        } catch (e) {
-            console.warn('Erro ao carregar informações de rede:', e);
-            const port = window.location.port ? `:${window.location.port}` : '';
-            return `${window.location.protocol}//${window.location.hostname}${port}`;
-        }
-    }
-
-    async function openMobileModal() {
-        mobileModal.classList.remove('hidden');
-        const url = await loadNetworkInfo();
-        if (mobileUrlDisplay) mobileUrlDisplay.value = url;
-
-        // Gerar QR Code se ainda não gerado
-        if (!qrCodeInstance && qrcodeContainer) {
-            qrcodeContainer.innerHTML = '';
-            if (typeof QRCode !== 'undefined') {
-                qrCodeInstance = new QRCode(qrcodeContainer, {
-                    text: url,
-                    width: 170,
-                    height: 170,
-                    colorDark: "#0f766e",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-            } else {
-                const qrImg = document.createElement('img');
-                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(url)}`;
-                qrImg.alt = "QR Code Mobile";
-                qrcodeContainer.appendChild(qrImg);
-            }
-        }
-    }
-
-    function closeMobileModal() {
-        mobileModal.classList.add('hidden');
-    }
-
-    if (btnMobileModal) btnMobileModal.addEventListener('click', openMobileModal);
-    if (btnCloseMobileModal) btnCloseMobileModal.addEventListener('click', closeMobileModal);
-    if (btnDoneMobileModal) btnDoneMobileModal.addEventListener('click', closeMobileModal);
-    if (mobileModal) {
-        mobileModal.addEventListener('click', (e) => {
-            if (e.target === mobileModal) closeMobileModal();
-        });
-    }
-
-    if (btnCopyMobileUrl) {
-        btnCopyMobileUrl.addEventListener('click', async () => {
-            const url = mobileUrlDisplay.value;
-            try {
-                await navigator.clipboard.writeText(url);
-                showToast('Link copiado com sucesso!', 'success');
-            } catch (err) {
-                mobileUrlDisplay.select();
-                document.execCommand('copy');
-                showToast('Link copiado!', 'success');
-            }
-        });
-    }
 
     // =========================================================================
     // Toast Notification System
