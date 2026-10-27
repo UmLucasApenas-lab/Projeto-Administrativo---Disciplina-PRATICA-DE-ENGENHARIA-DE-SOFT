@@ -1,18 +1,17 @@
-# FINEASY - Processamento Inteligente de Notas Fiscais
+# FINEASY - Sistema Administrativo-Financeiro & IA Fiscal
 ## UniRV - Prática de Engenharia de Software (6º Período)
-### Projeto Administrativo-Financeiro - Avaliação N2 (1ª Etapa)
+### Projeto Administrativo-Financeiro - Avaliação N2 (1ª e 2ª Etapas Concluídas)
 
 ![Projeto](https://img.shields.io/badge/projeto-FINEASY-0f766e.svg)
-![Versão](https://img.shields.io/badge/versão-1.5.0-blue.svg)
+![Versão](https://img.shields.io/badge/versão-2.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-yellow.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
+![SQLite](https://img.shields.io/badge/database-SQLite_ACID-lightgrey.svg)
+![Testes](https://img.shields.io/badge/testes-100%25_PASS-success.svg)
 ![Cloudflare](https://img.shields.io/badge/frontend-Cloudflare_Pages-orange.svg)
 ![Deploy](https://img.shields.io/badge/backend-Render-46E3B7.svg)
 
-**FINEASY** é um sistema Web completo para processamento e extração inteligente de dados de Notas Fiscais (Contas a Pagar) com classificação automática de despesas utilizando Inteligência Artificial (Google Gemini LLM).
-
-
-link para acesso: https://fineasyaiproject.pages.dev/
+**FINEASY** é um sistema Web completo que integra extração inteligente de dados de Notas Fiscais (DANFE / Contas a Pagar) utilizando LLMs (Google Gemini) e um ecossistema completo de gestão **Administrativo-Financeira** conforme os padrões acadêmicos da Universidade de Rio Verde (UniRV).
 
 ---
 
@@ -20,125 +19,135 @@ link para acesso: https://fineasyaiproject.pages.dev/
 
 - **Frontend (Cloudflare Pages)**: [https://fineasyaiproject.pages.dev](https://fineasyaiproject.pages.dev)
 - **Backend API (Render)**: [https://fineasy.onrender.com](https://fineasy.onrender.com)
+- **Repositório GitHub**: [https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT](https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT)
 
 ---
 
-## 🛠️ Tecnologias e Linguagens Utilizadas
+## 🚀 Funcionalidades da 2ª Etapa Implementadas
 
+### 1. Análise Automática pós-extração da Nota Fiscal (Páginas 1 e 2 do PDF)
+- Ao extrair qualquer nota fiscal, o backend cruza os dados com o Banco de Dados em tempo real:
+  - **FORNECEDOR**: Consulta por CNPJ ou Razão Social e informa na tela se `EXISTE – ID: XX` ou `NÃO EXISTE`.
+  - **FATURADO**: Consulta por CPF ou Nome Completo e informa se `EXISTE – ID: XX` ou `NÃO EXISTE`.
+  - **DESPESA**: Consulta a descrição da classificação e informa se `EXISTE – ID: XX` ou `NÃO EXISTE`.
+- **Botão de Lançamento no Sistema Financeiro**:
+  1. Cria o novo Fornecedor caso não exista (`status = 'ATIVO'`);
+  2. Cria o novo Faturado caso não exista (`status = 'ATIVO'`);
+  3. Cria a nova Despesa caso não exista (`status = 'ATIVO'`);
+  4. Cria o registro do Movimento em `movimento_contas` (Tipo: `APAGAR`) e suas respectivas parcelas em `parcela_contas`;
+  5. Notifica o usuário: **"REGISTRO FOI LANÇADO COM SUCESSO."**
+  6. Atualiza imediatamente os badges na tela para `EXISTE – ID: XX`.
 
-- **Linguagem Backend**: Python 3
-- **Framework Web**: Flask
-- **Linguagem Frontend**: JavaScript (ES6+), HTML5, CSS3 Moderno
-- **Inteligência Artificial**: Google Gemini API (`google-genai`)
-- **Processamento de Documentos**: `pypdf`, `pymupdf` (PDF Multimodal e OCR text extraction)
-- **SGBD Planejado para Etapa 2**: PostgreSQL / SQLite / MySQL
+### 2. Módulos Administrativos (CRUDs)
+- **Manter Pessoas**: Gerenciamento de Fornecedores, Clientes e Faturados.
+- **Manter Classificação**: Cadastro de Tipos de Despesas e Tipos de Receitas.
+- **Registrar Contas**: Contas a Pagar e a Receber com rateio de despesas e suporte a múltiplas parcelas com datas de vencimento distintas.
 
----
-
-## 📋 Regras de Negócio e Campos Obrigatórios Atendidos
-
-
-| Campo Obrigatório | Detalhe |
-| :--- | :--- |
-| **Fornecedor** | Razão Social, Nome Fantasia e CNPJ |
-| **Faturado (Destinatário)** | Nome Completo e CPF/CNPJ |
-| **Número da Nota Fiscal** | Número oficial do documento (ex: `000.084.682`) |
-| **Data de Emissão** | Data em formato `DD/MM/AAAA` |
-| **Data de Vencimento** | Data de vencimento (*Regra*: caso não localizada, assume a data de emissão) |
-| **Descrição dos Produtos** | Texto detalhado com itens adquiridos |
-| **Quantidade de Parcelas** | Estruturado para 1 ou múltiplas parcelas |
-| **Valor Total** | Valor total do documento em reais (R$) |
-| **Classificação da Despesa** | Categoria interpretada pela IA + Lista de `termos_detectados` |
-
-### Categorias de Despesas Suportadas
-1. `INSUMOS AGRÍCOLAS` (Sementes, Fertilizantes, Defensivos, Corretivos)
-2. `MANUTENÇÃO E OPERAÇÃO` (Combustíveis, Peças, Graxas, Rolamentos, Ferramentas)
-3. `RECURSOS HUMANOS` (Mão de Obra Temporária, Salários e Encargos)
-4. `SERVIÇOS OPERACIONAIS` (Frete e Transporte, Colheita Terceirizada, Secagem)
-5. `INFRAESTRUTURA E UTILIDADES` (Energia Elétrica, Arrendamento, Materiais de Construção)
-6. `ADMINISTRATIVAS` (Honorários Contábeis, Bancárias e Financeiras)
-7. `SEGUROS E PROTEÇÃO` (Seguro Agrícola, Seguro de Ativos)
-8. `IMPOSTOS E TAXAS` (ITR, IPTU, IPVA, INCRA-CCIR)
-9. `INVESTIMENTOS` (Aquisição de Máquinas, Imóveis, Veículos)
+### 3. Regras de Negócio e Recomendações de Layout UniRV Atendidas
+- **Exclusão Lógica Obrigatória**: Nenhum registro cadastral pode ser excluído fisicamente (`DELETE`). Ao excluir, o campo `status` é alterado para `'INATIVO'`.
+- **Reativação**: Suporte a reativar qualquer registro inativo, restaurando-o para `status = 'ATIVO'`.
+- **Tabela Vazia Inicialmente**: As tabelas de listagem iniciam vazias por padrão para máxima performance.
+- **Botão "TODOS"**: Carrega todos os registros cadastrados com `status = 'ATIVO'`.
+- **Busca Multi-Termo**: O campo de busca pesquisa simultaneamente por Nome/Razão Social, Documento (CNPJ/CPF formatado ou limpo), Telefone e E-mail.
+- **Indexação por Coluna**: Ordenação alfabética e numérica ao clicar nos cabeçalhos das colunas (`<th>`).
+- **Campos Ocultos**: No CREATE e UPDATE, o campo `status` permanece oculto (sendo gravado como `ATIVO` no cadastro).
 
 ---
 
-## 🚀 Como Executar o Projeto Localmente
+## 🛠️ Tecnologias e Arquitetura
 
-### 1. Instalar as dependências
-Caso não estejam instaladas:
+- **Backend**: Python 3 com microframework Flask.
+- **Banco de Dados**: SQLite3 com integridade referencial (`PRAGMA foreign_keys = ON`), transações ACID e soft delete.
+- **Frontend**: Aplicação SPA moderna em Vanilla JS (ES6+), HTML5 e CSS3 responsivo com suporte a temas Claro e Escuro.
+- **Segurança**: Autenticação via tokens JWT (`PyJWT`) e senhas com hash criptográfico (`werkzeug.security`).
+- **Processamento Fiscal & IA**: Google Gemini API (`google-genai`) + Engine Heurístico SEFAZ DANFE.
+
+---
+
+## 📊 Modelo do Banco de Dados Relacional
+
+```mermaid
+erDiagram
+    PESSOAS ||--o{ MOVIMENTO_CONTAS : "Fornecedor / Faturado"
+    MOVIMENTO_CONTAS ||--|{ PARCELA_CONTAS : "possui 1..N parcelas"
+    MOVIMENTO_CONTAS ||--|{ MOVIMENTO_CLASSIFICACOES : "rateio"
+    CLASSIFICACOES ||--o{ MOVIMENTO_CLASSIFICACOES : "classifica"
+
+    PESSOAS {
+        int id PK
+        string tipo "FORNECEDOR, CLIENTE, CLIENTE-FORNECEDOR, FATURADO"
+        string razao_social_nome
+        string fantasia
+        string cnpj_cpf
+        string email
+        string telefone
+        string status "ATIVO ou INATIVO"
+    }
+
+    CLASSIFICACOES {
+        int id PK
+        string tipo "DESPESA ou RECEITA"
+        string descricao
+        string status "ATIVO ou INATIVO"
+    }
+
+    MOVIMENTO_CONTAS {
+        int id PK
+        string tipo "APAGAR ou ARECEBER"
+        string numero_documento
+        string descricao
+        date data_emissao
+        real valor_total
+        string status "ATIVO ou INATIVO"
+    }
+
+    PARCELA_CONTAS {
+        int id PK
+        int movimento_id FK
+        int numero_parcela
+        string identificacao "ÚNICA, 1/N"
+        date data_vencimento
+        real valor
+        string status_pagamento "PENDENTE ou PAGO"
+        string status "ATIVO ou INATIVO"
+    }
+```
+
+---
+
+## 🧪 Testes Automatizados
+
+O projeto conta com uma suíte abrangente de testes unitários e de integração de ponta a ponta (E2E):
+
 ```bash
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+### Cobertura dos Testes:
+1. `tests/test_database_etapa2.py`: Criação de tabelas relacionais, integridade referencial, soft-delete e reativação.
+2. `tests/test_api_crud_basico.py`: Endpoints REST de Pessoas e Classificações, regras de busca e layout UniRV.
+3. `tests/test_analise_e_lancamento.py`: Motor de análise e lançamento automático transacional (Páginas 1 e 2 do PDF).
+4. `tests/test_api_contas.py`: Endpoints de Contas com rateio de despesas e múltiplas parcelas com datas distintas.
+5. `tests/test_fluxo_completo_e2e.py`: Ciclo de vida completo (extração -> análise inicial NÃO EXISTE -> lançamento -> re-análise EXISTE – ID: XX -> consulta nas tabelas -> exclusão lógica e reativação).
+
+---
+
+## 💻 Como Executar Localmente
+
+### 1. Clonar o repositório e instalar dependências
+```bash
+git clone https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT.git
+cd Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT
 python -m pip install -r requirements.txt
 ```
 
-### 2. Configurar a Chave do Gemini (Opcional)
-Você pode adicionar sua chave gratuita no arquivo `.env`:
-```env
-GEMINI_API_KEY=sua_chave_aqui
-```
-> *Nota: Você também pode inserir sua chave diretamente pela interface clicando no botão **"Configurar API"** no cabeçalho da página, ou utilizar os exemplos incluídos que contam com processamento heurístico local imediato.*
-
-### 3. Iniciar a Aplicação
+### 2. Iniciar a aplicação Flask
 ```bash
 python app.py
 ```
-- **Acesso no Navegador**: **[http://localhost:5000](http://localhost:5000)**
+Acesse no navegador: **[http://localhost:5000](http://localhost:5000)**
 
----
-
-## 📁 Estrutura de Arquivos
-
-```text
-├── agents/
-│   ├── agent_extracadados.py    # Agente de extração com prompt do professor e Gemini
-│   └── agent1/                  # Estrutura modular compatível com material
-├── sample_notas/                # PDFs de notas fiscais prontas para teste imediato
-├── static/
-│   ├── css/style.css            # Estilos refinados com design system moderno e Dark Mode
-│   └── js/
-│       ├── main.js              # Upload, chamadas assíncronas, tabs e cópia de JSON
-│       └── theme.js             # Gerenciador global de temas (Claro/Escuro)
-├── templates/
-│   ├── index.html               # Aplicação Principal de Extração
-│   ├── login.html               # Tela de Autenticação JWT
-│   └── register.html            # Tela de Cadastro de Novos Usuários
-├── utils/
-│   ├── database.py              # Gestão do banco de dados SQLite e senhas seguras
-│   ├── pdf_processor.py         # Leitura e extração de PDFs
-│   └── generate_sample_nf.py    # Gerador de notas fiscais de teste
-├── app.py                       # Servidor Flask com endpoints REST
-├── requirements.txt             # Dependências Python
-└── .env                         # Variáveis de ambiente
-```
-
----
-
-
-## 🏷️ Versionamento da Aplicação
-
-Este projeto adota as convenções de [Versionamento Semântico (SemVer)](https://semver.org/lang/pt-BR/):
-
-- **`v1.5.0` (Versão Atual - Identidade Oficial FINEASY & Simplificação de Acesso)**
-  - Consolidação do nome oficial do projeto: **FINEASY**.
-  - Remoção do modal de rede local / QR Code obsoleto, visto que a aplicação já está totalmente hospedada na nuvem (Cloudflare Pages + Render) e com design 100% responsivo para celulares e computadores via link direto.
-- **`v1.4.0` (Suporte a Modo Noturno / Dark Mode)**
-  - Implementação de alternância de tema Claro/Noturno com persistência em `localStorage` e detecção de preferência do sistema operacional (`prefers-color-scheme`).
-  - Paleta de cores escuras de alto contraste com foco em acessibilidade e conforto visual.
-  - Disponível em todas as telas: Extrator Principal, Login e Cadastro de Usuários.
-- **`v1.3.0` (Banco SQLite & Registro de Usuários)**
-  - Migração de credenciais fixas para banco de dados relacional **SQLite** com senhas criptografadas (`werkzeug.security`).
-  - Nova funcionalidade e tela de cadastro de novos usuários (`templates/register.html` e `/api/register`).
-  - Correção de fluxo no front-end com guardas imediatos no `<head>` para evitar loops de redirecionamento ou telas em branco.
-- **`v1.2.0` (Sistema de Autenticação JWT)**
-  - Implementação de tela e sistema de autenticação segura via tokens JWT (`pyjwt`).
-  - Proteção da rota `/api/extract` com decorator `@token_required` (Bearer Token).
-  - Front-end de login responsivo (`templates/login.html`).
-  - Guarda de rota no front-end com redirecionamento automático e botão de Logout.
-- **`v1.1.0` (Deploy & Produção)**
-  - Adição do servidor WSGI **`gunicorn`** para execução em ambiente de produção no [Render](https://render.com).
-- **`v1.0.0` (Lançamento Inicial - Etapa 1 da N2)**
-  - Implementação do agente de extração multimodal (`agent_extracadados.py`) integrado à API Google Gemini.
-  - Classificação automática de despesas nas 9 categorias padrão do agronegócio/financeiro.
-  - Processamento e leitura de PDFs com fallback heurístico.
-  - Interface web responsiva em HTML5/CSS3/Vanilla JS (espelhando Figuras 1 e 2 da especificação N2).
-
+### Credenciais Padrão de Acesso:
+- **E-mail**: `admin@unirv.edu.br`
+- **Senha**: `admin123`
+*(Você também pode criar uma nova conta na tela de registro)*
