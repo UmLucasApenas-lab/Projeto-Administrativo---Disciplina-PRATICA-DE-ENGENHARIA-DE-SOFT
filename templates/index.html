@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINEASY - Extração Inteligente de Notas Fiscais</title>
+    <title>FINEASY - Sistema Administrativo-Financeiro & IA</title>
     <script>
         (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
@@ -31,7 +31,7 @@
                 <div class="brand-badge">FINEASY</div>
                 <div class="brand-info">
                     <span class="brand-title">FINEASY · Prática de Engenharia de Software</span>
-                    <span class="brand-subtitle">Avaliação N2 - Processamento Inteligente com LLM Gemini</span>
+                    <span class="brand-subtitle">UniRV · Sistema Administrativo-Financeiro (2ª Etapa)</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -51,216 +51,729 @@
         </div>
     </header>
 
-    <main class="main-content">
-        <div class="page-container">
-            <div class="hero-section">
-                <h1 class="page-title">Extração de Dados de Nota Fiscal</h1>
-                <p class="page-subtitle">Carregue um PDF de nota fiscal e extraia os dados automaticamente usando IA</p>
+    <div class="app-layout">
+        <!-- SIDEBAR DE NAVEGAÇÃO -->
+        <aside class="app-sidebar">
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name" id="sidebarUserName">Administrador UniRV</span>
+                    <span class="user-role">Painel Financeiro</span>
+                </div>
             </div>
 
-            <section class="card upload-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                        <span>Upload do PDF</span>
-                    </div>
+            <nav class="sidebar-nav">
+                <button type="button" class="nav-item active" data-view="viewExtractor" id="navExtractor">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Processador de NF</span>
+                </button>
+                <button type="button" class="nav-item" data-view="viewPessoas" id="navPessoas">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Manter Pessoas</span>
+                </button>
+                <button type="button" class="nav-item" data-view="viewClassificacoes" id="navClassificacoes">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>Manter Classificações</span>
+                </button>
+                <button type="button" class="nav-item" data-view="viewContas" id="navContas">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <span>Registrar Contas</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status-pill">
+                    <span class="status-dot-green"></span>
+                    <span>Etapa 2: Online</span>
                 </div>
-                <div class="card-body">
-                    <label class="input-label" for="pdfInput">Selecione o arquivo PDF da nota fiscal</label>
-                    
-                    <div class="drop-zone" id="dropZone">
-                        <input type="file" id="pdfInput" accept=".pdf,application/pdf" class="file-input-hidden">
-                        <div class="drop-zone-prompt">
-                            <i class="fa-regular fa-file-pdf drop-icon"></i>
-                            <div class="drop-text">
-                                <span class="drop-title">Arraste seu arquivo PDF aqui ou</span>
-                                <button type="button" class="btn-browse" id="btnBrowse">Escolher arquivo</button>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL (SPA VIEWS) -->
+        <main class="main-content">
+            
+            <!-- VIEW 1: PROCESSADOR DE NOTAS FISCAIS & ANÁLISE -->
+            <section class="spa-view active" id="viewExtractor">
+                <div class="page-container">
+                    <div class="hero-section">
+                        <h1 class="page-title">Processador Inteligente de Notas Fiscais</h1>
+                        <p class="page-subtitle">Extraia dados da nota fiscal com IA e execute a análise cruzada com o Banco de Dados</p>
+                    </div>
+
+                    <div class="card upload-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Upload de Nota Fiscal (DANFE)</span>
                             </div>
-                            <span class="drop-hint">Formatos aceitos: PDF (DANFE / NF-e / Contas a Pagar)</span>
+                        </div>
+                        <div class="card-body">
+                            <label class="input-label" for="pdfInput">Selecione o arquivo PDF da nota fiscal</label>
+                            
+                            <div class="drop-zone" id="dropZone">
+                                <input type="file" id="pdfInput" accept=".pdf,application/pdf" class="file-input-hidden">
+                                <div class="drop-zone-prompt">
+                                    <i class="fa-regular fa-file-pdf drop-icon"></i>
+                                    <div class="drop-text">
+                                        <span class="drop-title">Arraste seu arquivo PDF aqui ou</span>
+                                        <button type="button" class="btn-browse" id="btnBrowse">Escolher arquivo</button>
+                                    </div>
+                                    <span class="drop-hint">Formatos aceitos: PDF (DANFE / NF-e / Contas a Pagar)</span>
+                                </div>
+                            </div>
+
+                            <div class="selected-file-card hidden" id="fileInfoCard">
+                                <div class="file-details">
+                                    <div class="file-icon-wrapper">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                    </div>
+                                    <div class="file-meta">
+                                        <span class="file-name" id="fileNameDisplay">NFE.pdf</span>
+                                        <span class="file-size" id="fileSizeDisplay">0.00 MB</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remover arquivo">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <div class="sample-actions">
+                                <span class="sample-label">Ou teste rapidamente com PDFs de exemplo:</span>
+                                <button type="button" class="btn-sample" id="btnSampleManutencao">
+                                    <i class="fa-solid fa-wrench"></i> Peças & Máquinas (DANFE 000.084.682)
+                                </button>
+                                <button type="button" class="btn-sample" id="btnSampleInsumos">
+                                    <i class="fa-solid fa-seedling"></i> Insumos Agrícolas (DANFE 000.054.121)
+                                </button>
+                            </div>
+
+                            <button type="button" class="btn-extract" id="btnExtract" disabled>
+                                <span class="btn-text">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> EXTRAIR E ANALISAR DADOS
+                                </span>
+                                <span class="spinner hidden" id="btnSpinner">
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i> Processando documento...
+                                </span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="selected-file-card hidden" id="fileInfoCard">
-                        <div class="file-details">
-                            <div class="file-icon-wrapper">
-                                <i class="fa-solid fa-file-pdf"></i>
+                    <!-- RESULTADOS E PAINEL DE ANÁLISE (2ª ETAPA) -->
+                    <div class="results-wrapper hidden" id="resultsSection">
+                        
+                        <!-- PAINEL DE ANÁLISE DE DADOS (PÁGINAS 1 E 2 DO PDF) -->
+                        <div class="card analysis-card-main" id="analysisSection">
+                            <div class="card-header analysis-main-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-database"></i>
+                                    <span>Análise dos Dados no Banco de Dados (2ª Etapa)</span>
+                                </div>
+                                <span class="analysis-tag-badge">Consulta em Tempo Real</span>
                             </div>
-                            <div class="file-meta">
-                                <span class="file-name" id="fileNameDisplay">NFE.pdf</span>
-                                <span class="file-size" id="fileSizeDisplay">0.00 MB</span>
+                            <div class="card-body">
+                                <p class="analysis-intro">
+                                    O sistema consultou o Banco de Dados para verificar a existência do Fornecedor, Faturado e Classificação da Despesa:
+                                </p>
+
+                                <div class="analysis-cards-grid">
+                                    <!-- 1. FORNECEDOR -->
+                                    <div class="analysis-item-box" id="boxAnaliseFornecedor">
+                                        <div class="box-header">
+                                            <i class="fa-solid fa-building"></i>
+                                            <span>FORNECEDOR</span>
+                                        </div>
+                                        <div class="box-body">
+                                            <h4 class="box-title" id="analiseFornecedorNome">-</h4>
+                                            <p class="box-subtitle" id="analiseFornecedorCnpj">CNPJ: -</p>
+                                        </div>
+                                        <div class="box-footer">
+                                            <span class="status-chip chip-loading" id="badgeFornecedor">CONSULTANDO...</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. FATURADO -->
+                                    <div class="analysis-item-box" id="boxAnaliseFaturado">
+                                        <div class="box-header">
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>FATURADO</span>
+                                        </div>
+                                        <div class="box-body">
+                                            <h4 class="box-title" id="analiseFaturadoNome">-</h4>
+                                            <p class="box-subtitle" id="analiseFaturadoCpf">CPF: -</p>
+                                        </div>
+                                        <div class="box-footer">
+                                            <span class="status-chip chip-loading" id="badgeFaturado">CONSULTANDO...</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. DESPESA -->
+                                    <div class="analysis-item-box" id="boxAnaliseDespesa">
+                                        <div class="box-header">
+                                            <i class="fa-solid fa-tag"></i>
+                                            <span>DESPESA</span>
+                                        </div>
+                                        <div class="box-body">
+                                            <h4 class="box-title" id="analiseDespesaNome">-</h4>
+                                            <p class="box-subtitle" id="analiseDespesaTipo">Classificação de Despesa</p>
+                                        </div>
+                                        <div class="box-footer">
+                                            <span class="status-chip chip-loading" id="badgeDespesa">CONSULTANDO...</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="launch-action-bar">
+                                    <button type="button" class="btn-launch-record" id="btnLancarSistema">
+                                        <i class="fa-solid fa-file-circle-check"></i>
+                                        <span>LANÇAR NO SISTEMA FINANCEIRO</span>
+                                    </button>
+                                    <div class="launch-feedback hidden" id="launchFeedback">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span id="launchFeedbackText">REGISTRO FOI LANÇADO COM SUCESSO.</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Remover arquivo">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
 
-                    <div class="sample-actions">
-                        <span class="sample-label">Ou teste com PDFs de exemplo:</span>
-                        <button type="button" class="btn-sample" id="btnSampleManutencao">
-                            <i class="fa-solid fa-wrench"></i> Exemplo: Peças & Máquinas (DANFE 000.084.682)
-                        </button>
-                        <button type="button" class="btn-sample" id="btnSampleInsumos">
-                            <i class="fa-solid fa-seedling"></i> Exemplo: Insumos Agrícolas (DANFE 000.054.121)
-                        </button>
-                    </div>
+                        <!-- CARD DOS DADOS EXTRAÍDOS FORMATADOS -->
+                        <div class="card results-card">
+                            <div class="card-header results-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                    <span>Dados da Nota Fiscal</span>
+                                </div>
+                                <div class="source-badge" id="extractionSourceBadge">
+                                    <i class="fa-solid fa-bolt"></i> Extraído com IA
+                                </div>
+                            </div>
 
-                    <button type="button" class="btn-extract" id="btnExtract" disabled>
-                        <span class="btn-text">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> EXTRAIR DADOS
-                        </span>
-                        <span class="spinner hidden" id="btnSpinner">
-                            <i class="fa-solid fa-circle-notch fa-spin"></i> Processando com IA...
-                        </span>
-                    </button>
+                            <div class="card-body">
+                                <div class="tabs-nav" role="tablist">
+                                    <button type="button" class="tab-btn active" id="tabFormattedBtn" data-target="tabFormatted">
+                                        <i class="fa-solid fa-table-cells-large"></i> Visualização Formatada
+                                    </button>
+                                    <button type="button" class="tab-btn" id="tabJsonBtn" data-target="tabJson">
+                                        <i class="fa-solid fa-code"></i> JSON
+                                    </button>
+                                </div>
+
+                                <div class="tab-content active" id="tabFormatted">
+                                    <div class="classification-banner" id="classificationBanner">
+                                        <div class="banner-icon">
+                                            <i class="fa-solid fa-tag"></i>
+                                        </div>
+                                        <div class="banner-body">
+                                            <span class="banner-label">Classificação da Despesa</span>
+                                            <h2 class="banner-category" id="formattedCategoria">MANUTENÇÃO E OPERAÇÃO</h2>
+                                            <div class="detected-tags-container">
+                                                <span class="tags-label">Termos detectados:</span>
+                                                <div class="tags-list" id="formattedTermos"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-grid">
+                                        <div class="info-card">
+                                            <div class="info-card-header">
+                                                <i class="fa-solid fa-building"></i>
+                                                <h3>Fornecedor / Emitente</h3>
+                                            </div>
+                                            <div class="info-card-body">
+                                                <div class="field-item">
+                                                    <span class="field-label">Razão Social:</span>
+                                                    <span class="field-value highlight" id="formattedEmitente">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">Nome Fantasia:</span>
+                                                    <span class="field-value" id="formattedFantasia">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">CNPJ:</span>
+                                                    <span class="field-value mono" id="formattedCnpjEmitente">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-card">
+                                            <div class="info-card-header">
+                                                <i class="fa-solid fa-user-check"></i>
+                                                <h3>Faturado / Destinatário</h3>
+                                            </div>
+                                            <div class="info-card-body">
+                                                <div class="field-item">
+                                                    <span class="field-label">Nome Completo:</span>
+                                                    <span class="field-value highlight" id="formattedDestinatario">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">CPF / CNPJ:</span>
+                                                    <span class="field-value mono" id="formattedCpfDestinatario">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-card">
+                                            <div class="info-card-header">
+                                                <i class="fa-solid fa-receipt"></i>
+                                                <h3>Dados da Nota Fiscal</h3>
+                                            </div>
+                                            <div class="info-card-body">
+                                                <div class="field-item">
+                                                    <span class="field-label">Número da NF:</span>
+                                                    <span class="field-value bold" id="formattedNumeroNf">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">Data de Emissão:</span>
+                                                    <span class="field-value" id="formattedDataEmissao">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">Data de Vencimento:</span>
+                                                    <span class="field-value" id="formattedDataVencimento">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">Valor Total:</span>
+                                                    <span class="field-value valor-total" id="formattedValorTotal">-</span>
+                                                </div>
+                                                <div class="field-item">
+                                                    <span class="field-label">Parcelas:</span>
+                                                    <span class="field-value" id="formattedParcelas">1 parcela</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-card full-width">
+                                            <div class="info-card-header">
+                                                <i class="fa-solid fa-boxes-stacked"></i>
+                                                <h3>Descrição dos Produtos / Serviços</h3>
+                                            </div>
+                                            <div class="info-card-body">
+                                                <p class="products-description" id="formattedDescricaoProdutos">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content" id="tabJson">
+                                    <div class="json-tab-header">
+                                        <div class="json-tab-title">
+                                            <i class="fa-solid fa-code"></i> Dados em JSON
+                                        </div>
+                                        <div class="json-actions">
+                                            <button type="button" class="btn-copy-json" id="btnCopyJson">
+                                                <i class="fa-regular fa-copy"></i> Copiar JSON
+                                            </button>
+                                            <button type="button" class="btn-download-json" id="btnDownloadJson">
+                                                <i class="fa-solid fa-download"></i> Baixar .JSON
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="code-container">
+                                        <pre><code id="jsonCodeDisplay" class="json-code">// Carregue uma nota fiscal e clique em Extrair Dados para visualizar o JSON</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </section>
 
-            <section class="card results-card hidden" id="resultsSection">
-                <div class="card-header results-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-file-lines"></i>
-                        <span>Dados Extraídos</span>
-                    </div>
-                    <div class="source-badge" id="extractionSourceBadge">
-                        <i class="fa-solid fa-bolt"></i> Extraído com IA
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="tabs-nav" role="tablist">
-                        <button type="button" class="tab-btn active" id="tabFormattedBtn" data-target="tabFormatted">
-                            <i class="fa-solid fa-table-cells-large"></i> Visualização Formatada
-                        </button>
-                        <button type="button" class="tab-btn" id="tabJsonBtn" data-target="tabJson">
-                            <i class="fa-solid fa-code"></i> JSON
+            <!-- VIEW 2: MANTER PESSOAS (CRUD UniRV) -->
+            <section class="spa-view" id="viewPessoas">
+                <div class="page-container">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Manter Pessoas</h1>
+                            <p class="page-subtitle">Cadastro de Fornecedores, Clientes e Faturados</p>
+                        </div>
+                        <button type="button" class="btn-primary" id="btnNovoPessoa">
+                            <i class="fa-solid fa-plus"></i> Inserir Nova Pessoa
                         </button>
                     </div>
 
-                    <div class="tab-content active" id="tabFormatted">
-                        <div class="classification-banner" id="classificationBanner">
-                            <div class="banner-icon">
-                                <i class="fa-solid fa-tag"></i>
+                    <!-- BARRA DE BUSCA (RECOMENDAÇÃO UNIRV: BUSCA POR MAIS DE UM ELEMENTO OU TODOS) -->
+                    <div class="filter-card">
+                        <div class="filter-row">
+                            <div class="filter-input-group">
+                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
+                                <input type="text" id="buscaPessoasInput" class="filter-input" placeholder="Buscar por nome, documento, contato...">
                             </div>
-                            <div class="banner-body">
-                                <span class="banner-label">Classificação da Despesa (Interpretado pelo Gemini)</span>
-                                <h2 class="banner-category" id="formattedCategoria">MANUTENÇÃO E OPERAÇÃO</h2>
-                                <div class="detected-tags-container">
-                                    <span class="tags-label">Termos detectados que embasaram a classificação:</span>
-                                    <div class="tags-list" id="formattedTermos">
-                                    </div>
-                                </div>
+                            <div class="filter-select-group">
+                                <select id="filtroTipoPessoas" class="filter-select">
+                                    <option value="TODOS">Todos os Tipos</option>
+                                    <option value="FORNECEDOR">Fornecedor</option>
+                                    <option value="CLIENTE">Cliente</option>
+                                    <option value="CLIENTE-FORNECEDOR">Cliente-Fornecedor</option>
+                                    <option value="FATURADO">Faturado</option>
+                                </select>
                             </div>
-                        </div>
-
-                        <div class="info-grid">
-                            <div class="info-card">
-                                <div class="info-card-header">
-                                    <i class="fa-solid fa-building"></i>
-                                    <h3>Fornecedor / Emitente</h3>
-                                </div>
-                                <div class="info-card-body">
-                                    <div class="field-item">
-                                        <span class="field-label">Razão Social:</span>
-                                        <span class="field-value highlight" id="formattedEmitente">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">Nome Fantasia:</span>
-                                        <span class="field-value" id="formattedFantasia">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">CNPJ:</span>
-                                        <span class="field-value mono" id="formattedCnpjEmitente">-</span>
-                                    </div>
-                                </div>
+                            <div class="filter-select-group">
+                                <select id="filtroStatusPessoas" class="filter-select">
+                                    <option value="ATIVO" selected>Status: ATIVO</option>
+                                    <option value="INATIVO">Status: INATIVO</option>
+                                    <option value="TODOS">Status: TODOS</option>
+                                </select>
                             </div>
-
-                            <div class="info-card">
-                                <div class="info-card-header">
-                                    <i class="fa-solid fa-user-check"></i>
-                                    <h3>Faturado / Destinatário</h3>
-                                </div>
-                                <div class="info-card-body">
-                                    <div class="field-item">
-                                        <span class="field-label">Nome Completo:</span>
-                                        <span class="field-value highlight" id="formattedDestinatario">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">CPF / CNPJ:</span>
-                                        <span class="field-value mono" id="formattedCpfDestinatario">-</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="info-card">
-                                <div class="info-card-header">
-                                    <i class="fa-solid fa-receipt"></i>
-                                    <h3>Dados da Nota Fiscal</h3>
-                                </div>
-                                <div class="info-card-body">
-                                    <div class="field-item">
-                                        <span class="field-label">Número da NF:</span>
-                                        <span class="field-value bold" id="formattedNumeroNf">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">Data de Emissão:</span>
-                                        <span class="field-value" id="formattedDataEmissao">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">Data de Vencimento:</span>
-                                        <span class="field-value" id="formattedDataVencimento">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">Valor Total:</span>
-                                        <span class="field-value valor-total" id="formattedValorTotal">-</span>
-                                    </div>
-                                    <div class="field-item">
-                                        <span class="field-label">Parcelas:</span>
-                                        <span class="field-value" id="formattedParcelas">1 parcela</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="info-card full-width">
-                                <div class="info-card-header">
-                                    <i class="fa-solid fa-boxes-stacked"></i>
-                                    <h3>Descrição dos Produtos / Serviços</h3>
-                                </div>
-                                <div class="info-card-body">
-                                    <p class="products-description" id="formattedDescricaoProdutos">-</p>
-                                </div>
-                            </div>
+                            <button type="button" class="btn-filter-search" id="btnBuscarPessoas">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-filter-all" id="btnTodosPessoas">
+                                <i class="fa-solid fa-list"></i> TODOS
+                            </button>
                         </div>
                     </div>
 
-                    <div class="tab-content" id="tabJson">
-                        <div class="json-tab-header">
-                            <div class="json-tab-title">
-                                <i class="fa-solid fa-code"></i> Dados em JSON
-                            </div>
-                            <div class="json-actions">
-                                <button type="button" class="btn-copy-json" id="btnCopyJson">
-                                    <i class="fa-regular fa-copy"></i> Copiar JSON
-                                </button>
-                                <button type="button" class="btn-download-json" id="btnDownloadJson">
-                                    <i class="fa-solid fa-download"></i> Baixar .JSON
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="code-container">
-                            <pre><code id="jsonCodeDisplay" class="json-code">// Carregue uma nota fiscal e clique em Extrair Dados para visualizar o JSON</code></pre>
-                        </div>
-                        
-                        <p class="json-footer-note">
-                            Este JSON contém todos os dados extraídos da nota fiscal e pode ser usado para integração com outros sistemas.
-                        </p>
+                    <!-- TABELA DE PESSOAS (RECOMENDAÇÃO UNIRV: VAZIA POR PADRÃO, INDEXAÇÃO POR COLUNA) -->
+                    <div class="table-container-card">
+                        <table class="data-table" id="tabelaPessoas">
+                            <thead>
+                                <tr>
+                                    <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="tipo" class="sortable">Tipo <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="razao_social_nome" class="sortable">Razão Social / Nome <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="cnpj_cpf" class="sortable">CNPJ / CPF <i class="fa-solid fa-sort"></i></th>
+                                    <th>Contato</th>
+                                    <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
+                                    <th class="text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaPessoasBody">
+                                <tr>
+                                    <td colspan="7" class="table-empty-notice">
+                                        <i class="fa-solid fa-inbox"></i>
+                                        <p>Nenhum registro carregado.</p>
+                                        <span>Utilize o campo de busca acima ou clique em <strong>TODOS</strong> para exibir os dados.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
+
+            <!-- VIEW 3: MANTER CLASSIFICAÇÃO (CRUD UniRV) -->
+            <section class="spa-view" id="viewClassificacoes">
+                <div class="page-container">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Manter Classificação</h1>
+                            <p class="page-subtitle">Categorias oficiais de Tipos de Despesas e Receitas</p>
+                        </div>
+                        <button type="button" class="btn-primary" id="btnNovoClassificacao">
+                            <i class="fa-solid fa-plus"></i> Inserir Nova Classificação
+                        </button>
+                    </div>
+
+                    <!-- BARRA DE BUSCA -->
+                    <div class="filter-card">
+                        <div class="filter-row">
+                            <div class="filter-input-group">
+                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
+                                <input type="text" id="buscaClassifInput" class="filter-input" placeholder="Buscar por descrição da classificação...">
+                            </div>
+                            <div class="filter-select-group">
+                                <select id="filtroTipoClassif" class="filter-select">
+                                    <option value="TODOS">Todos os Tipos</option>
+                                    <option value="DESPESA" selected>Tipo: DESPESA</option>
+                                    <option value="RECEITA">Tipo: RECEITA</option>
+                                </select>
+                            </div>
+                            <div class="filter-select-group">
+                                <select id="filtroStatusClassif" class="filter-select">
+                                    <option value="ATIVO" selected>Status: ATIVO</option>
+                                    <option value="INATIVO">Status: INATIVO</option>
+                                    <option value="TODOS">Status: TODOS</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn-filter-search" id="btnBuscarClassif">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-filter-all" id="btnTodosClassif">
+                                <i class="fa-solid fa-list"></i> TODOS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE CLASSIFICAÇÕES -->
+                    <div class="table-container-card">
+                        <table class="data-table" id="tabelaClassif">
+                            <thead>
+                                <tr>
+                                    <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="tipo" class="sortable">Tipo <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="descricao" class="sortable">Descrição da Categoria <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
+                                    <th class="text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaClassifBody">
+                                <tr>
+                                    <td colspan="5" class="table-empty-notice">
+                                        <i class="fa-solid fa-inbox"></i>
+                                        <p>Nenhuma classificação carregada.</p>
+                                        <span>Utilize a busca ou clique em <strong>TODOS</strong> para visualizar as categorias.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: REGISTRAR CONTAS (CRUD UniRV) -->
+            <section class="spa-view" id="viewContas">
+                <div class="page-container">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Registrar Contas</h1>
+                            <p class="page-subtitle">Gestão de Contas a Pagar e a Receber com Parcelas e Rateios</p>
+                        </div>
+                        <button type="button" class="btn-primary" id="btnNovoConta">
+                            <i class="fa-solid fa-plus"></i> Registrar Nova Conta
+                        </button>
+                    </div>
+
+                    <!-- BARRA DE FILTRO DE CONTAS -->
+                    <div class="filter-card">
+                        <div class="filter-row">
+                            <div class="filter-input-group">
+                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
+                                <input type="text" id="buscaContasInput" class="filter-input" placeholder="Buscar por número do doc, fornecedor ou descrição...">
+                            </div>
+                            <div class="filter-select-group">
+                                <select id="filtroTipoContas" class="filter-select">
+                                    <option value="TODOS">Todos os Movimentos</option>
+                                    <option value="APAGAR" selected>Contas a Pagar</option>
+                                    <option value="ARECEBER">Contas a Receber</option>
+                                </select>
+                            </div>
+                            <div class="filter-select-group">
+                                <select id="filtroStatusContas" class="filter-select">
+                                    <option value="ATIVO" selected>Status: ATIVO</option>
+                                    <option value="INATIVO">Status: INATIVO</option>
+                                    <option value="TODOS">Status: TODOS</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn-filter-search" id="btnBuscarContas">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-filter-all" id="btnTodosContas">
+                                <i class="fa-solid fa-list"></i> TODOS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE CONTAS -->
+                    <div class="table-container-card">
+                        <table class="data-table" id="tabelaContas">
+                            <thead>
+                                <tr>
+                                    <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="tipo" class="sortable">Tipo <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="numero_documento" class="sortable">Documento <i class="fa-solid fa-sort"></i></th>
+                                    <th>Pessoa / Razão Social</th>
+                                    <th data-sort="valor_total" class="sortable">Valor Total <i class="fa-solid fa-sort"></i></th>
+                                    <th>Parcelas</th>
+                                    <th>Próx. Vencimento</th>
+                                    <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
+                                    <th class="text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaContasBody">
+                                <tr>
+                                    <td colspan="9" class="table-empty-notice">
+                                        <i class="fa-solid fa-inbox"></i>
+                                        <p>Nenhuma conta carregada.</p>
+                                        <span>Utilize a busca ou clique em <strong>TODOS</strong> para consultar os lançamentos.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL: MANTER PESSOA (CREATE / EDIT) -->
+    <div class="modal-overlay hidden" id="modalPessoa">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalPessoaTitle"><i class="fa-solid fa-user-plus"></i> Inserir Nova Pessoa</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModalPessoa">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="formPessoa">
+                <input type="hidden" id="pessoaIdInput">
+                <div class="modal-body">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="pessoaTipoInput">Tipo de Pessoa *</label>
+                            <select id="pessoaTipoInput" class="form-control" required>
+                                <option value="FORNECEDOR">FORNECEDOR</option>
+                                <option value="CLIENTE">CLIENTE</option>
+                                <option value="CLIENTE-FORNECEDOR">CLIENTE-FORNECEDOR</option>
+                                <option value="FATURADO">FATURADO</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pessoaDocInput">CNPJ / CPF *</label>
+                            <input type="text" id="pessoaDocInput" class="form-control" placeholder="00.000.000/0000-00 ou 000.000.000-00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pessoaNomeInput">Razão Social / Nome Completo *</label>
+                        <input type="text" id="pessoaNomeInput" class="form-control" placeholder="Ex: IGUAÇU MAQUINAS LTDA" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pessoaFantasiaInput">Nome Fantasia</label>
+                        <input type="text" id="pessoaFantasiaInput" class="form-control" placeholder="Ex: Iguaçu Máquinas">
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="pessoaEmailInput">E-mail</label>
+                            <input type="email" id="pessoaEmailInput" class="form-control" placeholder="financeiro@empresa.com.br">
+                        </div>
+                        <div class="form-group">
+                            <label for="pessoaTelefoneInput">Telefone</label>
+                            <input type="text" id="pessoaTelefoneInput" class="form-control" placeholder="(64) 3611-0000">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelPessoa">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnSalvarPessoa">Salvar Cadastro</button>
+                </div>
+            </form>
         </div>
-    </main>
+    </div>
 
+    <!-- MODAL: MANTER CLASSIFICAÇÃO (CREATE / EDIT) -->
+    <div class="modal-overlay hidden" id="modalClassif">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalClassifTitle"><i class="fa-solid fa-tag"></i> Inserir Nova Classificação</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModalClassif">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="formClassif">
+                <input type="hidden" id="classifIdInput">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="classifTipoInput">Tipo de Classificação *</label>
+                        <select id="classifTipoInput" class="form-control" required>
+                            <option value="DESPESA">DESPESA</option>
+                            <option value="RECEITA">RECEITA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classifDescInput">Descrição da Classificação *</label>
+                        <input type="text" id="classifDescInput" class="form-control" placeholder="Ex: MANUTENÇÃO E OPERAÇÃO" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelClassif">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnSalvarClassif">Salvar Classificação</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REGISTRAR NOVA CONTA MANUAL -->
+    <div class="modal-overlay hidden" id="modalConta">
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-circle-plus"></i> Registrar Conta Financeira</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModalConta">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="formConta">
+                <div class="modal-body">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="contaTipoInput">Tipo de Movimento *</label>
+                            <select id="contaTipoInput" class="form-control" required>
+                                <option value="APAGAR">CONTA A PAGAR</option>
+                                <option value="ARECEBER">CONTA A RECEBER</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contaNumDocInput">Número do Documento / NF *</label>
+                            <input type="text" id="contaNumDocInput" class="form-control" placeholder="Ex: NF-000.126.981" required>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="contaPessoaSelect">Fornecedor / Favorecido *</label>
+                            <select id="contaPessoaSelect" class="form-control" required>
+                                <option value="">Carregando pessoas...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contaClassifSelect">Classificação da Despesa / Receita *</label>
+                            <select id="contaClassifSelect" class="form-control" required>
+                                <option value="">Carregando classificações...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="contaValorInput">Valor Total (R$) *</label>
+                            <input type="number" step="0.01" id="contaValorInput" class="form-control" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contaDataEmissaoInput">Data de Emissão</label>
+                            <input type="date" id="contaDataEmissaoInput" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="contaQtdParcelasSelect">Qtd. de Parcelas</label>
+                            <select id="contaQtdParcelasSelect" class="form-control">
+                                <option value="1">1 Parcela (Única)</option>
+                                <option value="2">2 Parcelas</option>
+                                <option value="3">3 Parcelas</option>
+                                <option value="4">4 Parcelas</option>
+                                <option value="6">6 Parcelas</option>
+                                <option value="12">12 Parcelas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contaDescInput">Descrição / Histórico</label>
+                        <input type="text" id="contaDescInput" class="form-control" placeholder="Resumo dos itens ou serviço contratado">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelConta">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnSalvarConta">Salvar Lançamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: DETALHES DA CONTA & PARCELAS -->
+    <div class="modal-overlay hidden" id="modalDetalhesConta">
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-info"></i> Detalhes do Movimento & Parcelas</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModalDetalhes">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detalhesContaBody">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-primary" id="btnFecharDetalhes">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAÇÃO DA API GEMINI -->
     <div class="modal-overlay hidden" id="apiModal">
         <div class="modal-container">
             <div class="modal-header">
