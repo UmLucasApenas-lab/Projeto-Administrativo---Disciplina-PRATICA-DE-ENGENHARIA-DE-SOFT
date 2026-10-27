@@ -307,6 +307,56 @@ def api_lancar_movimento_automatico():
         print(f"Erro no lançamento automático: {e}")
         return jsonify({"error": "Falha ao lançar movimento", "detalhes": str(e)}), 500
 
+# ==============================================================================
+# ENDPOINTS REST: REGISTRAR CONTAS (A Pagar / A Receber e Parcelas)
+# ==============================================================================
+@app.route('/api/contas', methods=['GET'])
+def api_get_contas():
+    q = request.args.get('q', '').strip()
+    tipo = request.args.get('tipo', '').strip()
+    status = request.args.get('status', 'ATIVO').strip()
+    todos = request.args.get('todos', '0').strip() in ('1', 'true', 'True')
+    contas = get_movimentos(q=q, tipo=tipo, status=status, todos=todos)
+    return jsonify(contas), 200
+
+@app.route('/api/contas/<int:conta_id>', methods=['GET'])
+def api_get_conta_detalhes(conta_id):
+    conta = get_movimento_by_id(conta_id)
+    if not conta:
+        return jsonify({"error": "Conta não encontrada"}), 404
+    return jsonify(conta), 200
+
+@app.route('/api/contas', methods=['POST'])
+def api_create_conta():
+    data = request.get_json(silent=True) or request.form
+    if not data:
+        return jsonify({"error": "Dados inválidos"}), 400
+
+    try:
+        movimento_id = save_movimento_completo(dict(data))
+        return jsonify({
+            "success": True,
+            "message": "Conta registrada com sucesso!",
+            "id": movimento_id
+        }), 201
+    except Exception as e:
+        print(f"Erro ao salvar conta: {e}")
+        return jsonify({"error": "Falha ao registrar conta", "detalhes": str(e)}), 400
+
+@app.route('/api/contas/<int:conta_id>', methods=['DELETE'])
+def api_delete_conta(conta_id):
+    success = soft_delete_movimento(conta_id)
+    if not success:
+        return jsonify({"error": "Conta não encontrada"}), 404
+    return jsonify({"success": True, "message": "Conta inativada com sucesso!"}), 200
+
+@app.route('/api/contas/<int:conta_id>/reativar', methods=['PATCH'])
+def api_reactivate_conta(conta_id):
+    success = reactivate_movimento(conta_id)
+    if not success:
+        return jsonify({"error": "Conta não encontrada"}), 404
+    return jsonify({"success": True, "message": "Conta reativada com sucesso!"}), 200
+
 if __name__ == '__main__':
     import sys
     if hasattr(sys.stdout, 'reconfigure'):
