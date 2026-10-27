@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from agents.agent_extracadados import Agent1
+from agents.agent_analise import AgentAnalise
 from utils.database import (
     init_db, create_user, verify_user_credentials,
     save_pessoa, update_pessoa, get_pessoa_by_id, get_pessoas, soft_delete_pessoa, reactivate_pessoa,
@@ -58,6 +59,7 @@ def token_required(f):
     return decorated
 
 agent = Agent1()
+agent_analise = AgentAnalise()
 init_db()
 
 @app.route('/')
@@ -281,6 +283,29 @@ def api_reactivate_classificacao(classif_id):
     if not success:
         return jsonify({"error": "Classificação não encontrada"}), 404
     return jsonify({"success": True, "message": "Classificação reativada com sucesso!"}), 200
+
+# ==============================================================================
+# ENDPOINTS REST: ANÁLISE PÓS-EXTRAÇÃO E LANÇAMENTO AUTOMÁTICO (2ª ETAPA)
+# ==============================================================================
+@app.route('/api/analise', methods=['POST'])
+def api_analisar_nf():
+    data = request.get_json(silent=True) or {}
+    try:
+        resultado = agent_analise.analisar_dados_nf(data)
+        return jsonify(resultado), 200
+    except Exception as e:
+        print(f"Erro na análise de NF: {e}")
+        return jsonify({"error": "Falha na análise dos dados", "detalhes": str(e)}), 500
+
+@app.route('/api/movimentos/lancar-automatico', methods=['POST'])
+def api_lancar_movimento_automatico():
+    data = request.get_json(silent=True) or {}
+    try:
+        resultado = agent_analise.lancar_registro_automatico(data)
+        return jsonify(resultado), 201
+    except Exception as e:
+        print(f"Erro no lançamento automático: {e}")
+        return jsonify({"error": "Falha ao lançar movimento", "detalhes": str(e)}), 500
 
 if __name__ == '__main__':
     import sys
