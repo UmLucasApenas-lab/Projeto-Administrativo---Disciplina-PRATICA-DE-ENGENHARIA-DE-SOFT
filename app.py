@@ -7,7 +7,12 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from agents.agent_extracadados import Agent1
-from utils.database import init_db, create_user, verify_user_credentials
+from utils.database import (
+    init_db, create_user, verify_user_credentials,
+    save_pessoa, update_pessoa, get_pessoa_by_id, get_pessoas, soft_delete_pessoa, reactivate_pessoa,
+    save_classificacao, update_classificacao, get_classificacao_by_id, get_classificacoes, soft_delete_classificacao, reactivate_classificacao,
+    save_movimento_completo, get_movimento_by_id, get_movimentos, soft_delete_movimento, reactivate_movimento
+)
 
 load_dotenv()
 
@@ -158,6 +163,124 @@ def extract_pdf():
 def serve_sample_pdf(filename):
     samples_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample_notas')
     return send_from_directory(samples_dir, filename)
+
+# ==============================================================================
+# ENDPOINTS REST: MANTER PESSOAS (Fornecedores, Clientes, Faturados)
+# ==============================================================================
+@app.route('/api/pessoas', methods=['GET'])
+def api_get_pessoas():
+    q = request.args.get('q', '').strip()
+    tipo = request.args.get('tipo', '').strip()
+    status = request.args.get('status', 'ATIVO').strip()
+    todos = request.args.get('todos', '0').strip() in ('1', 'true', 'True')
+    pessoas = get_pessoas(q=q, tipo=tipo, status=status, todos=todos)
+    return jsonify(pessoas), 200
+
+@app.route('/api/pessoas/<int:pessoa_id>', methods=['GET'])
+def api_get_pessoa(pessoa_id):
+    pessoa = get_pessoa_by_id(pessoa_id)
+    if not pessoa:
+        return jsonify({"error": "Pessoa não encontrada"}), 404
+    return jsonify(pessoa), 200
+
+@app.route('/api/pessoas', methods=['POST'])
+def api_create_pessoa():
+    data = request.get_json(silent=True) or request.form
+    if not data or not data.get('razao_social_nome'):
+        return jsonify({"error": "Nome ou Razão Social é obrigatório"}), 400
+
+    pessoa_id = save_pessoa(dict(data))
+    return jsonify({
+        "success": True,
+        "message": "Pessoa cadastrada com sucesso!",
+        "id": pessoa_id
+    }), 201
+
+@app.route('/api/pessoas/<int:pessoa_id>', methods=['PUT'])
+def api_update_pessoa(pessoa_id):
+    data = request.get_json(silent=True) or request.form
+    if not data:
+        return jsonify({"error": "Dados inválidos"}), 400
+
+    updated = update_pessoa(pessoa_id, dict(data))
+    if not updated:
+        return jsonify({"error": "Pessoa não encontrada para atualização"}), 404
+
+    return jsonify({"success": True, "message": "Pessoa atualizada com sucesso!"}), 200
+
+@app.route('/api/pessoas/<int:pessoa_id>', methods=['DELETE'])
+def api_delete_pessoa(pessoa_id):
+    # Exclusão lógica: altera status para INATIVO
+    success = soft_delete_pessoa(pessoa_id)
+    if not success:
+        return jsonify({"error": "Pessoa não encontrada"}), 404
+    return jsonify({"success": True, "message": "Cadastro inativado com sucesso!"}), 200
+
+@app.route('/api/pessoas/<int:pessoa_id>/reativar', methods=['PATCH'])
+def api_reactivate_pessoa(pessoa_id):
+    # Reativação lógica: retorna status para ATIVO
+    success = reactivate_pessoa(pessoa_id)
+    if not success:
+        return jsonify({"error": "Pessoa não encontrada"}), 404
+    return jsonify({"success": True, "message": "Cadastro reativado com sucesso!"}), 200
+
+# ==============================================================================
+# ENDPOINTS REST: MANTER CLASSIFICAÇÃO (Despesas e Receitas)
+# ==============================================================================
+@app.route('/api/classificacoes', methods=['GET'])
+def api_get_classificacoes():
+    q = request.args.get('q', '').strip()
+    tipo = request.args.get('tipo', '').strip()
+    status = request.args.get('status', 'ATIVO').strip()
+    todos = request.args.get('todos', '0').strip() in ('1', 'true', 'True')
+    classificacoes = get_classificacoes(q=q, tipo=tipo, status=status, todos=todos)
+    return jsonify(classificacoes), 200
+
+@app.route('/api/classificacoes/<int:classif_id>', methods=['GET'])
+def api_get_classificacao(classif_id):
+    classif = get_classificacao_by_id(classif_id)
+    if not classif:
+        return jsonify({"error": "Classificação não encontrada"}), 404
+    return jsonify(classif), 200
+
+@app.route('/api/classificacoes', methods=['POST'])
+def api_create_classificacao():
+    data = request.get_json(silent=True) or request.form
+    if not data or not data.get('descricao'):
+        return jsonify({"error": "Descrição da classificação é obrigatória"}), 400
+
+    classif_id = save_classificacao(dict(data))
+    return jsonify({
+        "success": True,
+        "message": "Classificação cadastrada com sucesso!",
+        "id": classif_id
+    }), 201
+
+@app.route('/api/classificacoes/<int:classif_id>', methods=['PUT'])
+def api_update_classificacao(classif_id):
+    data = request.get_json(silent=True) or request.form
+    if not data:
+        return jsonify({"error": "Dados inválidos"}), 400
+
+    updated = update_classificacao(classif_id, dict(data))
+    if not updated:
+        return jsonify({"error": "Classificação não encontrada para atualização"}), 404
+
+    return jsonify({"success": True, "message": "Classificação atualizada com sucesso!"}), 200
+
+@app.route('/api/classificacoes/<int:classif_id>', methods=['DELETE'])
+def api_delete_classificacao(classif_id):
+    success = soft_delete_classificacao(classif_id)
+    if not success:
+        return jsonify({"error": "Classificação não encontrada"}), 404
+    return jsonify({"success": True, "message": "Classificação inativada com sucesso!"}), 200
+
+@app.route('/api/classificacoes/<int:classif_id>/reativar', methods=['PATCH'])
+def api_reactivate_classificacao(classif_id):
+    success = reactivate_classificacao(classif_id)
+    if not success:
+        return jsonify({"error": "Classificação não encontrada"}), 404
+    return jsonify({"success": True, "message": "Classificação reativada com sucesso!"}), 200
 
 if __name__ == '__main__':
     import sys

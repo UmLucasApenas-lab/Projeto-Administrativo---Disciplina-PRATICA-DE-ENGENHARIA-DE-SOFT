@@ -10,6 +10,7 @@ def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.create_function("CLEAN_DOC", 1, clean_doc)
     return conn
 
 def clean_doc(doc: str) -> str:
@@ -288,8 +289,8 @@ def get_pessoas(q: str = None, tipo: str = None, status: str = 'ATIVO', todos: b
     if q and q.strip():
         term = f"%{q.strip()}%"
         doc_term = f"%{clean_doc(q)}%" if clean_doc(q) else term
-        conditions.append("(razao_social_nome LIKE ? OR fantasia LIKE ? OR cnpj_cpf LIKE ? OR email LIKE ? OR telefone LIKE ?)")
-        params.extend([term, term, doc_term, term, term])
+        conditions.append("(razao_social_nome LIKE ? OR fantasia LIKE ? OR cnpj_cpf LIKE ? OR CLEAN_DOC(cnpj_cpf) LIKE ? OR email LIKE ? OR telefone LIKE ?)")
+        params.extend([term, term, term, doc_term, term, term])
 
     where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
     query = f"SELECT * FROM pessoas {where_clause} ORDER BY razao_social_nome ASC"
