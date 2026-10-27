@@ -1034,6 +1034,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             showToast('Erro ao reativar', 'error');
         }
+    };
+
     // =========================================================================
     // MÓDULO: GESTÃO DE PRODUTOS & INSUMOS (CRUD UniRV)
     // =========================================================================

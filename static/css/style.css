@@ -1,25 +1,30 @@
 
 :root {
-        --primary-color: #0d9488;
-    --primary-dark: #0f766e;
-    --primary-light: #ccfbf1;
-    --primary-gradient: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+    --primary-color: #357A39;
+    --primary-dark: #27592a;
+    --primary-light: rgba(128, 207, 89, 0.15);
+    --primary-gradient: linear-gradient(135deg, #357A39 0%, #7E8C54 50%, #80CF59 100%);
     
-    --secondary-color: #1e293b;
-    --secondary-light: #334155;
+    --color-forest: #357A39;
+    --color-leaf: #80CF59;
+    --color-gold: #B2AC28;
+    --color-sage: #7E8C54;
     
-    --accent-emerald: #10b981;
-    --accent-blue: #3b82f6;
-    --accent-amber: #f59e0b;
+    --secondary-color: #172318;
+    --secondary-light: #283a2a;
+    
+    --accent-emerald: #80CF59;
+    --accent-blue: #357A39;
+    --accent-amber: #B2AC28;
     --accent-rose: #f43f5e;
     
-        --bg-main: #f8fafc;
+    --bg-main: #f8faf8;
     --bg-card: #ffffff;
-    --bg-muted: #f1f5f9;
-    --bg-code: #0f172a;
+    --bg-muted: #f2f6f2;
+    --bg-code: #0f1710;
     
-        --border-color: #e2e8f0;
-    --border-focus: #0d9488;
+    --border-color: #e0e7e0;
+    --border-focus: #357A39;
     
         --text-primary: #0f172a;
     --text-secondary: #475569;
@@ -84,14 +89,14 @@ body {
 }
 
 .brand-badge {
-    background: #0f766e;
+    background: linear-gradient(135deg, #357A39 0%, #7E8C54 50%, #80CF59 100%);
     color: #ffffff;
     font-weight: 800;
     font-size: 14px;
     padding: 6px 12px;
     border-radius: var(--radius-sm);
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(15, 118, 110, 0.25);
+    box-shadow: 0 2px 8px rgba(53, 122, 57, 0.35);
 }
 
 .brand-info {
@@ -402,7 +407,7 @@ body {
 .btn-extract {
     width: 100%;
     margin-top: 20px;
-    background: #334155;
+    background: linear-gradient(135deg, #357A39 0%, #7E8C54 50%, #80CF59 100%);
     color: #ffffff;
     border: none;
     padding: 14px 24px;
@@ -415,13 +420,13 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(53, 122, 57, 0.35);
     transition: var(--transition);
 }
 
 .btn-extract:not(:disabled):hover {
-    background: #1e293b;
-    box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, #27592a 0%, #687445 50%, #6ec348 100%);
+    box-shadow: 0 6px 16px rgba(53, 122, 57, 0.45);
     transform: translateY(-1px);
 }
 
@@ -1570,8 +1575,8 @@ html, body {
 /* SIDEBAR ESTILO UNIRV (PÁGINA 5 DO PDF) */
 .app-sidebar {
     width: 250px;
-    background-color: #1e293b;
-    border-right: 1px solid #334155;
+    background-color: #172318;
+    border-right: 1px solid #283a2a;
     display: flex;
     flex-direction: column;
     padding: 1.5rem 1rem;
@@ -1581,7 +1586,7 @@ html, body {
 
 .sidebar-brand-box {
     padding: 0 0.5rem 1.25rem 0.5rem;
-    border-bottom: 1px solid #334155;
+    border-bottom: 1px solid #283a2a;
     margin-bottom: 1.25rem;
 }
 
@@ -1599,10 +1604,10 @@ html, body {
     flex-direction: column;
     align-items: center;
     padding: 1.25rem 0.75rem;
-    background-color: #0f172a;
+    background-color: #0f1910;
     border-radius: var(--radius-md);
     margin-bottom: 1.5rem;
-    border: 1px solid #334155;
+    border: 1px solid #283a2a;
     text-align: center;
 }
 
@@ -1610,8 +1615,8 @@ html, body {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background-color: #334155;
-    color: #94a3b8;
+    background-color: #243525;
+    color: #80CF59;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1623,7 +1628,7 @@ html, body {
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.05em;
-    color: #38bdf8;
+    color: #80CF59;
     text-transform: uppercase;
     margin-bottom: 0.25rem;
 }
@@ -1640,9 +1645,9 @@ html, body {
     align-items: center;
     gap: 0.4rem;
     padding: 0.35rem 0.85rem;
-    background-color: #1e293b;
-    border: 1px solid #475569;
-    color: #cbd5e1;
+    background-color: #243525;
+    border: 1px solid #3d543e;
+    color: #d1ded2;
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 600;
@@ -1671,7 +1676,7 @@ html, body {
     border-radius: var(--radius-md);
     border: none;
     background: transparent;
-    color: #94a3b8;
+    color: #a4b8a6;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -1684,23 +1689,23 @@ html, body {
     font-size: 1.1rem;
     width: 20px;
     text-align: center;
-    color: #64748b;
+    color: #7E8C54;
     transition: var(--transition);
 }
 
 .nav-item:hover {
-    background-color: #334155;
+    background-color: #243525;
     color: #ffffff;
 }
 
 .nav-item:hover i {
-    color: #38bdf8;
+    color: #80CF59;
 }
 
 .nav-item.active {
-    background-color: #2563eb;
+    background: linear-gradient(135deg, #357A39 0%, #7E8C54 100%);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(53, 122, 57, 0.4);
 }
 
 .nav-item.active i {
@@ -1709,7 +1714,7 @@ html, body {
 
 .sidebar-footer {
     padding-top: 1rem;
-    border-top: 1px solid #334155;
+    border-top: 1px solid #283a2a;
 }
 
 .sidebar-status-pill {
@@ -1718,15 +1723,15 @@ html, body {
     gap: 0.5rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #a4b8a6;
 }
 
 .status-dot-green {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #10b981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    background-color: #80CF59;
+    box-shadow: 0 0 8px rgba(128, 207, 89, 0.6);
 }
 
 /* SPA VIEWS */
@@ -1868,14 +1873,14 @@ html, body {
 
 .action-tile:hover {
     background-color: var(--bg-card);
-    border-color: #2563eb;
+    border-color: #357A39;
     transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(53, 122, 57, 0.15);
 }
 
 .action-tile i {
     font-size: 1.5rem;
-    color: #2563eb;
+    color: #357A39;
     margin-bottom: 0.75rem;
 }
 
@@ -1893,10 +1898,15 @@ html, body {
 .btn-text-link {
     background: transparent;
     border: none;
-    color: #2563eb;
+    color: #357A39;
     font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
+}
+
+.btn-text-link:hover {
+    color: #80CF59;
+    text-decoration: underline;
 }
 
 .btn-text-link:hover {
@@ -1982,8 +1992,8 @@ html, body {
 
 .filter-input-unirv:focus {
     background-color: var(--bg-card);
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: #357A39;
+    box-shadow: 0 0 0 3px rgba(53, 122, 57, 0.2);
 }
 
 /* BOTÕES ESTILO UNIRV (PÁGINA 5) */
@@ -1994,16 +2004,18 @@ html, body {
     padding: 0.65rem 1.25rem;
     border-radius: var(--radius-sm);
     border: none;
-    background-color: #2563eb;
+    background-color: #357A39;
     color: #ffffff;
     font-weight: 700;
     font-size: 0.875rem;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(53, 122, 57, 0.25);
     transition: var(--transition);
 }
 
 .btn-search-blue:hover {
-    background-color: #1d4ed8;
+    background-color: #27592a;
+    transform: translateY(-1px);
 }
 
 .btn-all-green {
@@ -2012,17 +2024,19 @@ html, body {
     gap: 0.4rem;
     padding: 0.65rem 1.25rem;
     border-radius: var(--radius-sm);
-    border: none;
-    background-color: #059669;
-    color: #ffffff;
-    font-weight: 700;
+    border: 1px solid rgba(53, 122, 57, 0.25);
+    background-color: #80CF59;
+    color: #0e2410;
+    font-weight: 800;
     font-size: 0.875rem;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(128, 207, 89, 0.35);
     transition: var(--transition);
 }
 
 .btn-all-green:hover {
-    background-color: #047857;
+    background-color: #6ec348;
+    transform: translateY(-1px);
 }
 
 .filter-secondary-row {
@@ -2072,7 +2086,7 @@ html, body {
 .table-title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #2563eb;
+    color: #357A39;
 }
 
 .data-table {
@@ -2097,7 +2111,7 @@ html, body {
 }
 
 .data-table th.sortable:hover {
-    color: #2563eb;
+    color: #357A39;
 }
 
 .data-table th.sortable i {
@@ -2114,7 +2128,7 @@ html, body {
 }
 
 .data-table tr:hover td {
-    background-color: rgba(37, 99, 235, 0.03);
+    background-color: rgba(53, 122, 57, 0.04);
 }
 
 .table-empty-notice {
@@ -2146,20 +2160,21 @@ html, body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.75rem;
-    background-color: #2563eb;
+    background: linear-gradient(135deg, #357A39 0%, #7E8C54 100%);
     color: #ffffff;
     border: none;
     border-radius: var(--radius-sm);
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 12px rgba(53, 122, 57, 0.3);
     transition: var(--transition);
 }
 
 .btn-insert-unirv:hover {
-    background-color: #1d4ed8;
+    background: linear-gradient(135deg, #27592a 0%, #687445 100%);
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(53, 122, 57, 0.45);
 }
 
 .btn-blue-action {
@@ -2167,7 +2182,7 @@ html, body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.65rem 1.5rem;
-    background-color: #2563eb;
+    background-color: #357A39;
     color: #ffffff;
     border: none;
     border-radius: var(--radius-sm);
@@ -2178,7 +2193,7 @@ html, body {
 }
 
 .btn-blue-action:hover {
-    background-color: #1d4ed8;
+    background-color: #27592a;
 }
 
 .badge-status-ativo {
@@ -2383,7 +2398,7 @@ html, body {
     display: inline-flex;
     align-items: center;
     gap: 0.625rem;
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    background: linear-gradient(135deg, #357A39 0%, #80CF59 100%);
     color: #ffffff;
     border: none;
     border-radius: var(--radius-md);
@@ -2391,13 +2406,13 @@ html, body {
     font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 14px rgba(53, 122, 57, 0.35);
     transition: var(--transition);
 }
 
 .btn-launch-record:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 6px 20px rgba(53, 122, 57, 0.45);
 }
 
 .launch-feedback {
@@ -2543,27 +2558,27 @@ html, body {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #047857;
+    background: rgba(178, 172, 40, 0.15);
+    border: 1px solid rgba(178, 172, 40, 0.45);
+    color: #827e1b;
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.01em;
 }
 
 [data-theme="dark"] .header-safra-pill {
-    background: rgba(16, 185, 129, 0.18);
-    border-color: rgba(52, 211, 153, 0.35);
-    color: #34d399;
+    background: rgba(178, 172, 40, 0.22);
+    border-color: rgba(178, 172, 40, 0.55);
+    color: #ded73a;
 }
 
 .btn-header-quick {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    background: linear-gradient(135deg, #357A39 0%, #7E8C54 100%);
     color: #ffffff;
     border: none;
     border-radius: 6px;
@@ -2571,28 +2586,28 @@ html, body {
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.3);
+    box-shadow: 0 1px 3px rgba(53, 122, 57, 0.3);
     transition: all 0.2s ease;
 }
 
 .btn-header-quick:hover {
-    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    background: linear-gradient(135deg, #27592a 0%, #687445 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 6px -1px rgba(53, 122, 57, 0.45);
 }
 
 .kpi-card.card-balance {
-    border-left: 4px solid #0284c7;
+    border-left: 4px solid #80CF59;
 }
 
 .kpi-card.card-balance .kpi-icon {
-    background: rgba(2, 132, 199, 0.12);
-    color: #0284c7;
+    background: rgba(128, 207, 89, 0.15);
+    color: #357A39;
 }
 
 [data-theme="dark"] .kpi-card.card-balance .kpi-icon {
-    background: rgba(2, 132, 199, 0.2);
-    color: #38bdf8;
+    background: rgba(128, 207, 89, 0.25);
+    color: #80CF59;
 }
 
 .card.full-width-grid {
@@ -2641,6 +2656,72 @@ html, body {
 .cost-bar-fill {
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, #10b981 0%, #0284c7 100%);
+    background: linear-gradient(90deg, #357A39 0%, #7E8C54 50%, #80CF59 100%);
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* DARK MODE OVERRIDES */
+[data-theme="dark"] {
+    --bg-main: #0d120e;
+    --bg-card: #141b15;
+    --bg-muted: #1b231c;
+    --bg-code: #0b100c;
+    --border-color: #273428;
+    --text-primary: #f2f7f2;
+    --text-secondary: #cdd8cd;
+    --text-muted: #8c9e8d;
+}
+
+[data-theme="dark"] .app-header {
+    background: #141b15;
+    border-bottom-color: #273428;
+}
+
+[data-theme="dark"] .brand-title {
+    color: #f2f7f2;
+}
+
+[data-theme="dark"] .btn-api-config {
+    background: #1b231c;
+    border-color: #273428;
+    color: #cdd8cd;
+}
+
+[data-theme="dark"] .card {
+    background: #141b15;
+    border-color: #273428;
+}
+
+[data-theme="dark"] .card-header {
+    background: #182119;
+    border-bottom-color: #273428;
+}
+
+[data-theme="dark"] .card-title {
+    color: #f2f7f2;
+}
+
+[data-theme="dark"] .table-title {
+    color: #80CF59;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: #141b15;
+    border-color: #273428;
+    color: #f2f7f2;
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: #273428;
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top-color: #273428;
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select {
+    background-color: #1b231c;
+    border-color: #2e3d2f;
+    color: #f2f7f2;
 }
