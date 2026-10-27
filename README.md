@@ -38,10 +38,11 @@
   5. Notifica o usuário: **"REGISTRO FOI LANÇADO COM SUCESSO."**
   6. Atualiza imediatamente os badges na tela para `EXISTE – ID: XX`.
 
-### 2. Módulos Administrativos (CRUDs)
-- **Manter Pessoas**: Gerenciamento de Fornecedores, Clientes e Faturados.
-- **Manter Classificação**: Cadastro de Tipos de Despesas e Tipos de Receitas.
-- **Registrar Contas**: Contas a Pagar e a Receber com rateio de despesas e suporte a múltiplas parcelas com datas de vencimento distintas.
+### 2. Módulos Administrativos e Dashboard
+- **Dashboard Financeiro Geral**: Tela inicial moderna com KPIs de Contas a Pagar/Receber, contadores de cadastros, atalhos rápidos e listagem dos lançamentos recentes.
+- **Gestão de Pessoas**: Gerenciamento de Fornecedores, Clientes e Faturados.
+- **Classificação Financeira**: Cadastro e organização de Tipos de Despesas e Tipos de Receitas.
+- **Contas Financeiras**: Contas a Pagar e a Receber com rateio de despesas e suporte a múltiplas parcelas com datas de vencimento distintas.
 
 ### 3. Regras de Negócio e Recomendações de Layout UniRV Atendidas
 - **Exclusão Lógica Obrigatória**: Nenhum registro cadastral pode ser excluído fisicamente (`DELETE`). Ao excluir, o campo `status` é alterado para `'INATIVO'`.

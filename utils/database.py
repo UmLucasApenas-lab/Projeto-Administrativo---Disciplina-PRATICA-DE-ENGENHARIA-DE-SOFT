@@ -635,3 +635,48 @@ def reactivate_movimento(movimento_id: int):
     success = cursor.rowcount > 0
     conn.close()
     return success
+
+def get_dashboard_stats():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COALESCE(SUM(valor_total), 0) AS total, COUNT(*) AS qtd FROM movimento_contas WHERE tipo = 'APAGAR' AND status = 'ATIVO'")
+    row_pagar = cursor.fetchone()
+    total_pagar = float(row_pagar['total']) if row_pagar else 0.0
+    qtd_pagar = int(row_pagar['qtd']) if row_pagar else 0
+
+    cursor.execute("SELECT COALESCE(SUM(valor_total), 0) AS total, COUNT(*) AS qtd FROM movimento_contas WHERE tipo = 'ARECEBER' AND status = 'ATIVO'")
+    row_receber = cursor.fetchone()
+    total_receber = float(row_receber['total']) if row_receber else 0.0
+    qtd_receber = int(row_receber['qtd']) if row_receber else 0
+
+    cursor.execute("SELECT COUNT(*) AS total FROM pessoas WHERE status = 'ATIVO'")
+    total_pessoas = int(cursor.fetchone()['total'])
+
+    cursor.execute("SELECT COUNT(*) AS total FROM classificacoes WHERE status = 'ATIVO'")
+    total_classificacoes = int(cursor.fetchone()['total'])
+
+    # Últimos 5 lançamentos
+    cursor.execute('''
+        SELECT m.id, m.tipo, m.numero_documento, m.valor_total, m.created_at,
+               COALESCE(f.razao_social_nome, fat.razao_social_nome, 'N/A') AS pessoa_nome
+        FROM movimento_contas m
+        LEFT JOIN pessoas f ON m.pessoa_fornecedor_id = f.id
+        LEFT JOIN pessoas fat ON m.pessoa_faturado_id = fat.id
+        WHERE m.status = 'ATIVO'
+        ORDER BY m.id DESC
+        LIMIT 5
+    ''')
+    ultimos = [dict(r) for r in cursor.fetchall()]
+
+    conn.close()
+
+    return {
+        "total_pagar": total_pagar,
+        "qtd_pagar": qtd_pagar,
+        "total_receber": total_receber,
+        "qtd_receber": qtd_receber,
+        "total_pessoas": total_pessoas,
+        "total_classificacoes": total_classificacoes,
+        "ultimos_movimentos": ultimos
+    }

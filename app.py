@@ -12,7 +12,8 @@ from utils.database import (
     init_db, create_user, verify_user_credentials,
     save_pessoa, update_pessoa, get_pessoa_by_id, get_pessoas, soft_delete_pessoa, reactivate_pessoa,
     save_classificacao, update_classificacao, get_classificacao_by_id, get_classificacoes, soft_delete_classificacao, reactivate_classificacao,
-    save_movimento_completo, get_movimento_by_id, get_movimentos, soft_delete_movimento, reactivate_movimento
+    save_movimento_completo, get_movimento_by_id, get_movimentos, soft_delete_movimento, reactivate_movimento,
+    get_dashboard_stats
 )
 
 load_dotenv()
@@ -167,7 +168,7 @@ def serve_sample_pdf(filename):
     return send_from_directory(samples_dir, filename)
 
 # ==============================================================================
-# ENDPOINTS REST: MANTER PESSOAS (Fornecedores, Clientes, Faturados)
+# ENDPOINTS REST: GESTÃO DE PESSOAS (Fornecedores, Clientes, Faturados)
 # ==============================================================================
 @app.route('/api/pessoas', methods=['GET'])
 def api_get_pessoas():
@@ -227,7 +228,7 @@ def api_reactivate_pessoa(pessoa_id):
     return jsonify({"success": True, "message": "Cadastro reativado com sucesso!"}), 200
 
 # ==============================================================================
-# ENDPOINTS REST: MANTER CLASSIFICAÇÃO (Despesas e Receitas)
+# ENDPOINTS REST: CLASSIFICAÇÃO FINANCEIRA (Despesas e Receitas)
 # ==============================================================================
 @app.route('/api/classificacoes', methods=['GET'])
 def api_get_classificacoes():
@@ -356,6 +357,18 @@ def api_reactivate_conta(conta_id):
     if not success:
         return jsonify({"error": "Conta não encontrada"}), 404
     return jsonify({"success": True, "message": "Conta reativada com sucesso!"}), 200
+
+# ==============================================================================
+# ENDPOINT REST: DASHBOARD FINANCEIRO & ESTATÍSTICAS GERAIS
+# ==============================================================================
+@app.route('/api/dashboard', methods=['GET'])
+def api_get_dashboard():
+    try:
+        stats = get_dashboard_stats()
+        return jsonify(stats), 200
+    except Exception as e:
+        print(f"Erro ao obter estatísticas do dashboard: {e}")
+        return jsonify({"error": "Falha ao carregar dashboard", "detalhes": str(e)}), 500
 
 if __name__ == '__main__':
     import sys

@@ -43,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 view.classList.remove('active');
             }
         });
+
+        if (targetViewId === 'viewDashboard') {
+            carregarDashboard();
+        }
     }
 
     navItems.forEach(item => {
@@ -53,6 +57,111 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // =========================================================================
+    // MÓDULO: DASHBOARD FINANCEIRO & ATALHOS RÁPIDOS
+    // =========================================================================
+    const dashTotalPagar = document.getElementById('dashTotalPagar');
+    const dashQtdPagar = document.getElementById('dashQtdPagar');
+    const dashTotalReceber = document.getElementById('dashTotalReceber');
+    const dashQtdReceber = document.getElementById('dashQtdReceber');
+    const dashTotalPessoas = document.getElementById('dashTotalPessoas');
+    const dashTotalClassif = document.getElementById('dashTotalClassif');
+    const dashRecentList = document.getElementById('dashRecentList');
+    const btnDashProcessarNf = document.getElementById('btnDashProcessarNf');
+    const tileUploadNf = document.getElementById('tileUploadNf');
+    const tileNovaPessoa = document.getElementById('tileNovaPessoa');
+    const tileNovaConta = document.getElementById('tileNovaConta');
+    const tileVerContas = document.getElementById('tileVerContas');
+    const linkVerTodasContas = document.getElementById('linkVerTodasContas');
+
+    async function carregarDashboard() {
+        try {
+            const resp = await fetch(`${API_BASE_URL}/api/dashboard`);
+            if (!resp.ok) return;
+            const data = await resp.json();
+
+            if (dashTotalPagar) {
+                dashTotalPagar.textContent = parseFloat(data.total_pagar || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+            if (dashQtdPagar) {
+                dashQtdPagar.textContent = `${data.qtd_pagar || 0} lançamento(s) pendente(s)`;
+            }
+            if (dashTotalReceber) {
+                dashTotalReceber.textContent = parseFloat(data.total_receber || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+            if (dashQtdReceber) {
+                dashQtdReceber.textContent = `${data.qtd_receber || 0} título(s) a receber`;
+            }
+            if (dashTotalPessoas) {
+                dashTotalPessoas.textContent = data.total_pessoas || 0;
+            }
+            if (dashTotalClassif) {
+                dashTotalClassif.textContent = data.total_classificacoes || 0;
+            }
+
+            if (dashRecentList) {
+                if (data.ultimos_movimentos && data.ultimos_movimentos.length > 0) {
+                    dashRecentList.innerHTML = data.ultimos_movimentos.map(m => {
+                        const isPagar = m.tipo === 'APAGAR';
+                        const iconClass = isPagar ? 'fa-arrow-trend-down' : 'fa-arrow-trend-up';
+                        const iconColor = isPagar ? 'style="color: var(--danger-color);"' : 'style="color: var(--success-color);"';
+                        const tipoBadge = isPagar ? '<span class="tag-badge">A PAGAR</span>' : '<span class="tag-badge">A RECEBER</span>';
+                        const valorFmt = parseFloat(m.valor_total || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        const pessoa = m.fornecedor_nome || m.faturado_nome || 'Não vinculado';
+                        const doc = m.numero_documento ? `NF #${m.numero_documento}` : 'Doc S/N';
+                        const statusBadge = m.status === 'ATIVO' ? '<span class="badge-status-ativo">ATIVO</span>' : '<span class="badge-status-inativo">INATIVO</span>';
+
+                        return `
+                            <div class="recent-item">
+                                <div class="recent-icon" ${iconColor}><i class="fa-solid ${iconClass}"></i></div>
+                                <div class="recent-info">
+                                    <div class="recent-title"><strong>${doc}</strong> &bull; ${pessoa}</div>
+                                    <small class="text-muted">${m.data_emissao || 'Data não inf.'} &bull; ${tipoBadge}</small>
+                                </div>
+                                <div class="recent-value">
+                                    <strong>${valorFmt}</strong>
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    dashRecentList.innerHTML = `
+                        <div class="empty-recent-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <p>Nenhum lançamento recente registrado.</p>
+                        </div>
+                    `;
+                }
+            }
+        } catch (e) {
+            console.warn('Erro ao carregar dashboard:', e);
+        }
+    }
+
+    // Ações dos Atalhos do Dashboard
+    if (btnDashProcessarNf) btnDashProcessarNf.addEventListener('click', () => switchView('viewExtractor'));
+    if (tileUploadNf) tileUploadNf.addEventListener('click', () => switchView('viewExtractor'));
+    if (tileNovaPessoa) tileNovaPessoa.addEventListener('click', () => {
+        switchView('viewPessoas');
+        abrirModalPessoa();
+    });
+    if (tileNovaConta) tileNovaConta.addEventListener('click', () => {
+        switchView('viewContas');
+        abrirModalConta();
+    });
+    if (tileVerContas) tileVerContas.addEventListener('click', () => {
+        switchView('viewContas');
+        carregarContas('', true);
+    });
+    if (linkVerTodasContas) linkVerTodasContas.addEventListener('click', () => {
+        switchView('viewContas');
+        carregarContas('', true);
+    });
+
+    // Carregar Dashboard imediatamente ao iniciar
+    carregarDashboard();
 
     // =========================================================================
     // EXTRATOR DE NOTA FISCAL (ETAPA 1 & ETAPA 2)
@@ -499,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // MÓDULO: MANTER PESSOAS (CRUD UniRV)
+    // MÓDULO: GESTÃO DE PESSOAS (CRUD UniRV)
     // =========================================================================
     const buscaPessoasInput = document.getElementById('buscaPessoasInput');
     const filtroTipoPessoas = document.getElementById('filtroTipoPessoas');
@@ -691,7 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // =========================================================================
-    // MÓDULO: MANTER CLASSIFICAÇÃO (CRUD UniRV)
+    // MÓDULO: CLASSIFICAÇÃO FINANCEIRA (CRUD UniRV)
     // =========================================================================
     const buscaClassifInput = document.getElementById('buscaClassifInput');
     const filtroTipoClassif = document.getElementById('filtroTipoClassif');

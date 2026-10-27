@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINEASY - Sistema Administrativo-Financeiro & IA</title>
+    <title>FINEASY - Sistema de Gestão Financeira & IA</title>
     <script>
         (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
@@ -31,7 +31,7 @@
                 <div class="brand-badge">FINEASY</div>
                 <div class="brand-info">
                     <span class="brand-title">FINEASY · Prática de Engenharia de Software</span>
-                    <span class="brand-subtitle">UniRV · Sistema Administrativo-Financeiro (2ª Etapa)</span>
+                    <span class="brand-subtitle">UniRV · Sistema Integrado Administrativo-Financeiro (2ª Etapa)</span>
                 </div>
             </div>
             <div class="header-actions">
@@ -43,50 +43,55 @@
                 <button type="button" class="btn-theme-toggle" id="btnThemeToggle" title="Alternar Modo Noturno / Claro">
                     <i class="fa-solid fa-moon" id="themeIcon"></i>
                 </button>
-                <button type="button" class="btn-logout" id="btnLogout" title="Sair do Sistema">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Sair</span>
-                </button>
             </div>
         </div>
     </header>
 
     <div class="app-layout">
-        <!-- SIDEBAR DE NAVEGAÇÃO -->
+        <!-- SIDEBAR DE NAVEGAÇÃO (CONFORME MODELO DA UNIRV - PÁGINA 5) -->
         <aside class="app-sidebar">
-            <div class="sidebar-user">
-                <div class="user-avatar">
-                    <i class="fa-solid fa-user-tie"></i>
+            <div class="sidebar-brand-box">
+                <span class="sidebar-project-title">FINEASY</span>
+            </div>
+
+            <div class="sidebar-user-card">
+                <div class="user-avatar-circle">
+                    <i class="fa-solid fa-user"></i>
                 </div>
-                <div class="user-details">
-                    <span class="user-name" id="sidebarUserName">Administrador UniRV</span>
-                    <span class="user-role">Painel Financeiro</span>
-                </div>
+                <div class="user-role-badge" id="sidebarUserRole">COORDENADOR</div>
+                <div class="user-name-label" id="sidebarUserName">Administrador UniRV</div>
+                <button type="button" class="btn-sidebar-logout" id="btnLogout" title="Encerrar Sessão">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                </button>
             </div>
 
             <nav class="sidebar-nav">
-                <button type="button" class="nav-item active" data-view="viewExtractor" id="navExtractor">
+                <button type="button" class="nav-item active" data-view="viewDashboard" id="navDashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button type="button" class="nav-item" data-view="viewExtractor" id="navExtractor">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
                     <span>Processador de NF</span>
                 </button>
                 <button type="button" class="nav-item" data-view="viewPessoas" id="navPessoas">
-                    <i class="fa-solid fa-users-gear"></i>
-                    <span>Manter Pessoas</span>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Pessoas</span>
                 </button>
                 <button type="button" class="nav-item" data-view="viewClassificacoes" id="navClassificacoes">
                     <i class="fa-solid fa-tags"></i>
-                    <span>Manter Classificações</span>
+                    <span>Classificação</span>
                 </button>
                 <button type="button" class="nav-item" data-view="viewContas" id="navContas">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                    <span>Registrar Contas</span>
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Contas Financeiras</span>
                 </button>
             </nav>
 
             <div class="sidebar-footer">
                 <div class="sidebar-status-pill">
                     <span class="status-dot-green"></span>
-                    <span>Etapa 2: Online</span>
+                    <span>Sistema Operacional</span>
                 </div>
             </div>
         </aside>
@@ -94,12 +99,126 @@
         <!-- CONTEÚDO PRINCIPAL (SPA VIEWS) -->
         <main class="main-content">
             
-            <!-- VIEW 1: PROCESSADOR DE NOTAS FISCAIS & ANÁLISE -->
-            <section class="spa-view active" id="viewExtractor">
+            <!-- VIEW 1: DASHBOARD GERAL (TELA INICIAL COERENTE E PROFISSIONAL) -->
+            <section class="spa-view active" id="viewDashboard">
                 <div class="page-container">
-                    <div class="hero-section">
-                        <h1 class="page-title">Processador Inteligente de Notas Fiscais</h1>
-                        <p class="page-subtitle">Extraia dados da nota fiscal com IA e execute a análise cruzada com o Banco de Dados</p>
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Dashboard Financeiro</h1>
+                            <p class="page-subtitle">Visão consolidada do fluxo financeiro, cadastros e processamentos</p>
+                        </div>
+                        <div class="header-quick-actions">
+                            <button type="button" class="btn-primary" id="btnDashProcessarNf">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Processar Nova NF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CARDS DE METRICAS (KPIs) -->
+                    <div class="dashboard-kpi-grid">
+                        <div class="kpi-card card-danger">
+                            <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Contas a Pagar</span>
+                                <h3 class="kpi-value" id="dashTotalPagar">R$ 0,00</h3>
+                                <span class="kpi-subtext" id="dashQtdPagar">0 lançamentos pendentes</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card card-success">
+                            <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Contas a Receber</span>
+                                <h3 class="kpi-value" id="dashTotalReceber">R$ 0,00</h3>
+                                <span class="kpi-subtext" id="dashQtdReceber">0 títulos a receber</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card card-info">
+                            <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Pessoas Cadastradas</span>
+                                <h3 class="kpi-value" id="dashTotalPessoas">0</h3>
+                                <span class="kpi-subtext">Fornecedores, Clientes e Faturados</span>
+                            </div>
+                        </div>
+
+                        <div class="kpi-card card-warning">
+                            <div class="kpi-icon"><i class="fa-solid fa-tags"></i></div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Classificações Ativas</span>
+                                <h3 class="kpi-value" id="dashTotalClassif">0</h3>
+                                <span class="kpi-subtext">Categorias de Despesas e Receitas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ATALHOS RÁPIDOS & ÚLTIMOS LANÇAMENTOS -->
+                    <div class="dashboard-grid-2">
+                        <!-- QUADRO DE ATALHOS -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>Operações Rápidas</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-action-buttons">
+                                    <button type="button" class="action-tile" id="tileUploadNf">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                        <strong>Upload de DANFE</strong>
+                                        <span>Extrair com Inteligência Artificial</span>
+                                    </button>
+                                    <button type="button" class="action-tile" id="tileNovaPessoa">
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        <strong>Nova Pessoa</strong>
+                                        <span>Cadastrar Fornecedor ou Faturado</span>
+                                    </button>
+                                    <button type="button" class="action-tile" id="tileNovaConta">
+                                        <i class="fa-solid fa-file-circle-plus"></i>
+                                        <strong>Nova Conta</strong>
+                                        <span>Registrar Contas com Parcelas</span>
+                                    </button>
+                                    <button type="button" class="action-tile" id="tileVerContas">
+                                        <i class="fa-solid fa-list-check"></i>
+                                        <strong>Consultar Contas</strong>
+                                        <span>Visualizar todas as parcelas</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUADRO DE ÚLTIMOS LANÇAMENTOS -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                    <span>Últimos Lançamentos Financeiros</span>
+                                </div>
+                                <button type="button" class="btn-text-link" id="linkVerTodasContas">Ver todos</button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="recent-movements-list" id="dashRecentList">
+                                    <div class="empty-recent-state">
+                                        <i class="fa-solid fa-inbox"></i>
+                                        <p>Nenhum lançamento recente registrado.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: PROCESSADOR DE NOTAS FISCAIS & ANÁLISE (2ª ETAPA) -->
+            <section class="spa-view" id="viewExtractor">
+                <div class="page-container">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Processador Inteligente de Notas Fiscais</h1>
+                            <p class="page-subtitle">Extração automática multimodal de dados e conferência imediata no Banco de Dados</p>
+                        </div>
                     </div>
 
                     <div class="card upload-card">
@@ -379,28 +498,34 @@
                 </div>
             </section>
 
-            <!-- VIEW 2: MANTER PESSOAS (CRUD UniRV) -->
+            <!-- VIEW 3: GESTÃO DE PESSOAS (ESTILO PÁGINA 5 UNIRV) -->
             <section class="spa-view" id="viewPessoas">
                 <div class="page-container">
                     <div class="view-header">
                         <div>
-                            <h1 class="page-title">Manter Pessoas</h1>
-                            <p class="page-subtitle">Cadastro de Fornecedores, Clientes e Faturados</p>
+                            <h1 class="page-title">Pessoas</h1>
+                            <p class="page-subtitle">Cadastro e controle de Fornecedores, Clientes e Faturados</p>
                         </div>
-                        <button type="button" class="btn-primary" id="btnNovoPessoa">
-                            <i class="fa-solid fa-plus"></i> Inserir Nova Pessoa
-                        </button>
                     </div>
 
-                    <!-- BARRA DE BUSCA (RECOMENDAÇÃO UNIRV: BUSCA POR MAIS DE UM ELEMENTO OU TODOS) -->
+                    <!-- CARD DE BUSCA NO ESTILO DA UNIRV -->
                     <div class="filter-card">
+                        <div class="filter-card-title">Buscar Pessoas</div>
                         <div class="filter-row">
                             <div class="filter-input-group">
-                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
-                                <input type="text" id="buscaPessoasInput" class="filter-input" placeholder="Buscar por nome, documento, contato...">
+                                <input type="text" id="buscaPessoasInput" class="filter-input-unirv" placeholder="Buscar por nome, documento, email ou telefone...">
                             </div>
-                            <div class="filter-select-group">
-                                <select id="filtroTipoPessoas" class="filter-select">
+                            <button type="button" class="btn-search-blue" id="btnBuscarPessoas">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-all-green" id="btnTodosPessoas">
+                                <i class="fa-solid fa-list-check"></i> Todos
+                            </button>
+                        </div>
+                        <div class="filter-secondary-row">
+                            <div class="filter-subgroup">
+                                <label for="filtroTipoPessoas">Filtrar Tipo:</label>
+                                <select id="filtroTipoPessoas" class="filter-select-sm">
                                     <option value="TODOS">Todos os Tipos</option>
                                     <option value="FORNECEDOR">Fornecedor</option>
                                     <option value="CLIENTE">Cliente</option>
@@ -408,31 +533,29 @@
                                     <option value="FATURADO">Faturado</option>
                                 </select>
                             </div>
-                            <div class="filter-select-group">
-                                <select id="filtroStatusPessoas" class="filter-select">
-                                    <option value="ATIVO" selected>Status: ATIVO</option>
-                                    <option value="INATIVO">Status: INATIVO</option>
-                                    <option value="TODOS">Status: TODOS</option>
+                            <div class="filter-subgroup">
+                                <label for="filtroStatusPessoas">Filtrar Status:</label>
+                                <select id="filtroStatusPessoas" class="filter-select-sm">
+                                    <option value="ATIVO" selected>Apenas Ativos</option>
+                                    <option value="INATIVO">Apenas Inativos</option>
+                                    <option value="TODOS">Todos os Status</option>
                                 </select>
                             </div>
-                            <button type="button" class="btn-filter-search" id="btnBuscarPessoas">
-                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
-                            </button>
-                            <button type="button" class="btn-filter-all" id="btnTodosPessoas">
-                                <i class="fa-solid fa-list"></i> TODOS
-                            </button>
                         </div>
                     </div>
 
-                    <!-- TABELA DE PESSOAS (RECOMENDAÇÃO UNIRV: VAZIA POR PADRÃO, INDEXAÇÃO POR COLUNA) -->
+                    <!-- TABELA DE REGISTROS -->
                     <div class="table-container-card">
+                        <div class="table-header-bar">
+                            <span class="table-title">Lista de Pessoas</span>
+                        </div>
                         <table class="data-table" id="tabelaPessoas">
                             <thead>
                                 <tr>
                                     <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
                                     <th data-sort="tipo" class="sortable">Tipo <i class="fa-solid fa-sort"></i></th>
-                                    <th data-sort="razao_social_nome" class="sortable">Razão Social / Nome <i class="fa-solid fa-sort"></i></th>
-                                    <th data-sort="cnpj_cpf" class="sortable">CNPJ / CPF <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="razao_social_nome" class="sortable">Nome / Razão Social <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="cnpj_cpf" class="sortable">CPF / CNPJ <i class="fa-solid fa-sort"></i></th>
                                     <th>Contato</th>
                                     <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
                                     <th class="text-right">Ações</th>
@@ -441,68 +564,78 @@
                             <tbody id="tabelaPessoasBody">
                                 <tr>
                                     <td colspan="7" class="table-empty-notice">
-                                        <i class="fa-solid fa-inbox"></i>
-                                        <p>Nenhum registro carregado.</p>
-                                        <span>Utilize o campo de busca acima ou clique em <strong>TODOS</strong> para exibir os dados.</span>
+                                        <p>Nenhuma pessoa encontrada.</p>
+                                        <span>Utilize o campo de busca acima ou clique em <strong>Todos</strong>.</span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- BOTÃO INSERIR NOVO (CENTRALIZADO CONFORME REFERÊNCIA) -->
+                    <div class="table-action-footer">
+                        <button type="button" class="btn-insert-unirv" id="btnNovoPessoa">
+                            <i class="fa-solid fa-plus"></i> Inserir Nova Pessoa
+                        </button>
+                    </div>
                 </div>
             </section>
 
-            <!-- VIEW 3: MANTER CLASSIFICAÇÃO (CRUD UniRV) -->
+            <!-- VIEW 4: CLASSIFICAÇÃO FINANCEIRA -->
             <section class="spa-view" id="viewClassificacoes">
                 <div class="page-container">
                     <div class="view-header">
                         <div>
-                            <h1 class="page-title">Manter Classificação</h1>
-                            <p class="page-subtitle">Categorias oficiais de Tipos de Despesas e Receitas</p>
+                            <h1 class="page-title">Classificação Financeira</h1>
+                            <p class="page-subtitle">Categorias oficiais para rateio de Despesas e Receitas</p>
                         </div>
-                        <button type="button" class="btn-primary" id="btnNovoClassificacao">
-                            <i class="fa-solid fa-plus"></i> Inserir Nova Classificação
-                        </button>
                     </div>
 
-                    <!-- BARRA DE BUSCA -->
+                    <!-- CARD DE BUSCA -->
                     <div class="filter-card">
+                        <div class="filter-card-title">Buscar Classificações</div>
                         <div class="filter-row">
                             <div class="filter-input-group">
-                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
-                                <input type="text" id="buscaClassifInput" class="filter-input" placeholder="Buscar por descrição da classificação...">
+                                <input type="text" id="buscaClassifInput" class="filter-input-unirv" placeholder="Buscar por descrição da categoria...">
                             </div>
-                            <div class="filter-select-group">
-                                <select id="filtroTipoClassif" class="filter-select">
-                                    <option value="TODOS">Todos os Tipos</option>
-                                    <option value="DESPESA" selected>Tipo: DESPESA</option>
-                                    <option value="RECEITA">Tipo: RECEITA</option>
-                                </select>
-                            </div>
-                            <div class="filter-select-group">
-                                <select id="filtroStatusClassif" class="filter-select">
-                                    <option value="ATIVO" selected>Status: ATIVO</option>
-                                    <option value="INATIVO">Status: INATIVO</option>
-                                    <option value="TODOS">Status: TODOS</option>
-                                </select>
-                            </div>
-                            <button type="button" class="btn-filter-search" id="btnBuscarClassif">
+                            <button type="button" class="btn-search-blue" id="btnBuscarClassif">
                                 <i class="fa-solid fa-magnifying-glass"></i> Buscar
                             </button>
-                            <button type="button" class="btn-filter-all" id="btnTodosClassif">
-                                <i class="fa-solid fa-list"></i> TODOS
+                            <button type="button" class="btn-all-green" id="btnTodosClassif">
+                                <i class="fa-solid fa-list-check"></i> Todos
                             </button>
+                        </div>
+                        <div class="filter-secondary-row">
+                            <div class="filter-subgroup">
+                                <label for="filtroTipoClassif">Tipo:</label>
+                                <select id="filtroTipoClassif" class="filter-select-sm">
+                                    <option value="TODOS">Todos os Tipos</option>
+                                    <option value="DESPESA" selected>Despesas</option>
+                                    <option value="RECEITA">Receitas</option>
+                                </select>
+                            </div>
+                            <div class="filter-subgroup">
+                                <label for="filtroStatusClassif">Status:</label>
+                                <select id="filtroStatusClassif" class="filter-select-sm">
+                                    <option value="ATIVO" selected>Apenas Ativos</option>
+                                    <option value="INATIVO">Apenas Inativos</option>
+                                    <option value="TODOS">Todos os Status</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     <!-- TABELA DE CLASSIFICAÇÕES -->
                     <div class="table-container-card">
+                        <div class="table-header-bar">
+                            <span class="table-title">Lista de Classificações</span>
+                        </div>
                         <table class="data-table" id="tabelaClassif">
                             <thead>
                                 <tr>
                                     <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
                                     <th data-sort="tipo" class="sortable">Tipo <i class="fa-solid fa-sort"></i></th>
-                                    <th data-sort="descricao" class="sortable">Descrição da Categoria <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="descricao" class="sortable">Descrição da Classificação <i class="fa-solid fa-sort"></i></th>
                                     <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
                                     <th class="text-right">Ações</th>
                                 </tr>
@@ -510,62 +643,71 @@
                             <tbody id="tabelaClassifBody">
                                 <tr>
                                     <td colspan="5" class="table-empty-notice">
-                                        <i class="fa-solid fa-inbox"></i>
-                                        <p>Nenhuma classificação carregada.</p>
-                                        <span>Utilize a busca ou clique em <strong>TODOS</strong> para visualizar as categorias.</span>
+                                        <p>Nenhuma classificação encontrada.</p>
+                                        <span>Utilize a busca ou clique em <strong>Todos</strong> para listar as categorias.</span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="table-action-footer">
+                        <button type="button" class="btn-insert-unirv" id="btnNovoClassificacao">
+                            <i class="fa-solid fa-plus"></i> Inserir Nova Classificação
+                        </button>
+                    </div>
                 </div>
             </section>
 
-            <!-- VIEW 4: REGISTRAR CONTAS (CRUD UniRV) -->
+            <!-- VIEW 5: CONTAS FINANCEIRAS -->
             <section class="spa-view" id="viewContas">
                 <div class="page-container">
                     <div class="view-header">
                         <div>
-                            <h1 class="page-title">Registrar Contas</h1>
-                            <p class="page-subtitle">Gestão de Contas a Pagar e a Receber com Parcelas e Rateios</p>
+                            <h1 class="page-title">Contas Financeiras</h1>
+                            <p class="page-subtitle">Controle de Contas a Pagar, Contas a Receber e Parcelamentos</p>
                         </div>
-                        <button type="button" class="btn-primary" id="btnNovoConta">
-                            <i class="fa-solid fa-plus"></i> Registrar Nova Conta
-                        </button>
                     </div>
 
-                    <!-- BARRA DE FILTRO DE CONTAS -->
+                    <!-- CARD DE BUSCA DE CONTAS -->
                     <div class="filter-card">
+                        <div class="filter-card-title">Buscar Contas</div>
                         <div class="filter-row">
                             <div class="filter-input-group">
-                                <i class="fa-solid fa-magnifying-glass filter-icon"></i>
-                                <input type="text" id="buscaContasInput" class="filter-input" placeholder="Buscar por número do doc, fornecedor ou descrição...">
+                                <input type="text" id="buscaContasInput" class="filter-input-unirv" placeholder="Buscar por número do doc, pessoa ou descrição...">
                             </div>
-                            <div class="filter-select-group">
-                                <select id="filtroTipoContas" class="filter-select">
+                            <button type="button" class="btn-search-blue" id="btnBuscarContas">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-all-green" id="btnTodosContas">
+                                <i class="fa-solid fa-list-check"></i> Todos
+                            </button>
+                        </div>
+                        <div class="filter-secondary-row">
+                            <div class="filter-subgroup">
+                                <label for="filtroTipoContas">Tipo de Movimento:</label>
+                                <select id="filtroTipoContas" class="filter-select-sm">
                                     <option value="TODOS">Todos os Movimentos</option>
                                     <option value="APAGAR" selected>Contas a Pagar</option>
                                     <option value="ARECEBER">Contas a Receber</option>
                                 </select>
                             </div>
-                            <div class="filter-select-group">
-                                <select id="filtroStatusContas" class="filter-select">
-                                    <option value="ATIVO" selected>Status: ATIVO</option>
-                                    <option value="INATIVO">Status: INATIVO</option>
-                                    <option value="TODOS">Status: TODOS</option>
+                            <div class="filter-subgroup">
+                                <label for="filtroStatusContas">Status:</label>
+                                <select id="filtroStatusContas" class="filter-select-sm">
+                                    <option value="ATIVO" selected>Apenas Ativos</option>
+                                    <option value="INATIVO">Apenas Inativos</option>
+                                    <option value="TODOS">Todos os Status</option>
                                 </select>
                             </div>
-                            <button type="button" class="btn-filter-search" id="btnBuscarContas">
-                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
-                            </button>
-                            <button type="button" class="btn-filter-all" id="btnTodosContas">
-                                <i class="fa-solid fa-list"></i> TODOS
-                            </button>
                         </div>
                     </div>
 
                     <!-- TABELA DE CONTAS -->
                     <div class="table-container-card">
+                        <div class="table-header-bar">
+                            <span class="table-title">Lista de Contas</span>
+                        </div>
                         <table class="data-table" id="tabelaContas">
                             <thead>
                                 <tr>
@@ -583,13 +725,18 @@
                             <tbody id="tabelaContasBody">
                                 <tr>
                                     <td colspan="9" class="table-empty-notice">
-                                        <i class="fa-solid fa-inbox"></i>
-                                        <p>Nenhuma conta carregada.</p>
-                                        <span>Utilize a busca ou clique em <strong>TODOS</strong> para consultar os lançamentos.</span>
+                                        <p>Nenhuma conta financeira carregada.</p>
+                                        <span>Utilize a busca ou clique em <strong>Todos</strong> para carregar os registros.</span>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="table-action-footer">
+                        <button type="button" class="btn-insert-unirv" id="btnNovoConta">
+                            <i class="fa-solid fa-plus"></i> Nova Conta Financeira
+                        </button>
                     </div>
                 </div>
             </section>
@@ -597,11 +744,11 @@
         </main>
     </div>
 
-    <!-- MODAL: MANTER PESSOA (CREATE / EDIT) -->
+    <!-- MODAL: FORMULÁRIO DE PESSOA (CREATE / EDIT) -->
     <div class="modal-overlay hidden" id="modalPessoa">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 id="modalPessoaTitle"><i class="fa-solid fa-user-plus"></i> Inserir Nova Pessoa</h3>
+                <h3 id="modalPessoaTitle">Formulário de Pessoa</h3>
                 <button type="button" class="btn-close-modal" id="btnCloseModalPessoa">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -611,7 +758,7 @@
                 <div class="modal-body">
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label for="pessoaTipoInput">Tipo de Pessoa *</label>
+                            <label for="pessoaTipoInput">Tipo *</label>
                             <select id="pessoaTipoInput" class="form-control" required>
                                 <option value="FORNECEDOR">FORNECEDOR</option>
                                 <option value="CLIENTE">CLIENTE</option>
@@ -620,12 +767,12 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="pessoaDocInput">CNPJ / CPF *</label>
+                            <label for="pessoaDocInput">CPF / CNPJ *</label>
                             <input type="text" id="pessoaDocInput" class="form-control" placeholder="00.000.000/0000-00 ou 000.000.000-00">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="pessoaNomeInput">Razão Social / Nome Completo *</label>
+                        <label for="pessoaNomeInput">Nome / Razão Social *</label>
                         <input type="text" id="pessoaNomeInput" class="form-control" placeholder="Ex: IGUAÇU MAQUINAS LTDA" required>
                     </div>
                     <div class="form-group">
@@ -644,18 +791,18 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn-blue-action" id="btnSalvarPessoa">Salvar</button>
                     <button type="button" class="btn-modal-cancel" id="btnCancelPessoa">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="btnSalvarPessoa">Salvar Cadastro</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: MANTER CLASSIFICAÇÃO (CREATE / EDIT) -->
+    <!-- MODAL: FORMULÁRIO DE CLASSIFICAÇÃO -->
     <div class="modal-overlay hidden" id="modalClassif">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 id="modalClassifTitle"><i class="fa-solid fa-tag"></i> Inserir Nova Classificação</h3>
+                <h3 id="modalClassifTitle">Formulário de Classificação</h3>
                 <button type="button" class="btn-close-modal" id="btnCloseModalClassif">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -671,23 +818,23 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="classifDescInput">Descrição da Classificação *</label>
+                        <label for="classifDescInput">Descrição *</label>
                         <input type="text" id="classifDescInput" class="form-control" placeholder="Ex: MANUTENÇÃO E OPERAÇÃO" required>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn-blue-action" id="btnSalvarClassif">Salvar</button>
                     <button type="button" class="btn-modal-cancel" id="btnCancelClassif">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="btnSalvarClassif">Salvar Classificação</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: REGISTRAR NOVA CONTA MANUAL -->
+    <!-- MODAL: REGISTRAR NOVA CONTA -->
     <div class="modal-overlay hidden" id="modalConta">
         <div class="modal-container modal-lg">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-file-circle-plus"></i> Registrar Conta Financeira</h3>
+                <h3>Formulário de Conta Financeira</h3>
                 <button type="button" class="btn-close-modal" id="btnCloseModalConta">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -709,13 +856,13 @@
                     </div>
                     <div class="form-grid-2">
                         <div class="form-group">
-                            <label for="contaPessoaSelect">Fornecedor / Favorecido *</label>
+                            <label for="contaPessoaSelect">Pessoa Vinculada *</label>
                             <select id="contaPessoaSelect" class="form-control" required>
                                 <option value="">Carregando pessoas...</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="contaClassifSelect">Classificação da Despesa / Receita *</label>
+                            <label for="contaClassifSelect">Classificação *</label>
                             <select id="contaClassifSelect" class="form-control" required>
                                 <option value="">Carregando classificações...</option>
                             </select>
@@ -744,12 +891,12 @@
                     </div>
                     <div class="form-group">
                         <label for="contaDescInput">Descrição / Histórico</label>
-                        <input type="text" id="contaDescInput" class="form-control" placeholder="Resumo dos itens ou serviço contratado">
+                        <input type="text" id="contaDescInput" class="form-control" placeholder="Resumo dos itens ou serviço">
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn-blue-action" id="btnSalvarConta">Salvar</button>
                     <button type="button" class="btn-modal-cancel" id="btnCancelConta">Cancelar</button>
-                    <button type="submit" class="btn-primary" id="btnSalvarConta">Salvar Lançamento</button>
                 </div>
             </form>
         </div>
@@ -759,16 +906,14 @@
     <div class="modal-overlay hidden" id="modalDetalhesConta">
         <div class="modal-container modal-lg">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-circle-info"></i> Detalhes do Movimento & Parcelas</h3>
+                <h3>Detalhes do Movimento & Parcelas</h3>
                 <button type="button" class="btn-close-modal" id="btnCloseModalDetalhes">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="modal-body" id="detalhesContaBody">
-                <!-- Preenchido dinamicamente via JS -->
-            </div>
+            <div class="modal-body" id="detalhesContaBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn-primary" id="btnFecharDetalhes">Fechar</button>
+                <button type="button" class="btn-blue-action" id="btnFecharDetalhes">Fechar</button>
             </div>
         </div>
     </div>
@@ -797,10 +942,6 @@
                     <small class="form-hint">
                         Obtenha gratuitamente em <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.
                     </small>
-                </div>
-                <div class="api-notice" id="apiNoticeBox">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>A chave fica armazenada apenas no seu navegador durante o uso.</span>
                 </div>
             </div>
             <div class="modal-footer">

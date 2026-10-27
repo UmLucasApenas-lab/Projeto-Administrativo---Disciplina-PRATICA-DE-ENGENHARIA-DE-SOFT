@@ -97,6 +97,39 @@ class TestApiContas(unittest.TestCase):
         self.assertEqual(res_reativar.status_code, 200)
         res_todos_pos_reativar = self.client.get('/api/contas?todos=1&tipo=APAGAR')
         self.assertEqual(len(res_todos_pos_reativar.get_json()), 1)
+    def test_api_dashboard_stats(self):
+        # Cadastrar uma conta a pagar
+        self.client.post('/api/contas', json={
+            "tipo": "APAGAR",
+            "numero_documento": "NF-DASH-1",
+            "descricao": "MANUTENCAO ELETRICA",
+            "valor_total": 1200.00,
+            "pessoa_fornecedor_id": self.fornecedor_id,
+            "classificacoes": [{"classificacao_id": self.classif_id, "valor": 1200.00}],
+            "parcelas": [{"numero_parcela": 1, "data_vencimento": "20/11/2026", "valor": 1200.00}]
+        })
+
+        # Cadastrar uma conta a receber
+        self.client.post('/api/contas', json={
+            "tipo": "ARECEBER",
+            "numero_documento": "REC-01",
+            "descricao": "RECEBIMENTO VENDA",
+            "valor_total": 3500.00,
+            "pessoa_faturado_id": self.faturado_id,
+            "parcelas": [{"numero_parcela": 1, "data_vencimento": "30/11/2026", "valor": 3500.00}]
+        })
+
+        res_dash = self.client.get('/api/dashboard')
+        self.assertEqual(res_dash.status_code, 200)
+        data = res_dash.get_json()
+
+        self.assertEqual(data['total_pagar'], 1200.00)
+        self.assertEqual(data['qtd_pagar'], 1)
+        self.assertEqual(data['total_receber'], 3500.00)
+        self.assertEqual(data['qtd_receber'], 1)
+        self.assertGreaterEqual(data['total_pessoas'], 2)
+        self.assertGreaterEqual(data['total_classificacoes'], 1)
+        self.assertEqual(len(data['ultimos_movimentos']), 2)
 
 if __name__ == '__main__':
     unittest.main()
