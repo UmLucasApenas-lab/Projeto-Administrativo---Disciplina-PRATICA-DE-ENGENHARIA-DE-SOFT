@@ -2536,5 +2536,111 @@ html, body {
     }
 }
 
+/* ==========================================================================
+   AGRO / CLAY FINTECH ENHANCEMENTS (INSPIRED BY FARM-FIN & UNIRV SCOPE)
+   ========================================================================== */
+.header-safra-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #047857;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
 
+[data-theme="dark"] .header-safra-pill {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(52, 211, 153, 0.35);
+    color: #34d399;
+}
 
+.btn-header-quick {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-header-quick:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.4);
+}
+
+.kpi-card.card-balance {
+    border-left: 4px solid #0284c7;
+}
+
+.kpi-card.card-balance .kpi-icon {
+    background: rgba(2, 132, 199, 0.12);
+    color: #0284c7;
+}
+
+[data-theme="dark"] .kpi-card.card-balance .kpi-icon {
+    background: rgba(2, 132, 199, 0.2);
+    color: #38bdf8;
+}
+
+.card.full-width-grid {
+    grid-column: 1 / -1;
+}
+
+/* Cost Distribution / Rateio Analítico de Despesas */
+.cost-distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0.5rem 0;
+}
+
+.cost-cat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.cost-cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.cost-cat-header strong {
+    color: var(--text-primary);
+}
+
+.cost-cat-header span {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.cost-bar-container {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-muted);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.cost-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #10b981 0%, #0284c7 100%);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -111,6 +111,34 @@ def init_db():
         )
     ''')
 
+    # 7. Produtos e Insumos Extraídos / Cadastrados
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS produtos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            descricao TEXT NOT NULL,
+            categoria TEXT,
+            unidade TEXT DEFAULT 'UN',
+            valor_unitario REAL DEFAULT 0.0,
+            status TEXT NOT NULL DEFAULT 'ATIVO' CHECK(status IN ('ATIVO', 'INATIVO')),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    # 8. Vínculo Movimento <-> Produtos da NF
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS movimento_produtos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            movimento_id INTEGER NOT NULL,
+            produto_id INTEGER NOT NULL,
+            quantidade REAL DEFAULT 1.0,
+            valor_unitario REAL DEFAULT 0.0,
+            valor_total REAL DEFAULT 0.0,
+            FOREIGN KEY (movimento_id) REFERENCES movimento_contas(id) ON DELETE CASCADE,
+            FOREIGN KEY (produto_id) REFERENCES produtos(id)
+        )
+    ''')
+
     conn.commit()
 
     # Criar usuário admin padrão se não existir
@@ -153,6 +181,25 @@ def init_db():
         )
         conn.commit()
         print(f"[DB] {len(categorias_padrao)} classificações padrão inseridas com sucesso.")
+
+    # Semear produtos agrícolas padrão se a tabela estiver vazia
+    cursor.execute("SELECT COUNT(*) AS total FROM produtos")
+    if cursor.fetchone()['total'] == 0:
+        produtos_padrao = [
+            ("Óleo Diesel S10", "COMBUSTÍVEIS", "L", 5.89),
+            ("Adubo NPK 04-14-08", "INSUMOS AGRÍCOLAS", "KG", 3.45),
+            ("Semente de Soja Transgênica Certificada", "INSUMOS AGRÍCOLAS", "SC", 280.00),
+            ("Filtro de Óleo Trator John Deere", "MANUTENÇÃO E OPERAÇÃO", "UN", 145.00),
+            ("Defensivo Agrícola Glifosato 480", "INSUMOS AGRÍCOLAS", "L", 42.50),
+            ("Serviço de Manutenção Preventiva de Colheitadeira", "SERVIÇOS OPERACIONAIS", "UN", 1200.00),
+            ("Peça Rolamento Blindado 6205", "MANUTENÇÃO E OPERAÇÃO", "UN", 65.00)
+        ]
+        cursor.executemany(
+            "INSERT INTO produtos (descricao, categoria, unidade, valor_unitario, status) VALUES (?, ?, ?, ?, 'ATIVO')",
+            produtos_padrao
+        )
+        conn.commit()
+        print(f"[DB] {len(produtos_padrao)} produtos/insumos padrão inseridos com sucesso.")
 
     conn.close()
 
@@ -636,6 +683,112 @@ def reactivate_movimento(movimento_id: int):
     conn.close()
     return success
 
+# ==============================================================================
+# FUNÇÕES: PRODUTOS E INSUMOS (UniRV CRUD)
+# ==============================================================================
+def get_produtos(q: str = "", status: str = "ATIVO", todos: bool = False) -> list:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    query = "SELECT * FROM produtos WHERE 1=1"
+    params = []
+
+    if not todos and not q:
+        conn.close()
+        return []
+
+    if status and status != "TODOS":
+        query += " AND status = ?"
+        params.append(status)
+
+    if q:
+        query += " AND (descricao LIKE ? OR categoria LIKE ?)"
+        q_like = f"%{q}%"
+        params.extend([q_like, q_like])
+
+    query += " ORDER BY id DESC"
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_produto_by_id(produto_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM produtos WHERE id = ?", (produto_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def find_produto_by_desc(descricao: str):
+    if not descricao:
+        return None
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    desc_clean = descricao.strip()
+    cursor.execute("SELECT * FROM produtos WHERE LOWER(descricao) = LOWER(?) LIMIT 1", (desc_clean,))
+    row = cursor.fetchone()
+    if not row:
+        # Busca aproximada pelos primeiros caracteres
+        busca_parcial = desc_clean[:20] if len(desc_clean) > 20 else desc_clean
+        cursor.execute("SELECT * FROM produtos WHERE LOWER(descricao) LIKE LOWER(?) LIMIT 1", (f"%{busca_parcial}%",))
+        row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def save_produto(data: dict) -> int:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    descricao = data.get("descricao", "").strip()
+    categoria = data.get("categoria", "INSUMOS AGRÍCOLAS").strip()
+    unidade = data.get("unidade", "UN").strip()
+    valor_unitario = float(data.get("valor_unitario") or 0.0)
+
+    cursor.execute('''
+        INSERT INTO produtos (descricao, categoria, unidade, valor_unitario, status)
+        VALUES (?, ?, ?, ?, 'ATIVO')
+    ''', (descricao, categoria, unidade, valor_unitario))
+    conn.commit()
+    novo_id = cursor.lastrowid
+    conn.close()
+    return novo_id
+
+def update_produto(produto_id: int, data: dict) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    descricao = data.get("descricao", "").strip()
+    categoria = data.get("categoria", "").strip()
+    unidade = data.get("unidade", "").strip()
+    valor_unitario = float(data.get("valor_unitario") or 0.0)
+
+    cursor.execute('''
+        UPDATE produtos 
+        SET descricao = ?, categoria = ?, unidade = ?, valor_unitario = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    ''', (descricao, categoria, unidade, valor_unitario, produto_id))
+    conn.commit()
+    success = cursor.rowcount > 0
+    conn.close()
+    return success
+
+def soft_delete_produto(produto_id: int) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE produtos SET status = 'INATIVO', updated_at = CURRENT_TIMESTAMP WHERE id = ?", (produto_id,))
+    conn.commit()
+    success = cursor.rowcount > 0
+    conn.close()
+    return success
+
+def reactivate_produto(produto_id: int) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE produtos SET status = 'ATIVO', updated_at = CURRENT_TIMESTAMP WHERE id = ?", (produto_id,))
+    conn.commit()
+    success = cursor.rowcount > 0
+    conn.close()
+    return success
+
 def get_dashboard_stats():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -655,6 +808,25 @@ def get_dashboard_stats():
 
     cursor.execute("SELECT COUNT(*) AS total FROM classificacoes WHERE status = 'ATIVO'")
     total_classificacoes = int(cursor.fetchone()['total'])
+
+    cursor.execute("SELECT COUNT(*) AS total FROM produtos WHERE status = 'ATIVO'")
+    row_prod = cursor.fetchone()
+    total_produtos = int(row_prod['total']) if row_prod else 0
+
+    saldo_projetado = total_receber - total_pagar
+
+    # Distribuição de despesas por categoria (Top 5)
+    cursor.execute('''
+        SELECT c.descricao, COALESCE(SUM(mc.valor), 0) AS valor_total
+        FROM movimento_classificacoes mc
+        JOIN classificacoes c ON mc.classificacao_id = c.id
+        JOIN movimento_contas m ON mc.movimento_id = m.id
+        WHERE m.status = 'ATIVO' AND c.tipo = 'DESPESA'
+        GROUP BY c.id
+        ORDER BY valor_total DESC
+        LIMIT 5
+    ''')
+    despesas_categorias = [dict(r) for r in cursor.fetchall()]
 
     # Últimos 5 lançamentos
     cursor.execute('''
@@ -676,7 +848,11 @@ def get_dashboard_stats():
         "qtd_pagar": qtd_pagar,
         "total_receber": total_receber,
         "qtd_receber": qtd_receber,
+        "saldo_projetado": saldo_projetado,
         "total_pessoas": total_pessoas,
         "total_classificacoes": total_classificacoes,
+        "total_produtos": total_produtos,
+        "despesas_categorias": despesas_categorias,
         "ultimos_movimentos": ultimos
     }
+

@@ -12,6 +12,7 @@ from utils.database import (
     init_db, create_user, verify_user_credentials,
     save_pessoa, update_pessoa, get_pessoa_by_id, get_pessoas, soft_delete_pessoa, reactivate_pessoa,
     save_classificacao, update_classificacao, get_classificacao_by_id, get_classificacoes, soft_delete_classificacao, reactivate_classificacao,
+    save_produto, update_produto, get_produto_by_id, get_produtos, soft_delete_produto, reactivate_produto,
     save_movimento_completo, get_movimento_by_id, get_movimentos, soft_delete_movimento, reactivate_movimento,
     get_dashboard_stats
 )
@@ -286,6 +287,65 @@ def api_reactivate_classificacao(classif_id):
     return jsonify({"success": True, "message": "Classificação reativada com sucesso!"}), 200
 
 # ==============================================================================
+# ENDPOINTS REST: PRODUTOS E INSUMOS (Extraídos / Agrícolas)
+# ==============================================================================
+@app.route('/api/produtos', methods=['GET'])
+def api_get_produtos():
+    q = request.args.get('q', '').strip()
+    status = request.args.get('status', 'ATIVO').strip()
+    todos = request.args.get('todos', '0').strip() in ('1', 'true', 'True')
+    if request.args.get('incluir_inativos', '0').strip() in ('1', 'true', 'True'):
+        status = 'TODOS'
+    produtos = get_produtos(q=q, status=status, todos=todos)
+    return jsonify(produtos), 200
+
+@app.route('/api/produtos/<int:produto_id>', methods=['GET'])
+def api_get_produto(produto_id):
+    produto = get_produto_by_id(produto_id)
+    if not produto:
+        return jsonify({"error": "Produto não encontrado"}), 404
+    return jsonify(produto), 200
+
+@app.route('/api/produtos', methods=['POST'])
+def api_create_produto():
+    data = request.get_json(silent=True) or request.form
+    if not data or not data.get('descricao'):
+        return jsonify({"error": "Descrição do produto é obrigatória"}), 400
+
+    produto_id = save_produto(dict(data))
+    return jsonify({
+        "success": True,
+        "message": "Produto cadastrado com sucesso!",
+        "id": produto_id
+    }), 201
+
+@app.route('/api/produtos/<int:produto_id>', methods=['PUT'])
+def api_update_produto(produto_id):
+    data = request.get_json(silent=True) or request.form
+    if not data:
+        return jsonify({"error": "Dados inválidos"}), 400
+
+    updated = update_produto(produto_id, dict(data))
+    if not updated:
+        return jsonify({"error": "Produto não encontrado para atualização"}), 404
+
+    return jsonify({"success": True, "message": "Produto atualizado com sucesso!"}), 200
+
+@app.route('/api/produtos/<int:produto_id>', methods=['DELETE'])
+def api_delete_produto(produto_id):
+    success = soft_delete_produto(produto_id)
+    if not success:
+        return jsonify({"error": "Produto não encontrado"}), 404
+    return jsonify({"success": True, "message": "Produto inativado com sucesso!"}), 200
+
+@app.route('/api/produtos/<int:produto_id>/reativar', methods=['PATCH'])
+def api_reactivate_produto(produto_id):
+    success = reactivate_produto(produto_id)
+    if not success:
+        return jsonify({"error": "Produto não encontrado"}), 404
+    return jsonify({"success": True, "message": "Produto reativado com sucesso!"}), 200
+
+# ==============================================================================
 # ENDPOINTS REST: ANÁLISE PÓS-EXTRAÇÃO E LANÇAMENTO AUTOMÁTICO (2ª ETAPA)
 # ==============================================================================
 @app.route('/api/analise', methods=['POST'])
@@ -362,6 +422,7 @@ def api_reactivate_conta(conta_id):
 # ENDPOINT REST: DASHBOARD FINANCEIRO & ESTATÍSTICAS GERAIS
 # ==============================================================================
 @app.route('/api/dashboard', methods=['GET'])
+@app.route('/api/dashboard/stats', methods=['GET'])
 def api_get_dashboard():
     try:
         stats = get_dashboard_stats()

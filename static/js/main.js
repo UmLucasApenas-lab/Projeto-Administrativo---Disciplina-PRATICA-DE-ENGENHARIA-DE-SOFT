@@ -65,12 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashQtdPagar = document.getElementById('dashQtdPagar');
     const dashTotalReceber = document.getElementById('dashTotalReceber');
     const dashQtdReceber = document.getElementById('dashQtdReceber');
-    const dashTotalPessoas = document.getElementById('dashTotalPessoas');
-    const dashTotalClassif = document.getElementById('dashTotalClassif');
+    const dashSaldoProjetado = document.getElementById('dashSaldoProjetado');
+    const dashSaldoBadge = document.getElementById('dashSaldoBadge');
+    const dashTotalCadastros = document.getElementById('dashTotalCadastros');
+    const dashSubtextCadastros = document.getElementById('dashSubtextCadastros');
+    const dashCostBreakdown = document.getElementById('dashCostBreakdown');
     const dashRecentList = document.getElementById('dashRecentList');
+
     const btnDashProcessarNf = document.getElementById('btnDashProcessarNf');
+    const btnQuickNovoLancamento = document.getElementById('btnQuickNovoLancamento');
     const tileUploadNf = document.getElementById('tileUploadNf');
     const tileNovaPessoa = document.getElementById('tileNovaPessoa');
+    const tileNovoProduto = document.getElementById('tileNovoProduto');
     const tileNovaConta = document.getElementById('tileNovaConta');
     const tileVerContas = document.getElementById('tileVerContas');
     const linkVerTodasContas = document.getElementById('linkVerTodasContas');
@@ -93,11 +99,57 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dashQtdReceber) {
                 dashQtdReceber.textContent = `${data.qtd_receber || 0} título(s) a receber`;
             }
-            if (dashTotalPessoas) {
-                dashTotalPessoas.textContent = data.total_pessoas || 0;
+
+            if (dashSaldoProjetado) {
+                const saldo = parseFloat(data.saldo_projetado || 0);
+                dashSaldoProjetado.textContent = saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                if (dashSaldoBadge) {
+                    if (saldo > 0) {
+                        dashSaldoBadge.innerHTML = '<span class="badge-status-ativo"><i class="fa-solid fa-arrow-trend-up"></i> Superávit Operacional</span>';
+                    } else if (saldo < 0) {
+                        dashSaldoBadge.innerHTML = '<span class="badge-status-inativo"><i class="fa-solid fa-arrow-trend-down"></i> Déficit Previsto</span>';
+                    } else {
+                        dashSaldoBadge.innerHTML = '<span class="badge-status-ativo">Equilibrado</span>';
+                    }
+                }
             }
-            if (dashTotalClassif) {
-                dashTotalClassif.textContent = data.total_classificacoes || 0;
+
+            if (dashTotalCadastros) {
+                const totalCad = (data.total_pessoas || 0) + (data.total_classificacoes || 0) + (data.total_produtos || 0);
+                dashTotalCadastros.textContent = totalCad;
+            }
+            if (dashSubtextCadastros) {
+                dashSubtextCadastros.textContent = `${data.total_pessoas || 0} pessoas · ${data.total_classificacoes || 0} categorias · ${data.total_produtos || 0} produtos`;
+            }
+
+            // Distribuição de Despesas (Inspirado no Rateio Farm-Fin)
+            if (dashCostBreakdown) {
+                if (data.despesas_categorias && data.despesas_categorias.length > 0) {
+                    const maxVal = Math.max(...data.despesas_categorias.map(c => c.valor_total || 0), 1);
+                    dashCostBreakdown.innerHTML = data.despesas_categorias.map(cat => {
+                        const val = parseFloat(cat.valor_total || 0);
+                        const pct = Math.min(100, Math.round((val / maxVal) * 100));
+                        const valFmt = val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        return `
+                            <div class="cost-cat-item">
+                                <div class="cost-cat-header">
+                                    <strong>${cat.descricao}</strong>
+                                    <span>${valFmt}</span>
+                                </div>
+                                <div class="cost-bar-container">
+                                    <div class="cost-bar-fill" style="width: ${pct}%;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    dashCostBreakdown.innerHTML = `
+                        <div class="empty-recent-state">
+                            <i class="fa-solid fa-chart-simple"></i>
+                            <p>Nenhuma despesa apurada até o momento.</p>
+                        </div>
+                    `;
+                }
             }
 
             if (dashRecentList) {
@@ -140,12 +192,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Ações dos Atalhos do Dashboard
+    // Ações dos Atalhos do Dashboard e Header
     if (btnDashProcessarNf) btnDashProcessarNf.addEventListener('click', () => switchView('viewExtractor'));
+    if (btnQuickNovoLancamento) {
+        btnQuickNovoLancamento.addEventListener('click', () => {
+            switchView('viewContas');
+            abrirModalConta();
+        });
+    }
     if (tileUploadNf) tileUploadNf.addEventListener('click', () => switchView('viewExtractor'));
     if (tileNovaPessoa) tileNovaPessoa.addEventListener('click', () => {
         switchView('viewPessoas');
         abrirModalPessoa();
+    });
+    if (tileNovoProduto) tileNovoProduto.addEventListener('click', () => {
+        switchView('viewProdutos');
+        abrirModalProduto();
     });
     if (tileNovaConta) tileNovaConta.addEventListener('click', () => {
         switchView('viewContas');
@@ -509,6 +571,22 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 badgeDespesa.className = 'status-chip chip-not-found';
                 badgeDespesa.textContent = 'NÃO EXISTE';
+            }
+
+            // 4. PRODUTO / INSUMO
+            const badgeProduto = document.getElementById('badgeProduto');
+            const analiseProdutoNome = document.getElementById('analiseProdutoNome');
+            const analiseProdutoCategoria = document.getElementById('analiseProdutoCategoria');
+            if (badgeProduto && analise.produto) {
+                if (analiseProdutoNome) analiseProdutoNome.textContent = analise.produto.descricao;
+                if (analiseProdutoCategoria) analiseProdutoCategoria.textContent = `Categoria: ${analise.despesa.descricao || 'Insumo'}`;
+                if (analise.produto.existe) {
+                    badgeProduto.className = 'status-chip chip-found';
+                    badgeProduto.textContent = `EXISTE – ID: ${analise.produto.id}`;
+                } else {
+                    badgeProduto.className = 'status-chip chip-not-found';
+                    badgeProduto.textContent = 'NÃO EXISTE';
+                }
             }
 
         } catch (e) {
@@ -953,6 +1031,178 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetch(`${API_BASE_URL}/api/classificacoes/${id}/reativar`, { method: 'PATCH' });
             showToast('Classificação reativada!', 'success');
             carregarClassificacoes(buscaClassifInput.value.trim(), true);
+        } catch (e) {
+            showToast('Erro ao reativar', 'error');
+        }
+    // =========================================================================
+    // MÓDULO: GESTÃO DE PRODUTOS & INSUMOS (CRUD UniRV)
+    // =========================================================================
+    const buscaProdutosInput = document.getElementById('buscaProdutosInput');
+    const filtroStatusProdutos = document.getElementById('filtroStatusProdutos');
+    const btnBuscarProdutos = document.getElementById('btnBuscarProdutos');
+    const btnTodosProdutos = document.getElementById('btnTodosProdutos');
+    const tabelaProdutosBody = document.getElementById('tabelaProdutosBody');
+
+    const btnNovoProduto = document.getElementById('btnNovoProduto');
+    const modalProduto = document.getElementById('modalProduto');
+    const btnCloseModalProduto = document.getElementById('btnCloseModalProduto');
+    const btnCancelProduto = document.getElementById('btnCancelProduto');
+    const formProduto = document.getElementById('formProduto');
+    const modalProdutoTitle = document.getElementById('modalProdutoTitle');
+    const produtoIdInput = document.getElementById('produtoIdInput');
+    const produtoDescInput = document.getElementById('produtoDescInput');
+    const produtoCatInput = document.getElementById('produtoCatInput');
+    const produtoUnidadeInput = document.getElementById('produtoUnidadeInput');
+    const produtoValorInput = document.getElementById('produtoValorInput');
+
+    let produtosCache = [];
+
+    async function carregarProdutos(query = '', todos = false) {
+        const status = filtroStatusProdutos ? filtroStatusProdutos.value : 'ATIVO';
+        const params = new URLSearchParams();
+
+        if (todos) params.append('todos', '1');
+        if (query) params.append('q', query);
+        if (status) params.append('status', status);
+
+        try {
+            tabelaProdutosBody.innerHTML = `<tr><td colspan="7" class="table-empty-notice"><i class="fa-solid fa-spinner fa-spin"></i><p>Carregando produtos...</p></td></tr>`;
+            const resp = await fetch(`${API_BASE_URL}/api/produtos?${params.toString()}`);
+            if (!resp.ok) throw new Error('Falha ao buscar produtos');
+            const data = await resp.json();
+            produtosCache = data;
+            renderTabelaProdutos(data);
+        } catch (e) {
+            console.error(e);
+            showToast('Erro ao carregar produtos.', 'error');
+        }
+    }
+
+    function renderTabelaProdutos(lista) {
+        if (!lista || lista.length === 0) {
+            tabelaProdutosBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="table-empty-notice">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <p>Nenhum produto ou insumo encontrado.</p>
+                        <span>Clique em <strong>TODOS</strong> ou pesquise acima.</span>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tabelaProdutosBody.innerHTML = lista.map(p => {
+            const isAtivo = p.status === 'ATIVO';
+            const badgeClass = isAtivo ? 'badge-status-ativo' : 'badge-status-inativo';
+            const actionBtn = isAtivo
+                ? `<button type="button" class="btn-action-delete" onclick="window.excluirProduto(${p.id})"><i class="fa-solid fa-ban"></i> Excluir</button>`
+                : `<button type="button" class="btn-action-reactivate" onclick="window.reativarProduto(${p.id})"><i class="fa-solid fa-rotate-left"></i> Reativar</button>`;
+            const valFmt = parseFloat(p.valor_unitario || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            return `
+                <tr>
+                    <td><strong>#${p.id}</strong></td>
+                    <td><strong>${p.descricao}</strong></td>
+                    <td><span class="tag-badge">${p.categoria || 'Geral'}</span></td>
+                    <td><code>${p.unidade || 'UN'}</code></td>
+                    <td><strong class="valor-total">${valFmt}</strong></td>
+                    <td><span class="${badgeClass}">${p.status}</span></td>
+                    <td class="action-buttons-cell">
+                        <button type="button" class="btn-action-edit" onclick="window.editarProduto(${p.id})"><i class="fa-solid fa-pen"></i> Editar</button>
+                        ${actionBtn}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    if (btnBuscarProdutos) btnBuscarProdutos.addEventListener('click', () => carregarProdutos(buscaProdutosInput.value.trim(), false));
+    if (buscaProdutosInput) {
+        buscaProdutosInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') carregarProdutos(buscaProdutosInput.value.trim(), false);
+        });
+    }
+    if (btnTodosProdutos) {
+        btnTodosProdutos.addEventListener('click', () => {
+            buscaProdutosInput.value = '';
+            carregarProdutos('', true);
+        });
+    }
+
+    function abrirModalProduto(produto = null) {
+        formProduto.reset();
+        if (produto) {
+            modalProdutoTitle.innerHTML = '<i class="fa-solid fa-pen"></i> Editar Produto / Insumo';
+            produtoIdInput.value = produto.id;
+            produtoDescInput.value = produto.descricao;
+            produtoCatInput.value = produto.categoria || '';
+            produtoUnidadeInput.value = produto.unidade || 'UN';
+            produtoValorInput.value = produto.valor_unitario || '0.00';
+        } else {
+            modalProdutoTitle.innerHTML = '<i class="fa-solid fa-plus"></i> Inserir Novo Produto / Insumo';
+            produtoIdInput.value = '';
+            produtoUnidadeInput.value = 'UN';
+            produtoValorInput.value = '0.00';
+        }
+        modalProduto.classList.remove('hidden');
+    }
+
+    if (btnNovoProduto) btnNovoProduto.addEventListener('click', () => abrirModalProduto());
+    if (btnCloseModalProduto) btnCloseModalProduto.addEventListener('click', () => modalProduto.classList.add('hidden'));
+    if (btnCancelProduto) btnCancelProduto.addEventListener('click', () => modalProduto.classList.add('hidden'));
+
+    if (formProduto) {
+        formProduto.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = produtoIdInput.value;
+            const payload = {
+                descricao: produtoDescInput.value.trim(),
+                categoria: produtoCatInput.value.trim(),
+                unidade: produtoUnidadeInput.value.trim(),
+                valor_unitario: parseFloat(produtoValorInput.value || 0)
+            };
+
+            const url = id ? `${API_BASE_URL}/api/produtos/${id}` : `${API_BASE_URL}/api/produtos`;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const resp = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!resp.ok) throw new Error('Falha ao salvar produto');
+                showToast(id ? 'Produto atualizado!' : 'Produto cadastrado!', 'success');
+                modalProduto.classList.add('hidden');
+                carregarProdutos('', true);
+            } catch (err) {
+                showToast(`Erro: ${err.message}`, 'error');
+            }
+        });
+    }
+
+    window.editarProduto = (id) => {
+        const prod = produtosCache.find(p => p.id === id);
+        if (prod) abrirModalProduto(prod);
+    };
+
+    window.excluirProduto = async (id) => {
+        if (!confirm('Deseja inativar este produto?')) return;
+        try {
+            await fetch(`${API_BASE_URL}/api/produtos/${id}`, { method: 'DELETE' });
+            showToast('Produto inativado com sucesso!', 'success');
+            carregarProdutos(buscaProdutosInput.value.trim(), true);
+        } catch (e) {
+            showToast('Erro ao inativar', 'error');
+        }
+    };
+
+    window.reativarProduto = async (id) => {
+        try {
+            await fetch(`${API_BASE_URL}/api/produtos/${id}/reativar`, { method: 'PATCH' });
+            showToast('Produto reativado com sucesso!', 'success');
+            carregarProdutos(buscaProdutosInput.value.trim(), true);
         } catch (e) {
             showToast('Erro ao reativar', 'error');
         }

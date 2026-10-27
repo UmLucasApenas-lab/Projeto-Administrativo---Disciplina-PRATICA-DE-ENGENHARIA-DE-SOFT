@@ -2,8 +2,10 @@ import re
 from utils.database import (
     find_pessoa_by_doc_or_name,
     find_classificacao_by_desc,
+    find_produto_by_desc,
     save_pessoa,
     save_classificacao,
+    save_produto,
     save_movimento_completo,
     clean_doc
 )
@@ -42,6 +44,7 @@ class AgentAnalise:
         - FORNECEDOR existe ou não
         - FATURADO existe ou não
         - DESPESA existe ou não
+        - PRODUTO/INSUMO existe ou não
         Retorna o dicionário de status no padrão visual exigido na Página 2 do PDF.
         """
         fornecedor_data = dados_nf.get("Fornecedor", {})
@@ -87,10 +90,23 @@ class AgentAnalise:
             "mensagem": f"EXISTE – ID: {classificacao_obj['id']}" if classificacao_obj else "NÃO EXISTE"
         }
 
+        # 4. Análise de Produtos/Insumos da NF
+        descricao_prod = dados_nf.get("Descrição dos Produtos") or dados_nf.get("descricao_produtos", "")
+        desc_limpa = descricao_prod.split("\n")[0].split(";")[0].strip() if descricao_prod else ""
+        prod_obj = find_produto_by_desc(desc_limpa) if desc_limpa else None
+        
+        status_produto = {
+            "existe": bool(prod_obj),
+            "id": prod_obj["id"] if prod_obj else None,
+            "descricao": desc_limpa or "Item de Nota Fiscal",
+            "mensagem": f"EXISTE – ID: {prod_obj['id']}" if prod_obj else "NÃO EXISTE"
+        }
+
         return {
             "fornecedor": status_fornecedor,
             "faturado": status_faturado,
-            "despesa": status_despesa
+            "despesa": status_despesa,
+            "produto": status_produto
         }
 
     def lancar_registro_automatico(self, dados_nf: dict) -> dict:
@@ -133,12 +149,25 @@ class AgentAnalise:
                 "descricao": analise["despesa"]["descricao"]
             })
 
-        # 4. Criar Movimento de Contas e Parcela(s)
+        # 4. Valores e dados do movimento
         valor_total_float = parse_moeda(dados_nf.get("Valor Total", 0))
         numero_doc = dados_nf.get("Número da Nota Fiscal", "S/N")
         data_emissao = dados_nf.get("Data de Emissão", "")
         data_vencimento = dados_nf.get("Data de Vencimento") or data_emissao
         descricao_produtos = dados_nf.get("Descrição dos Produtos", f"Nota Fiscal {numero_doc}")
+
+        # 3.1 Obter ou criar Produto / Insumo
+        if analise["produto"]["existe"]:
+            produto_id = analise["produto"]["id"]
+        else:
+            produto_id = save_produto({
+                "descricao": analise["produto"]["descricao"],
+                "categoria": analise["despesa"]["descricao"],
+                "unidade": "UN",
+                "valor_unitario": valor_total_float
+            })
+
+        # 4. Criar Movimento de Contas e Parcela(s)
 
         # Montar lista de parcelas
         parcelas_dados = []
@@ -178,5 +207,6 @@ class AgentAnalise:
             "movimento_id": movimento_id,
             "fornecedor_id": fornecedor_id,
             "faturado_id": faturado_id,
-            "classificacao_id": despesa_id
+            "classificacao_id": despesa_id,
+            "produto_id": produto_id
         }

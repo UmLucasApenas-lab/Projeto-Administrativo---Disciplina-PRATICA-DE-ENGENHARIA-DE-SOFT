@@ -35,6 +35,13 @@
                 </div>
             </div>
             <div class="header-actions">
+                <div class="header-safra-pill" title="Safra Ativa e Exercício Fiscal">
+                    <i class="fa-solid fa-wheat-awn"></i>
+                    <span>Safra 25/26 · Exercício Financeiro</span>
+                </div>
+                <button type="button" class="btn-header-quick" id="btnQuickNovoLancamento" title="Registrar Nova Conta Financeira">
+                    <i class="fa-solid fa-plus"></i> Novo Lançamento
+                </button>
                 <button type="button" class="btn-api-config" id="btnConfigModal" title="Configurar Chave da API Gemini">
                     <i class="fa-solid fa-key"></i>
                     <span id="apiStatusText">Configurar API</span>
@@ -81,6 +88,10 @@
                 <button type="button" class="nav-item" data-view="viewClassificacoes" id="navClassificacoes">
                     <i class="fa-solid fa-tags"></i>
                     <span>Classificação</span>
+                </button>
+                <button type="button" class="nav-item" data-view="viewProdutos" id="navProdutos">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Produtos & Insumos</span>
                 </button>
                 <button type="button" class="nav-item" data-view="viewContas" id="navContas">
                     <i class="fa-solid fa-wallet"></i>
@@ -134,26 +145,26 @@
                             </div>
                         </div>
 
-                        <div class="kpi-card card-info">
-                            <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="kpi-card card-balance">
+                            <div class="kpi-icon"><i class="fa-solid fa-scale-balanced"></i></div>
                             <div class="kpi-info">
-                                <span class="kpi-label">Pessoas Cadastradas</span>
-                                <h3 class="kpi-value" id="dashTotalPessoas">0</h3>
-                                <span class="kpi-subtext">Fornecedores, Clientes e Faturados</span>
+                                <span class="kpi-label">Saldo Projetado</span>
+                                <h3 class="kpi-value" id="dashSaldoProjetado">R$ 0,00</h3>
+                                <span class="kpi-subtext" id="dashSaldoBadge"><span class="badge-status-ativo">Equilibrado</span></span>
                             </div>
                         </div>
 
-                        <div class="kpi-card card-warning">
-                            <div class="kpi-icon"><i class="fa-solid fa-tags"></i></div>
+                        <div class="kpi-card card-info">
+                            <div class="kpi-icon"><i class="fa-solid fa-cubes"></i></div>
                             <div class="kpi-info">
-                                <span class="kpi-label">Classificações Ativas</span>
-                                <h3 class="kpi-value" id="dashTotalClassif">0</h3>
-                                <span class="kpi-subtext">Categorias de Despesas e Receitas</span>
+                                <span class="kpi-label">Cadastros Ativos</span>
+                                <h3 class="kpi-value" id="dashTotalCadastros">0</h3>
+                                <span class="kpi-subtext" id="dashSubtextCadastros">Pessoas, Categorias e Produtos</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ATALHOS RÁPIDOS & ÚLTIMOS LANÇAMENTOS -->
+                    <!-- ATALHOS RÁPIDOS, COMPOSIÇÃO DE CUSTOS & ÚLTIMOS LANÇAMENTOS -->
                     <div class="dashboard-grid-2">
                         <!-- QUADRO DE ATALHOS -->
                         <div class="card">
@@ -173,7 +184,12 @@
                                     <button type="button" class="action-tile" id="tileNovaPessoa">
                                         <i class="fa-solid fa-user-plus"></i>
                                         <strong>Nova Pessoa</strong>
-                                        <span>Cadastrar Fornecedor ou Faturado</span>
+                                        <span>Fornecedor, Cliente ou Faturado</span>
+                                    </button>
+                                    <button type="button" class="action-tile" id="tileNovoProduto">
+                                        <i class="fa-solid fa-boxes-stacked"></i>
+                                        <strong>Novo Produto/Insumo</strong>
+                                        <span>Cadastrar Itens e Peças</span>
                                     </button>
                                     <button type="button" class="action-tile" id="tileNovaConta">
                                         <i class="fa-solid fa-file-circle-plus"></i>
@@ -189,14 +205,32 @@
                             </div>
                         </div>
 
-                        <!-- QUADRO DE ÚLTIMOS LANÇAMENTOS -->
+                        <!-- QUADRO DE COMPOSIÇÃO DE DESPESAS POR CATEGORIA (RATEIO ANALÍTICO) -->
                         <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-chart-pie"></i>
+                                    <span>Composição de Despesas por Categoria</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="cost-distribution-list" id="dashCostBreakdown">
+                                    <div class="empty-recent-state">
+                                        <i class="fa-solid fa-chart-simple"></i>
+                                        <p>Nenhuma despesa apurada até o momento.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUADRO DE ÚLTIMOS LANÇAMENTOS -->
+                        <div class="card full-width-grid">
                             <div class="card-header">
                                 <div class="card-title">
                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                     <span>Últimos Lançamentos Financeiros</span>
                                 </div>
-                                <button type="button" class="btn-text-link" id="linkVerTodasContas">Ver todos</button>
+                                <button type="button" class="btn-text-link" id="linkVerTodasContas">Ver todas as contas</button>
                             </div>
                             <div class="card-body p-0">
                                 <div class="recent-movements-list" id="dashRecentList">
@@ -339,6 +373,21 @@
                                         </div>
                                         <div class="box-footer">
                                             <span class="status-chip chip-loading" id="badgeDespesa">CONSULTANDO...</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 4. PRODUTO / INSUMO -->
+                                    <div class="analysis-item-box" id="boxAnaliseProduto">
+                                        <div class="box-header">
+                                            <i class="fa-solid fa-boxes-stacked"></i>
+                                            <span>PRODUTO / INSUMO</span>
+                                        </div>
+                                        <div class="box-body">
+                                            <h4 class="box-title" id="analiseProdutoNome">-</h4>
+                                            <p class="box-subtitle" id="analiseProdutoCategoria">Item da Nota Fiscal</p>
+                                        </div>
+                                        <div class="box-footer">
+                                            <span class="status-chip chip-loading" id="badgeProduto">CONSULTANDO...</span>
                                         </div>
                                     </div>
                                 </div>
@@ -741,6 +790,78 @@
                 </div>
             </section>
 
+            <!-- VIEW 6: GESTÃO DE PRODUTOS & INSUMOS (ESTILO PÁGINA 5 UNIRV) -->
+            <section class="spa-view" id="viewProdutos">
+                <div class="page-container">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="page-title">Produtos & Insumos</h1>
+                            <p class="page-subtitle">Controle de insumos agrícolas, defensivos, sementes, peças e serviços</p>
+                        </div>
+                    </div>
+
+                    <!-- CARD DE BUSCA NO ESTILO DA UNIRV -->
+                    <div class="filter-card">
+                        <div class="filter-card-title">Buscar Produtos / Insumos</div>
+                        <div class="filter-row">
+                            <div class="filter-input-group">
+                                <input type="text" id="buscaProdutosInput" class="filter-input-unirv" placeholder="Buscar por descrição ou categoria...">
+                            </div>
+                            <button type="button" class="btn-search-blue" id="btnBuscarProdutos">
+                                <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                            </button>
+                            <button type="button" class="btn-all-green" id="btnTodosProdutos">
+                                <i class="fa-solid fa-list-check"></i> Todos
+                            </button>
+                        </div>
+                        <div class="filter-secondary-row">
+                            <div class="filter-subgroup">
+                                <label for="filtroStatusProdutos">Status:</label>
+                                <select id="filtroStatusProdutos" class="filter-select-sm">
+                                    <option value="ATIVO" selected>Apenas Ativos</option>
+                                    <option value="INATIVO">Apenas Inativos</option>
+                                    <option value="TODOS">Todos os Status</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE PRODUTOS -->
+                    <div class="table-container-card">
+                        <div class="table-header-bar">
+                            <span class="table-title">Lista de Produtos & Insumos</span>
+                        </div>
+                        <table class="data-table" id="tabelaProdutos">
+                            <thead>
+                                <tr>
+                                    <th data-sort="id" class="sortable">ID <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="descricao" class="sortable">Descrição <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="categoria" class="sortable">Categoria <i class="fa-solid fa-sort"></i></th>
+                                    <th>Unidade</th>
+                                    <th data-sort="valor_unitario" class="sortable">Valor Unitário Ref. <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="status" class="sortable">Status <i class="fa-solid fa-sort"></i></th>
+                                    <th class="text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaProdutosBody">
+                                <tr>
+                                    <td colspan="7" class="table-empty-notice">
+                                        <p>Nenhum produto ou insumo carregado.</p>
+                                        <span>Utilize a busca acima ou clique em <strong>Todos</strong> para listar os registros.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-action-footer">
+                        <button type="button" class="btn-insert-unirv" id="btnNovoProduto">
+                            <i class="fa-solid fa-plus"></i> Inserir Novo Produto/Insumo
+                        </button>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -948,6 +1069,49 @@
                 <button type="button" class="btn-modal-cancel" id="btnCancelKey">Cancelar</button>
                 <button type="button" class="btn-modal-save" id="btnSaveKey">Salvar Chave</button>
             </div>
+    <!-- MODAL: FORMULÁRIO DE PRODUTO / INSUMO (CREATE / EDIT) -->
+    <div class="modal-overlay hidden" id="modalProduto">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalProdutoTitle">Formulário de Produto / Insumo</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseModalProduto">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="formProduto">
+                <input type="hidden" id="produtoIdInput">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="produtoDescInput">Descrição do Produto / Serviço *</label>
+                        <input type="text" id="produtoDescInput" class="form-control" placeholder="Ex: Adubo NPK 04-14-08" required>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="produtoCatInput">Categoria</label>
+                            <input type="text" id="produtoCatInput" class="form-control" placeholder="Ex: INSUMOS AGRÍCOLAS" value="INSUMOS AGRÍCOLAS">
+                        </div>
+                        <div class="form-group">
+                            <label for="produtoUnidadeInput">Unidade</label>
+                            <select id="produtoUnidadeInput" class="form-control">
+                                <option value="UN">UN (Unidade)</option>
+                                <option value="KG">KG (Quilograma)</option>
+                                <option value="L">L (Litro)</option>
+                                <option value="SC">SC (Saca 60kg)</option>
+                                <option value="TN">TN (Tonelada)</option>
+                                <option value="CX">CX (Caixa)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="produtoValorInput">Valor Unitário Ref. (R$)</label>
+                            <input type="number" step="0.01" id="produtoValorInput" class="form-control" placeholder="0.00" value="0.00">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-blue-action" id="btnSalvarProduto">Salvar</button>
+                    <button type="button" class="btn-modal-cancel" id="btnCancelProduto">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 
