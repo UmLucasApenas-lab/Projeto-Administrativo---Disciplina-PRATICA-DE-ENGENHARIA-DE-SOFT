@@ -79,6 +79,15 @@ def login_page():
 def register_page():
     return render_template('register.html')
 
+@app.route('/api/version', methods=['GET'])
+def api_version():
+    return jsonify({
+        "version": "2.2.0",
+        "commit": "d6c1506",
+        "commit_url": "https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commit/d6c1506b61109f02da85fab74c051f41da984048",
+        "date": "27/10/2026"
+    })
+
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json(silent=True) or request.form

@@ -131,17 +131,18 @@
                 </div>
             </form>
 
-            <!-- VERSIONAMENTO COM REDIRECIONAMENTO AO GITHUB COM DATA -->
+            <!-- VERSIONAMENTO COM REDIRECIONAMENTO AO COMMIT DO GITHUB COM DATA (ESTILO FARM-FIN) -->
             <div class="login-version-container">
-                <a href="https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/releases/tag/v2.2.0" 
+                <a href="https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commit/d6c1506b61109f02da85fab74c051f41da984048" 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="version-github-pill" 
-                   title="Ver versão v2.2.0 (27/10/2026) no repositório GitHub">
+                   id="versionGithubPill"
+                   title="Ver commit no GitHub (27/10/2026)">
                     <i class="fa-brands fa-github"></i>
-                    <span class="version-label">Versão v2.2.0</span>
+                    <span class="version-label" id="versionCommitHash">d6c1506</span>
                     <span class="version-sep">•</span>
-                    <span class="version-date">27/10/2026</span>
+                    <span class="version-date" id="versionCommitDate">27/10/2026</span>
                     <i class="fa-solid fa-arrow-up-right-from-square version-ext-icon"></i>
                 </a>
                 <span class="version-subtext">Prática de Engenharia de Software · UniRV 2026</span>
@@ -259,6 +260,33 @@
                     setTimeout(() => toast.remove(), 300);
                 }, 3500);
             }
+
+            // Sincronizar dinamicamente o link para o commit mais recente do GitHub
+            async function sincronizarVersaoGithub() {
+                try {
+                    const res = await fetch('https://api.github.com/repos/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commits/main');
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    if (!data || !data.sha) return;
+
+                    const shaShort = data.sha.slice(0, 7);
+                    const commitUrl = data.html_url;
+                    const commitDate = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
+
+                    const pill = document.getElementById('versionGithubPill');
+                    if (pill) {
+                        pill.href = commitUrl;
+                        pill.title = `Ver commit ${shaShort} (${commitDate}) no GitHub`;
+                    }
+                    const lbl = document.getElementById('versionCommitHash');
+                    if (lbl) lbl.textContent = shaShort;
+                    const dt = document.getElementById('versionCommitDate');
+                    if (dt) dt.textContent = commitDate;
+                } catch (e) {
+                    // Fallback gracioso mantendo o commit padrão
+                }
+            }
+            sincronizarVersaoGithub();
         });
     </script>
 </body>

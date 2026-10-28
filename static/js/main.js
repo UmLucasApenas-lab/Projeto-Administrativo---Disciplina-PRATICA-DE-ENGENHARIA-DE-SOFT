@@ -1715,4 +1715,29 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => window.location.replace('/login.html'), 400);
         });
     }
+
+    // Sincronizar dinamicamente o link para o commit mais recente do GitHub na sidebar
+    async function sincronizarVersaoGithub() {
+        try {
+            const res = await fetch('https://api.github.com/repos/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commits/main');
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data || !data.sha) return;
+
+            const shaShort = data.sha.slice(0, 7);
+            const commitUrl = data.html_url;
+            const commitDate = new Date(data.commit.author.date).toLocaleDateString('pt-BR');
+
+            const sidebarVer = document.getElementById('sidebarVersionPill') || document.querySelector('.sidebar-version-pill');
+            if (sidebarVer) {
+                sidebarVer.href = commitUrl;
+                sidebarVer.title = `Ver commit ${shaShort} (${commitDate}) no GitHub`;
+                const txt = document.getElementById('sidebarVersionText') || sidebarVer.querySelector('.sidebar-version-text');
+                if (txt) txt.textContent = `${shaShort} · ${commitDate}`;
+            }
+        } catch (e) {
+            // Fallback gracioso mantendo o commit padrão
+        }
+    }
+    sincronizarVersaoGithub();
 });
