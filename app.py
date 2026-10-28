@@ -180,9 +180,6 @@ def serve_sample_pdf(filename):
     samples_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample_notas')
     return send_from_directory(samples_dir, filename)
 
-# ==============================================================================
-# ENDPOINTS REST: GESTÃO DE PESSOAS (Fornecedores, Clientes, Faturados)
-# ==============================================================================
 @app.route('/api/pessoas', methods=['GET'])
 def api_get_pessoas():
     q = request.args.get('q', '').strip()
@@ -226,7 +223,7 @@ def api_update_pessoa(pessoa_id):
 
 @app.route('/api/pessoas/<int:pessoa_id>', methods=['DELETE'])
 def api_delete_pessoa(pessoa_id):
-    # Exclusão lógica: altera status para INATIVO
+                                                 
     success = soft_delete_pessoa(pessoa_id)
     if not success:
         return jsonify({"error": "Pessoa não encontrada"}), 404
@@ -234,15 +231,12 @@ def api_delete_pessoa(pessoa_id):
 
 @app.route('/api/pessoas/<int:pessoa_id>/reativar', methods=['PATCH'])
 def api_reactivate_pessoa(pessoa_id):
-    # Reativação lógica: retorna status para ATIVO
+                                                  
     success = reactivate_pessoa(pessoa_id)
     if not success:
         return jsonify({"error": "Pessoa não encontrada"}), 404
     return jsonify({"success": True, "message": "Cadastro reativado com sucesso!"}), 200
 
-# ==============================================================================
-# ENDPOINTS REST: CLASSIFICAÇÃO FINANCEIRA (Despesas e Receitas)
-# ==============================================================================
 @app.route('/api/classificacoes', methods=['GET'])
 def api_get_classificacoes():
     q = request.args.get('q', '').strip()
@@ -298,9 +292,6 @@ def api_reactivate_classificacao(classif_id):
         return jsonify({"error": "Classificação não encontrada"}), 404
     return jsonify({"success": True, "message": "Classificação reativada com sucesso!"}), 200
 
-# ==============================================================================
-# ENDPOINTS REST: PRODUTOS E INSUMOS (Extraídos / Agrícolas)
-# ==============================================================================
 @app.route('/api/produtos', methods=['GET'])
 def api_get_produtos():
     q = request.args.get('q', '').strip()
@@ -357,9 +348,6 @@ def api_reactivate_produto(produto_id):
         return jsonify({"error": "Produto não encontrado"}), 404
     return jsonify({"success": True, "message": "Produto reativado com sucesso!"}), 200
 
-# ==============================================================================
-# ENDPOINTS REST: ANÁLISE PÓS-EXTRAÇÃO E LANÇAMENTO AUTOMÁTICO (2ª ETAPA)
-# ==============================================================================
 @app.route('/api/analise', methods=['POST'])
 def api_analisar_nf():
     data = request.get_json(silent=True) or {}
@@ -380,9 +368,6 @@ def api_lancar_movimento_automatico():
         print(f"Erro no lançamento automático: {e}")
         return jsonify({"error": "Falha ao lançar movimento", "detalhes": str(e)}), 500
 
-# ==============================================================================
-# ENDPOINTS REST: REGISTRAR CONTAS (A Pagar / A Receber e Parcelas)
-# ==============================================================================
 @app.route('/api/contas', methods=['GET'])
 def api_get_contas():
     q = request.args.get('q', '').strip()
@@ -430,9 +415,6 @@ def api_reactivate_conta(conta_id):
         return jsonify({"error": "Conta não encontrada"}), 404
     return jsonify({"success": True, "message": "Conta reativada com sucesso!"}), 200
 
-# ==============================================================================
-# ENDPOINT REST: DASHBOARD FINANCEIRO & ESTATÍSTICAS GERAIS
-# ==============================================================================
 @app.route('/api/dashboard', methods=['GET'])
 @app.route('/api/dashboard/stats', methods=['GET'])
 def api_get_dashboard():

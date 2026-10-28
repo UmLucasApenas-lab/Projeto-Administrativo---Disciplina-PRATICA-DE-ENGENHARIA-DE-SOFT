@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEASY - Sistema de Gestão Financeira & IA</title>
-    <script>
-        (function() {
+    <script>        (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
             var path = window.location.pathname.toLowerCase();
             var isAuthPage = path.endsWith('/login.html') || 
@@ -16,14 +15,16 @@
                 window.location.replace('/login.html');
             }
         })();
-    </script>
+    
+</script>
     <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/theme.js">
+</script>
 </head>
 <body>
     <header class="app-header">
@@ -56,7 +57,7 @@
     </header>
 
     <div class="app-layout">
-        <!-- SIDEBAR DE NAVEGAÇÃO PREMIUM FLUTUANTE (ESTILO PREMIUM SIDEBAR UI) -->
+        
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header-bar">
                 <div class="sidebar-brand-box">
@@ -123,10 +124,8 @@
             </div>
         </aside>
 
-        <!-- CONTEÚDO PRINCIPAL (SPA VIEWS) -->
         <main class="main-content" id="mainContent">
-            
-            <!-- VIEW 1: DASHBOARD GERAL (TELA INICIAL COERENTE E PROFISSIONAL) -->
+
             <section class="spa-view active" id="viewDashboard">
                 <div class="page-container">
                     <div class="view-header">
@@ -155,7 +154,6 @@
                         </div>
                     </div>
 
-                    <!-- CARD INTERATIVO DE PROJEÇÃO DE BALANÇO (RECEBER vs PAGAR) -->
                     <div class="card card-ratio-balance">
                         <div class="ratio-header">
                             <div class="ratio-title">
@@ -182,7 +180,6 @@
                         </div>
                     </div>
 
-                    <!-- CARDS DE METRICAS (KPIs) COM MICRO-INTERAÇÕES -->
                     <div class="dashboard-kpi-grid">
                         <div class="kpi-card card-danger clickable-kpi" id="kpiCardPagar" data-nav="viewContas" data-filter="APAGAR" title="Clique para filtrar Contas a Pagar">
                             <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
@@ -225,9 +222,8 @@
                         </div>
                     </div>
 
-                    <!-- ATALHOS RÁPIDOS, COMPOSIÇÃO DE CUSTOS & ÚLTIMOS LANÇAMENTOS -->
                     <div class="dashboard-grid-2">
-                        <!-- QUADRO DE ATALHOS -->
+                        
                         <div class="card">
                             <div class="card-header">
                                 <div class="card-title">
@@ -266,7 +262,6 @@
                             </div>
                         </div>
 
-                        <!-- QUADRO DE COMPOSIÇÃO DE DESPESAS POR CATEGORIA (RATEIO ANALÍTICO) -->
                         <div class="card">
                             <div class="card-header">
                                 <div class="card-title">
@@ -284,7 +279,6 @@
                             </div>
                         </div>
 
-                        <!-- QUADRO DE ÚLTIMOS LANÇAMENTOS -->
                         <div class="card full-width-grid">
                             <div class="card-header">
                                 <div class="card-title">
@@ -306,7 +300,6 @@
                 </div>
             </section>
 
-            <!-- VIEW 2: PROCESSADOR DE NOTAS FISCAIS & ANÁLISE (2ª ETAPA) -->
             <section class="spa-view" id="viewExtractor">
                 <div class="page-container">
                     <div class="view-header">
@@ -374,10 +367,8 @@
                         </div>
                     </div>
 
-                    <!-- RESULTADOS E PAINEL DE ANÁLISE (2ª ETAPA) -->
                     <div class="results-wrapper hidden" id="resultsSection">
-                        
-                        <!-- PAINEL DE ANÁLISE DE DADOS (PÁGINAS 1 E 2 DO PDF) -->
+
                         <div class="card analysis-card-main" id="analysisSection">
                             <div class="card-header analysis-main-header">
                                 <div class="card-title">
@@ -392,7 +383,7 @@
                                 </p>
 
                                 <div class="analysis-cards-grid">
-                                    <!-- 1. FORNECEDOR -->
+                                    
                                     <div class="analysis-item-box" id="boxAnaliseFornecedor">
                                         <div class="box-header">
                                             <i class="fa-solid fa-building"></i>
@@ -407,7 +398,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 2. FATURADO -->
                                     <div class="analysis-item-box" id="boxAnaliseFaturado">
                                         <div class="box-header">
                                             <i class="fa-solid fa-user"></i>
@@ -422,7 +412,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 3. DESPESA -->
                                     <div class="analysis-item-box" id="boxAnaliseDespesa">
                                         <div class="box-header">
                                             <i class="fa-solid fa-tag"></i>
@@ -437,7 +426,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- 4. PRODUTO / INSUMO -->
                                     <div class="analysis-item-box" id="boxAnaliseProduto">
                                         <div class="box-header">
                                             <i class="fa-solid fa-boxes-stacked"></i>
@@ -466,7 +454,6 @@
                             </div>
                         </div>
 
-                        <!-- CARD DOS DADOS EXTRAÍDOS FORMATADOS -->
                         <div class="card results-card">
                             <div class="card-header results-header">
                                 <div class="card-title">
@@ -608,7 +595,6 @@
                 </div>
             </section>
 
-            <!-- VIEW 3: GESTÃO DE PESSOAS (ESTILO PÁGINA 5 UNIRV) -->
             <section class="spa-view" id="viewPessoas">
                 <div class="page-container">
                     <div class="view-header">
@@ -618,7 +604,6 @@
                         </div>
                     </div>
 
-                    <!-- CARD DE BUSCA NO ESTILO DA UNIRV -->
                     <div class="filter-card">
                         <div class="filter-card-title">Buscar Pessoas</div>
                         <div class="filter-row">
@@ -654,7 +639,6 @@
                         </div>
                     </div>
 
-                    <!-- TABELA DE REGISTROS -->
                     <div class="table-container-card">
                         <div class="table-header-bar">
                             <span class="table-title">Lista de Pessoas</span>
@@ -682,7 +666,6 @@
                         </table>
                     </div>
 
-                    <!-- BOTÃO INSERIR NOVO (CENTRALIZADO CONFORME REFERÊNCIA) -->
                     <div class="table-action-footer">
                         <button type="button" class="btn-insert-unirv" id="btnNovoPessoa">
                             <i class="fa-solid fa-plus"></i> Inserir Nova Pessoa
@@ -691,7 +674,6 @@
                 </div>
             </section>
 
-            <!-- VIEW 4: CLASSIFICAÇÃO FINANCEIRA -->
             <section class="spa-view" id="viewClassificacoes">
                 <div class="page-container">
                     <div class="view-header">
@@ -701,7 +683,6 @@
                         </div>
                     </div>
 
-                    <!-- CARD DE BUSCA -->
                     <div class="filter-card">
                         <div class="filter-card-title">Buscar Classificações</div>
                         <div class="filter-row">
@@ -735,7 +716,6 @@
                         </div>
                     </div>
 
-                    <!-- TABELA DE CLASSIFICAÇÕES -->
                     <div class="table-container-card">
                         <div class="table-header-bar">
                             <span class="table-title">Lista de Classificações</span>
@@ -769,7 +749,6 @@
                 </div>
             </section>
 
-            <!-- VIEW 5: CONTAS FINANCEIRAS -->
             <section class="spa-view" id="viewContas">
                 <div class="page-container">
                     <div class="view-header">
@@ -779,7 +758,6 @@
                         </div>
                     </div>
 
-                    <!-- CARD DE BUSCA DE CONTAS -->
                     <div class="filter-card">
                         <div class="filter-card-title">Buscar Contas</div>
                         <div class="filter-row">
@@ -813,7 +791,6 @@
                         </div>
                     </div>
 
-                    <!-- TABELA DE CONTAS -->
                     <div class="table-container-card">
                         <div class="table-header-bar">
                             <span class="table-title">Lista de Contas</span>
@@ -851,7 +828,6 @@
                 </div>
             </section>
 
-            <!-- VIEW 6: GESTÃO DE PRODUTOS & INSUMOS (ESTILO PÁGINA 5 UNIRV) -->
             <section class="spa-view" id="viewProdutos">
                 <div class="page-container">
                     <div class="view-header">
@@ -861,7 +837,6 @@
                         </div>
                     </div>
 
-                    <!-- CARD DE BUSCA NO ESTILO DA UNIRV -->
                     <div class="filter-card">
                         <div class="filter-card-title">Buscar Produtos / Insumos</div>
                         <div class="filter-row">
@@ -887,7 +862,6 @@
                         </div>
                     </div>
 
-                    <!-- TABELA DE PRODUTOS -->
                     <div class="table-container-card">
                         <div class="table-header-bar">
                             <span class="table-title">Lista de Produtos & Insumos</span>
@@ -926,7 +900,6 @@
         </main>
     </div>
 
-    <!-- MODAL: FORMULÁRIO DE PESSOA (CREATE / EDIT) -->
     <div class="modal-overlay hidden" id="modalPessoa">
         <div class="modal-container">
             <div class="modal-header">
@@ -980,7 +953,6 @@
         </div>
     </div>
 
-    <!-- MODAL: FORMULÁRIO DE CLASSIFICAÇÃO -->
     <div class="modal-overlay hidden" id="modalClassif">
         <div class="modal-container">
             <div class="modal-header">
@@ -1012,7 +984,6 @@
         </div>
     </div>
 
-    <!-- MODAL: REGISTRAR NOVA CONTA -->
     <div class="modal-overlay hidden" id="modalConta">
         <div class="modal-container modal-lg">
             <div class="modal-header">
@@ -1084,7 +1055,6 @@
         </div>
     </div>
 
-    <!-- MODAL: DETALHES DA CONTA & PARCELAS -->
     <div class="modal-overlay hidden" id="modalDetalhesConta">
         <div class="modal-container modal-lg">
             <div class="modal-header">
@@ -1100,7 +1070,6 @@
         </div>
     </div>
 
-    <!-- MODAL: CONFIGURAÇÃO DA API GEMINI -->
     <div class="modal-overlay hidden" id="apiModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -1130,7 +1099,7 @@
                 <button type="button" class="btn-modal-cancel" id="btnCancelKey">Cancelar</button>
                 <button type="button" class="btn-modal-save" id="btnSaveKey">Salvar Chave</button>
             </div>
-    <!-- MODAL: FORMULÁRIO DE PRODUTO / INSUMO (CREATE / EDIT) -->
+    
     <div class="modal-overlay hidden" id="modalProduto">
         <div class="modal-container">
             <div class="modal-header">
@@ -1178,6 +1147,7 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/main.js">
+</script>
 </body>
 </html>

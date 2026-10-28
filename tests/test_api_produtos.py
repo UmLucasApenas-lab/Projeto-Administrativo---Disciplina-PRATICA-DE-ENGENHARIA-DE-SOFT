@@ -26,19 +26,17 @@ class TestApiProdutos(unittest.TestCase):
             pass
 
     def test_produtos_layout_regras_and_crud(self):
-        # 1. Tabela deve iniciar vazia se sem parâmetros e sem 'todos' (Recomendação UniRV)
+                                                                                           
         res = self.client.get('/api/produtos')
         self.assertEqual(res.status_code, 200)
         dados = res.get_json()
         self.assertEqual(dados, [], "Inicialmente a listagem sem busca/todos deve vir vazia")
 
-        # 2. Botão 'TODOS' carrega produtos com status ATIVO (incluindo os seeds iniciais de agritech)
         res_todos = self.client.get('/api/produtos?todos=1')
         self.assertEqual(res_todos.status_code, 200)
         lista_inicial = res_todos.get_json()
         self.assertGreater(len(lista_inicial), 0, "Deve conter produtos ativos após init_db()")
 
-        # 3. Cadastro de novo produto
         novo_payload = {
             "descricao": "Adubo Foliar Micronutrientes Zinc 5L",
             "categoria": "Fertilizantes e Adubos",
@@ -52,7 +50,6 @@ class TestApiProdutos(unittest.TestCase):
         prod_id = created.get('id')
         self.assertIsNotNone(prod_id)
 
-        # 4. Busca multi-termo por descrição ou categoria
         res_busca = self.client.get('/api/produtos?q=Adubo Foliar')
         self.assertEqual(res_busca.status_code, 200)
         encontrados = res_busca.get_json()
@@ -63,7 +60,6 @@ class TestApiProdutos(unittest.TestCase):
         encontrados_cat = res_busca_cat.get_json()
         self.assertTrue(any(p['id'] == prod_id for p in encontrados_cat))
 
-        # 5. Edição (Update) do produto
         update_payload = {
             "descricao": "Adubo Foliar Micronutrientes Zinc 5L - Concentrado",
             "categoria": "Fertilizantes e Adubos",
@@ -79,21 +75,17 @@ class TestApiProdutos(unittest.TestCase):
         self.assertEqual(prod_alterado['descricao'], update_payload['descricao'])
         self.assertEqual(float(prod_alterado['valor_unitario']), 210.00)
 
-        # 6. Exclusão Lógica (Soft Delete)
         res_del = self.client.delete(f'/api/produtos/{prod_id}')
         self.assertEqual(res_del.status_code, 200)
 
-        # Busca normal (ativos) não deve retornar o produto inativado
         res_busca_ativo = self.client.get(f'/api/produtos?q=Adubo Foliar')
         self.assertFalse(any(p['id'] == prod_id for p in res_busca_ativo.get_json()))
 
-        # Busca com inativos deve encontrá-lo com status INATIVO
         res_com_inativos = self.client.get('/api/produtos?todos=1&incluir_inativos=1')
         inativo_item = next((p for p in res_com_inativos.get_json() if p['id'] == prod_id), None)
         self.assertIsNotNone(inativo_item)
         self.assertEqual(inativo_item['status'], 'INATIVO')
 
-        # 7. Reativação do produto
         res_patch = self.client.patch(f'/api/produtos/{prod_id}/reativar')
         self.assertEqual(res_patch.status_code, 200)
 
@@ -101,7 +93,7 @@ class TestApiProdutos(unittest.TestCase):
         self.assertEqual(res_reativado.get_json()['status'], 'ATIVO')
 
     def test_dashboard_stats_features(self):
-        # Verifica se o endpoint do dashboard retorna saldo_projetado, total_produtos e despesas_categorias
+                                                                                                           
         res = self.client.get('/api/dashboard/stats')
         self.assertEqual(res.status_code, 200)
         data = res.get_json()

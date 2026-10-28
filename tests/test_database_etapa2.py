@@ -34,7 +34,7 @@ class TestDatabaseEtapa2(unittest.TestCase):
             self.assertIn(expected_table, tables, f"Tabela '{expected_table}' deve ser criada pelo init_db")
 
     def test_pessoa_crud_and_soft_delete(self):
-        # 1. Create pessoa (deve ter status 'ATIVO' implicitamente)
+                                                                   
         pessoa_id = self.db.save_pessoa({
             'tipo': 'FORNECEDOR',
             'razao_social_nome': 'IGUAÇU MAQUINAS LTDA',
@@ -49,20 +49,16 @@ class TestDatabaseEtapa2(unittest.TestCase):
         self.assertEqual(pessoa['razao_social_nome'], 'IGUAÇU MAQUINAS LTDA')
         self.assertEqual(pessoa['status'], 'ATIVO')
 
-        # 2. Soft delete (exclusão lógica)
         success = self.db.soft_delete_pessoa(pessoa_id)
         self.assertTrue(success)
 
-        # Registro ainda existe no banco, mas com status INATIVO
         pessoa_inativa = self.db.get_pessoa_by_id(pessoa_id)
         self.assertIsNotNone(pessoa_inativa)
         self.assertEqual(pessoa_inativa['status'], 'INATIVO')
 
-        # Listagem padrão (status='ATIVO') não deve trazer o registro inativo
         ativas = self.db.get_pessoas(status='ATIVO')
         self.assertEqual(len(ativas), 0)
 
-        # 3. Reativação lógica
         reactivated = self.db.reactivate_pessoa(pessoa_id)
         self.assertTrue(reactivated)
         pessoa_reativada = self.db.get_pessoa_by_id(pessoa_id)
@@ -79,12 +75,10 @@ class TestDatabaseEtapa2(unittest.TestCase):
         self.assertEqual(classif['status'], 'ATIVO')
         self.assertEqual(classif['descricao'], 'MANUTENÇÃO E OPERAÇÃO')
 
-        # Soft delete
         self.db.soft_delete_classificacao(classif_id)
         classif_inativa = self.db.get_classificacao_by_id(classif_id)
         self.assertEqual(classif_inativa['status'], 'INATIVO')
 
-        # Reativação
         self.db.reactivate_classificacao(classif_id)
         classif_reativada = self.db.get_classificacao_by_id(classif_id)
         self.assertEqual(classif_reativada['status'], 'ATIVO')

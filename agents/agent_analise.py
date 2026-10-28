@@ -18,12 +18,12 @@ def parse_moeda(valor_str) -> float:
         return float(valor_str)
     
     s = str(valor_str).strip()
-    s = re.sub(r'[^\d,.-]', '', s) # remove R$, espaços
+    s = re.sub(r'[^\d,.-]', '', s)                     
     if ',' in s and '.' in s:
-        # Padrão brasileiro: 1.234,56
+                                     
         s = s.replace('.', '').replace(',', '.')
     elif ',' in s:
-        # Padrão com vírgula: 1234,56
+                                     
         s = s.replace(',', '.')
     
     try:
@@ -51,7 +51,6 @@ class AgentAnalise:
         faturado_data = dados_nf.get("Faturado", {})
         classif_data = dados_nf.get("CLASSIFICAÇÃO", {})
 
-        # 1. Análise do Fornecedor (Razão Social / CNPJ)
         f_razao = fornecedor_data.get("Razão Social") or dados_nf.get("Nome do Emitente", "")
         f_cnpj = fornecedor_data.get("CNPJ") or dados_nf.get("CNPJ do Emitente", "")
         
@@ -65,7 +64,6 @@ class AgentAnalise:
             "mensagem": f"EXISTE – ID: {pessoa_fornecedor['id']}" if pessoa_fornecedor else "NÃO EXISTE"
         }
 
-        # 2. Análise do Faturado (Nome Completo / CPF)
         fat_nome = faturado_data.get("Nome Completo") or dados_nf.get("Nome do Destinatário", "")
         fat_cpf = faturado_data.get("CPF") or dados_nf.get("CPF/CNPJ do Destinatário", "")
         
@@ -79,7 +77,6 @@ class AgentAnalise:
             "mensagem": f"EXISTE – ID: {pessoa_faturado['id']}" if pessoa_faturado else "NÃO EXISTE"
         }
 
-        # 3. Análise da Despesa (Classificação)
         categoria_despesa = classif_data.get("categoria") or dados_nf.get("Classificação da Despesa", "")
         classificacao_obj = find_classificacao_by_desc(categoria_despesa, tipo="DESPESA")
 
@@ -90,7 +87,6 @@ class AgentAnalise:
             "mensagem": f"EXISTE – ID: {classificacao_obj['id']}" if classificacao_obj else "NÃO EXISTE"
         }
 
-        # 4. Análise de Produtos/Insumos da NF
         descricao_prod = dados_nf.get("Descrição dos Produtos") or dados_nf.get("descricao_produtos", "")
         desc_limpa = descricao_prod.split("\n")[0].split(";")[0].strip() if descricao_prod else ""
         prod_obj = find_produto_by_desc(desc_limpa) if desc_limpa else None
@@ -120,7 +116,6 @@ class AgentAnalise:
         """
         analise = self.analisar_dados_nf(dados_nf)
 
-        # 1. Obter ou criar Fornecedor
         if analise["fornecedor"]["existe"]:
             fornecedor_id = analise["fornecedor"]["id"]
         else:
@@ -130,7 +125,6 @@ class AgentAnalise:
                 "cnpj_cpf": analise["fornecedor"]["cnpj"]
             })
 
-        # 2. Obter ou criar Faturado
         if analise["faturado"]["existe"]:
             faturado_id = analise["faturado"]["id"]
         else:
@@ -140,7 +134,6 @@ class AgentAnalise:
                 "cnpj_cpf": analise["faturado"]["cpf"]
             })
 
-        # 3. Obter ou criar Despesa
         if analise["despesa"]["existe"]:
             despesa_id = analise["despesa"]["id"]
         else:
@@ -149,14 +142,12 @@ class AgentAnalise:
                 "descricao": analise["despesa"]["descricao"]
             })
 
-        # 4. Valores e dados do movimento
         valor_total_float = parse_moeda(dados_nf.get("Valor Total", 0))
         numero_doc = dados_nf.get("Número da Nota Fiscal", "S/N")
         data_emissao = dados_nf.get("Data de Emissão", "")
         data_vencimento = dados_nf.get("Data de Vencimento") or data_emissao
         descricao_produtos = dados_nf.get("Descrição dos Produtos", f"Nota Fiscal {numero_doc}")
 
-        # 3.1 Obter ou criar Produto / Insumo
         if analise["produto"]["existe"]:
             produto_id = analise["produto"]["id"]
         else:
@@ -167,9 +158,6 @@ class AgentAnalise:
                 "valor_unitario": valor_total_float
             })
 
-        # 4. Criar Movimento de Contas e Parcela(s)
-
-        # Montar lista de parcelas
         parcelas_dados = []
         raw_parcelas = dados_nf.get("Parcelas", {}).get("detalhes", [])
         if raw_parcelas:
@@ -200,7 +188,6 @@ class AgentAnalise:
 
         movimento_id = save_movimento_completo(movimento_payload)
 
-        # 5. Informar ao usuário que registro foi lançado com sucesso
         return {
             "success": True,
             "message": "REGISTRO FOI LANÇADO COM SUCESSO.",

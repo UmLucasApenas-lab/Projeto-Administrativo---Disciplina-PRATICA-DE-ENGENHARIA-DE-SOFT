@@ -27,7 +27,7 @@ class TestAnaliseELancamento(unittest.TestCase):
             pass
 
     def test_analise_e_lancamento_automatico_fluxo(self):
-        # Dados de exemplo idênticos à especificação da UniRV (Página 2 do PDF)
+                                                                               
         dados_nf = {
             "Número da Nota Fiscal": "000.126.981",
             "Data de Emissão": "25/08/2026",
@@ -57,26 +57,19 @@ class TestAnaliseELancamento(unittest.TestCase):
             }
         }
 
-        # 1. Primeira Análise:
-        # A classificação "MANUTENÇÃO E OPERAÇÃO" já foi pré-semeada pelo init_db (EXISTE).
-        # Porém FORNECEDOR e FATURADO NÃO EXISTEM ainda.
         res_analise_1 = self.client.post('/api/analise', json=dados_nf)
         self.assertEqual(res_analise_1.status_code, 200)
         analise_1 = res_analise_1.get_json()
 
-        # Fornecedor NÃO EXISTE
         self.assertFalse(analise_1['fornecedor']['existe'])
         self.assertIsNone(analise_1['fornecedor']['id'])
 
-        # Faturado NÃO EXISTE
         self.assertFalse(analise_1['faturado']['existe'])
         self.assertIsNone(analise_1['faturado']['id'])
 
-        # Despesa EXISTE (semeada no init_db)
         self.assertTrue(analise_1['despesa']['existe'])
         self.assertIsNotNone(analise_1['despesa']['id'])
 
-        # 2. Executar Lançamento Automático
         res_lancamento = self.client.post('/api/movimentos/lancar-automatico', json=dados_nf)
         self.assertEqual(res_lancamento.status_code, 201)
         res_data = res_lancamento.get_json()
@@ -85,8 +78,6 @@ class TestAnaliseELancamento(unittest.TestCase):
         movimento_id = res_data.get('movimento_id')
         self.assertIsNotNone(movimento_id)
 
-        # 3. Segunda Análise pós-lançamento:
-        # Agora TODOS devem retornar EXISTE com seus respectivos IDs!
         res_analise_2 = self.client.post('/api/analise', json=dados_nf)
         self.assertEqual(res_analise_2.status_code, 200)
         analise_2 = res_analise_2.get_json()
@@ -102,7 +93,6 @@ class TestAnaliseELancamento(unittest.TestCase):
         self.assertTrue(analise_2['despesa']['existe'])
         self.assertIsNotNone(analise_2['despesa']['id'])
 
-        # 4. Verificar detalhes do movimento gravado
         mov = self.db.get_movimento_by_id(movimento_id)
         self.assertIsNotNone(mov)
         self.assertEqual(mov['tipo'], 'APAGAR')

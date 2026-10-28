@@ -17,7 +17,6 @@ class TestApiContas(unittest.TestCase):
 
         self.client = app.test_client()
 
-        # Cadastrar Fornecedor, Faturado e Classificação de base
         self.fornecedor_id = self.db.save_pessoa({
             "tipo": "CLIENTE-FORNECEDOR",
             "razao_social_nome": "COMBO EMBALAGENS LTDA",
@@ -43,12 +42,11 @@ class TestApiContas(unittest.TestCase):
             pass
 
     def test_contas_crud_multiplas_parcelas_e_soft_delete(self):
-        # 1. Tabela deve iniciar vazia (layout UniRV a)
+                                                       
         res_empty = self.client.get('/api/contas')
         self.assertEqual(res_empty.status_code, 200)
         self.assertEqual(res_empty.get_json(), [])
 
-        # 2. Cadastro manual de Contas a Pagar com 2 parcelas (Multiplas parcelas com datas distintas)
         payload_conta = {
             "tipo": "APAGAR",
             "numero_documento": "NF-9988",
@@ -68,7 +66,6 @@ class TestApiContas(unittest.TestCase):
         mov_id = res_post.get_json().get('id')
         self.assertIsNotNone(mov_id)
 
-        # 3. Consulta via botão "TODOS" (traz status = ATIVO)
         res_todos = self.client.get('/api/contas?todos=1&tipo=APAGAR')
         self.assertEqual(res_todos.status_code, 200)
         lista = res_todos.get_json()
@@ -76,7 +73,6 @@ class TestApiContas(unittest.TestCase):
         self.assertEqual(lista[0]['fornecedor_nome'], "COMBO EMBALAGENS LTDA")
         self.assertEqual(lista[0]['qtd_parcelas'], 2)
 
-        # 4. Detalhes da conta (GET /api/contas/<id>)
         res_detalhes = self.client.get(f'/api/contas/{mov_id}')
         self.assertEqual(res_detalhes.status_code, 200)
         detalhes = res_detalhes.get_json()
@@ -84,21 +80,18 @@ class TestApiContas(unittest.TestCase):
         self.assertEqual(detalhes['parcelas'][0]['data_vencimento'], "10/11/2026")
         self.assertEqual(detalhes['parcelas'][1]['data_vencimento'], "10/12/2026")
 
-        # 5. Exclusão Lógica (status = INATIVO)
         res_del = self.client.delete(f'/api/contas/{mov_id}')
         self.assertEqual(res_del.status_code, 200)
 
-        # 'TODOS' agora não deve retornar nada porque filtra ATIVO
         res_todos_pos_del = self.client.get('/api/contas?todos=1&tipo=APAGAR')
         self.assertEqual(len(res_todos_pos_del.get_json()), 0)
 
-        # 6. Reativação lógica
         res_reativar = self.client.patch(f'/api/contas/{mov_id}/reativar')
         self.assertEqual(res_reativar.status_code, 200)
         res_todos_pos_reativar = self.client.get('/api/contas?todos=1&tipo=APAGAR')
         self.assertEqual(len(res_todos_pos_reativar.get_json()), 1)
     def test_api_dashboard_stats(self):
-        # Cadastrar uma conta a pagar
+                                     
         self.client.post('/api/contas', json={
             "tipo": "APAGAR",
             "numero_documento": "NF-DASH-1",
@@ -109,7 +102,6 @@ class TestApiContas(unittest.TestCase):
             "parcelas": [{"numero_parcela": 1, "data_vencimento": "20/11/2026", "valor": 1200.00}]
         })
 
-        # Cadastrar uma conta a receber
         self.client.post('/api/contas', json={
             "tipo": "ARECEBER",
             "numero_documento": "REC-01",

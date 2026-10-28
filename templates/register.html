@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEASY - Cadastro de Usuário</title>
-    <script>
-        (function() {
+    <script>        (function() {
             var token = localStorage.getItem('AUTH_TOKEN');
             var path = window.location.pathname.toLowerCase();
             var isRegister = path.endsWith('/register.html') || path.endsWith('/register');
@@ -13,14 +12,16 @@
                 window.location.replace('/index.html');
             }
         })();
-    </script>
+    
+</script>
     <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/theme.js">
+</script>
 </head>
 <body>
     <header class="app-header">
@@ -131,7 +132,6 @@
                 </div>
             </form>
 
-            <!-- VERSIONAMENTO COM REDIRECIONAMENTO AO COMMIT DO GITHUB COM DATA (ESTILO FARM-FIN) -->
             <div class="login-version-container">
                 <a href="https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commit/d6c1506b61109f02da85fab74c051f41da984048" 
                    target="_blank" 
@@ -152,8 +152,7 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script>        document.addEventListener('DOMContentLoaded', () => {
             const registerForm = document.getElementById('registerForm');
             const registerName = document.getElementById('registerName');
             const registerEmail = document.getElementById('registerEmail');
@@ -164,12 +163,10 @@
             const btnToggleRegisterPassword = document.getElementById('btnToggleRegisterPassword');
             const toggleRegisterPasswordIcon = document.getElementById('toggleRegisterPasswordIcon');
 
-            // Determina a URL base da API
             const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
                 ? ''
                 : 'https://fineasy.onrender.com';
 
-            // Alternar visibilidade da senha
             if (btnToggleRegisterPassword) {
                 btnToggleRegisterPassword.addEventListener('click', () => {
                     const isPassword = registerPassword.type === 'password';
@@ -178,7 +175,6 @@
                 });
             }
 
-            // Envio do Formulário de Registro
             registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -261,7 +257,6 @@
                 }, 3500);
             }
 
-            // Sincronizar dinamicamente o link para o commit mais recente do GitHub
             async function sincronizarVersaoGithub() {
                 try {
                     const res = await fetch('https://api.github.com/repos/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commits/main');
@@ -283,11 +278,12 @@
                     const dt = document.getElementById('versionCommitDate');
                     if (dt) dt.textContent = commitDate;
                 } catch (e) {
-                    // Fallback gracioso mantendo o commit padrão
+                    
                 }
             }
             sincronizarVersaoGithub();
         });
-    </script>
+    
+</script>
 </body>
 </html>

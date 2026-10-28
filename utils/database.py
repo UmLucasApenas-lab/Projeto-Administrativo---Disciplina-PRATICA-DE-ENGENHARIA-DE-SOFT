@@ -23,7 +23,6 @@ def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # 1. Usuários do Sistema
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,7 +33,6 @@ def init_db():
         )
     ''')
 
-    # 2. Pessoas (Fornecedor, Cliente, Faturado)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS pessoas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +48,6 @@ def init_db():
         )
     ''')
 
-    # 3. Classificações (Receitas e Despesas)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS classificacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +59,6 @@ def init_db():
         )
     ''')
 
-    # 4. Movimento de Contas (Contas a Pagar e Contas a Receber)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS movimento_contas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +77,6 @@ def init_db():
         )
     ''')
 
-    # 5. Associação Movimento <-> Classificações (Permite rateio de 1..N despesas/receitas)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS movimento_classificacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,7 +89,6 @@ def init_db():
         )
     ''')
 
-    # 6. Parcelas de Contas (1..N parcelas com vencimentos distintos)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS parcela_contas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,7 +105,6 @@ def init_db():
         )
     ''')
 
-    # 7. Produtos e Insumos Extraídos / Cadastrados
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS produtos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -125,7 +118,6 @@ def init_db():
         )
     ''')
 
-    # 8. Vínculo Movimento <-> Produtos da NF
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS movimento_produtos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -141,7 +133,6 @@ def init_db():
 
     conn.commit()
 
-    # Criar usuário admin padrão se não existir
     default_email = os.getenv("AUTH_EMAIL", "admin@unirv.edu.br").strip().lower()
     default_password = os.getenv("AUTH_PASSWORD", "admin123").strip()
 
@@ -157,7 +148,6 @@ def init_db():
         conn.commit()
         print(f"[DB] Usuário padrão criado: {default_email}")
 
-    # Semear classificações oficiais se a tabela estiver vazia
     cursor.execute("SELECT COUNT(*) AS total FROM classificacoes")
     if cursor.fetchone()['total'] == 0:
         categorias_padrao = [
@@ -182,7 +172,6 @@ def init_db():
         conn.commit()
         print(f"[DB] {len(categorias_padrao)} classificações padrão inseridas com sucesso.")
 
-    # Semear produtos agrícolas padrão se a tabela estiver vazia
     cursor.execute("SELECT COUNT(*) AS total FROM produtos")
     if cursor.fetchone()['total'] == 0:
         produtos_padrao = [
@@ -203,9 +192,6 @@ def init_db():
 
     conn.close()
 
-# ==============================================================================
-# FUNÇÕES: USERS
-# ==============================================================================
 def create_user(email: str, password: str, name: str = None):
     email_clean = email.strip().lower()
     conn = get_db_connection()
@@ -256,9 +242,6 @@ def verify_user_credentials(email: str, password: str):
         return user
     return None
 
-# ==============================================================================
-# FUNÇÕES: PESSOAS (Fornecedores, Clientes, Faturados)
-# ==============================================================================
 def save_pessoa(data: dict):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -317,7 +300,6 @@ def get_pessoas(q: str = None, tipo: str = None, status: str = 'ATIVO', todos: b
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Se não clicou em TODOS e nem forneceu busca, a recomendação de layout UniRV exige trazer vazio
     if not todos and not q and not tipo:
         conn.close()
         return []
@@ -371,7 +353,6 @@ def find_pessoa_by_doc_or_name(cnpj_cpf: str = None, nome: str = None, tipo: str
     
     clean_target_doc = clean_doc(cnpj_cpf)
     
-    # 1. Tentar por documento (CNPJ/CPF limpo)
     if clean_target_doc:
         cursor.execute("SELECT * FROM pessoas")
         rows = cursor.fetchall()
@@ -380,7 +361,6 @@ def find_pessoa_by_doc_or_name(cnpj_cpf: str = None, nome: str = None, tipo: str
                 conn.close()
                 return dict(r)
 
-    # 2. Tentar por Razão Social ou Nome exato / aproximado
     if nome and nome.strip():
         nome_clean = nome.strip()
         cursor.execute("SELECT * FROM pessoas WHERE UPPER(razao_social_nome) = UPPER(?)", (nome_clean,))
@@ -392,9 +372,6 @@ def find_pessoa_by_doc_or_name(cnpj_cpf: str = None, nome: str = None, tipo: str
     conn.close()
     return None
 
-# ==============================================================================
-# FUNÇÕES: CLASSIFICAÇÕES
-# ==============================================================================
 def save_classificacao(data: dict):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -494,7 +471,6 @@ def find_classificacao_by_desc(descricao: str, tipo: str = 'DESPESA'):
     cursor = conn.cursor()
     desc_clean = descricao.strip().upper()
     
-    # Busca exata ou que contenha
     cursor.execute("SELECT * FROM classificacoes WHERE tipo = ? AND UPPER(descricao) = ?", (tipo.upper(), desc_clean))
     row = cursor.fetchone()
     if not row:
@@ -504,9 +480,6 @@ def find_classificacao_by_desc(descricao: str, tipo: str = 'DESPESA'):
     conn.close()
     return dict(row) if row else None
 
-# ==============================================================================
-# FUNÇÕES: MOVIMENTO DE CONTAS & PARCELAS
-# ==============================================================================
 def save_movimento_completo(dados: dict):
     """
     Executa a transação completa (ACID) de criação de um movimento de contas,
@@ -535,7 +508,6 @@ def save_movimento_completo(dados: dict):
         ))
         movimento_id = cursor.lastrowid
 
-        # 1. Vincular classificações (Rateio)
         classificacoes = dados.get('classificacoes', [])
         for c in classificacoes:
             c_id = c.get('classificacao_id') if isinstance(c, dict) else c
@@ -547,10 +519,9 @@ def save_movimento_completo(dados: dict):
                     VALUES (?, ?, ?, ?)
                 ''', (movimento_id, c_id, c_valor, c_perc))
 
-        # 2. Criar parcelas
         parcelas = dados.get('parcelas', [])
         if not parcelas:
-            # Parcela única default
+                                   
             data_venc = dados.get('data_vencimento') or data_emissao or 'À Vista'
             cursor.execute('''
                 INSERT INTO parcela_contas (
@@ -601,7 +572,6 @@ def get_movimento_by_id(movimento_id: int):
 
     mov = dict(mov_row)
 
-    # Classificações
     cursor.execute('''
         SELECT mc.*, c.descricao, c.tipo AS classificacao_tipo
         FROM movimento_classificacoes mc
@@ -610,7 +580,6 @@ def get_movimento_by_id(movimento_id: int):
     ''', (movimento_id,))
     mov['classificacoes'] = [dict(r) for r in cursor.fetchall()]
 
-    # Parcelas
     cursor.execute('''
         SELECT * FROM parcela_contas
         WHERE movimento_id = ?
@@ -683,9 +652,6 @@ def reactivate_movimento(movimento_id: int):
     conn.close()
     return success
 
-# ==============================================================================
-# FUNÇÕES: PRODUTOS E INSUMOS (UniRV CRUD)
-# ==============================================================================
 def get_produtos(q: str = "", status: str = "ATIVO", todos: bool = False) -> list:
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -729,7 +695,7 @@ def find_produto_by_desc(descricao: str):
     cursor.execute("SELECT * FROM produtos WHERE LOWER(descricao) = LOWER(?) LIMIT 1", (desc_clean,))
     row = cursor.fetchone()
     if not row:
-        # Busca aproximada pelos primeiros caracteres
+                                                     
         busca_parcial = desc_clean[:20] if len(desc_clean) > 20 else desc_clean
         cursor.execute("SELECT * FROM produtos WHERE LOWER(descricao) LIKE LOWER(?) LIMIT 1", (f"%{busca_parcial}%",))
         row = cursor.fetchone()
@@ -815,7 +781,6 @@ def get_dashboard_stats():
 
     saldo_projetado = total_receber - total_pagar
 
-    # Distribuição de despesas por categoria (Top 5)
     cursor.execute('''
         SELECT c.descricao, COALESCE(SUM(mc.valor), 0) AS valor_total
         FROM movimento_classificacoes mc
@@ -828,7 +793,6 @@ def get_dashboard_stats():
     ''')
     despesas_categorias = [dict(r) for r in cursor.fetchall()]
 
-    # Últimos 5 lançamentos
     cursor.execute('''
         SELECT m.id, m.tipo, m.numero_documento, m.valor_total, m.created_at,
                COALESCE(f.razao_social_nome, fat.razao_social_nome, 'N/A') AS pessoa_nome

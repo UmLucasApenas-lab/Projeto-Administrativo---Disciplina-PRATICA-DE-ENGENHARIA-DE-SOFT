@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarUserName.textContent = authUser.name;
     }
 
-    // Iniciais no avatar
     const userAvatarSpan = document.querySelector('.user-avatar-circle span');
     if (userAvatarSpan && authUser.name) {
         const parts = authUser.name.trim().split(/\s+/);
@@ -31,14 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ? ''
         : 'https://fineasy.onrender.com';
 
-    // =========================================================================
-    // SPA NAVIGATION & SIDEBAR RETRÁTIL (PREMIUM SIDEBAR UI)
-    // =========================================================================
     const appSidebar = document.getElementById('appSidebar');
     const btnToggleSidebar = document.getElementById('btnToggleSidebar');
     const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
 
-    // Restaurar estado recolhido salvo da sidebar
     if (localStorage.getItem('SIDEBAR_COLLAPSED') === 'true' && appSidebar) {
         appSidebar.classList.add('collapsed');
         if (sidebarToggleIcon) {
@@ -91,9 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // =========================================================================
-    // MÓDULO: DASHBOARD FINANCEIRO & ATALHOS RÁPIDOS
-    // =========================================================================
     const dashTotalPagar = document.getElementById('dashTotalPagar');
     const dashQtdPagar = document.getElementById('dashQtdPagar');
     const dashTotalReceber = document.getElementById('dashTotalReceber');
@@ -155,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dashSubtextCadastros.textContent = `${data.total_pessoas || 0} pessoas · ${data.total_classificacoes || 0} categorias · ${data.total_produtos || 0} produtos`;
             }
 
-            // Projeção Proporcional de Balanço Operacional (Receber vs Pagar)
             const totalPagar = parseFloat(data.total_pagar || 0);
             const totalReceber = parseFloat(data.total_receber || 0);
             const somaTotal = totalPagar + totalReceber;
@@ -195,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Distribuição de Despesas (Inspirado no Rateio Farm-Fin)
             if (dashCostBreakdown) {
                 if (data.despesas_categorias && data.despesas_categorias.length > 0) {
                     const maxVal = Math.max(...data.despesas_categorias.map(c => c.valor_total || 0), 1);
@@ -265,7 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Ações dos Atalhos do Dashboard e Header
     if (btnDashProcessarNf) btnDashProcessarNf.addEventListener('click', () => switchView('viewExtractor'));
     if (btnQuickNovoLancamento) {
         btnQuickNovoLancamento.addEventListener('click', () => {
@@ -295,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarContas('', true);
     });
 
-    // Interações com os KPIs Clicáveis do Dashboard (Atalhos rápidos com filtros)
     const clickableKpis = document.querySelectorAll('.clickable-kpi');
     clickableKpis.forEach(card => {
         card.addEventListener('click', () => {
@@ -316,7 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Abas de Filtros de Período do Dashboard
     const dashTabs = document.querySelectorAll('.dash-tab');
     const dashRefreshIcon = document.getElementById('dashRefreshIcon');
     const btnRefreshDashboard = document.getElementById('btnRefreshDashboard');
@@ -345,12 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Carregar Dashboard imediatamente ao iniciar
     carregarDashboard();
 
-    // =========================================================================
-    // EXTRATOR DE NOTA FISCAL (ETAPA 1 & ETAPA 2)
-    // =========================================================================
     const dropZone = document.getElementById('dropZone');
     const pdfInput = document.getElementById('pdfInput');
     const btnBrowse = document.getElementById('btnBrowse');
@@ -389,7 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCopyJson = document.getElementById('btnCopyJson');
     const btnDownloadJson = document.getElementById('btnDownloadJson');
 
-    // Elementos do Painel de Análise (2ª Etapa)
     const analiseFornecedorNome = document.getElementById('analiseFornecedorNome');
     const analiseFornecedorCnpj = document.getElementById('analiseFornecedorCnpj');
     const badgeFornecedor = document.getElementById('badgeFornecedor');
@@ -408,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSelectedFile = null;
     let latestExtractedJson = null;
 
-    // Configuração da API Modal
     const btnConfigModal = document.getElementById('btnConfigModal');
     const apiModal = document.getElementById('apiModal');
     const btnCloseModal = document.getElementById('btnCloseModal');
@@ -532,7 +513,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // EXTRAÇÃO E ANÁLISE
     if (btnExtract) {
         btnExtract.addEventListener('click', async () => {
             if (!currentSelectedFile) return;
@@ -643,9 +623,6 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonCodeDisplay.textContent = JSON.stringify(data, null, 2);
     }
 
-    // =========================================================================
-    // ANÁLISE DOS DADOS NO BANCO (2ª ETAPA - PÁGINAS 1 E 2 DO PDF)
-    // =========================================================================
     async function executarAnaliseBanco(dadosNf) {
         try {
             badgeFornecedor.className = 'status-chip chip-loading';
@@ -664,7 +641,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!resp.ok) throw new Error('Falha ao consultar banco');
             const analise = await resp.json();
 
-            // 1. FORNECEDOR
             analiseFornecedorNome.textContent = analise.fornecedor.razao_social;
             analiseFornecedorCnpj.textContent = analise.fornecedor.cnpj ? `CNPJ: ${analise.fornecedor.cnpj}` : 'CNPJ não informado';
             if (analise.fornecedor.existe) {
@@ -675,7 +651,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 badgeFornecedor.textContent = 'NÃO EXISTE';
             }
 
-            // 2. FATURADO
             analiseFaturadoNome.textContent = analise.faturado.nome;
             analiseFaturadoCpf.textContent = analise.faturado.cpf ? `CPF: ${analise.faturado.cpf}` : 'Documento não informado';
             if (analise.faturado.existe) {
@@ -686,7 +661,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 badgeFaturado.textContent = 'NÃO EXISTE';
             }
 
-            // 3. DESPESA
             analiseDespesaNome.textContent = analise.despesa.descricao;
             if (analise.despesa.existe) {
                 badgeDespesa.className = 'status-chip chip-found';
@@ -696,7 +670,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 badgeDespesa.textContent = 'NÃO EXISTE';
             }
 
-            // 4. PRODUTO / INSUMO
             const badgeProduto = document.getElementById('badgeProduto');
             const analiseProdutoNome = document.getElementById('analiseProdutoNome');
             const analiseProdutoCategoria = document.getElementById('analiseProdutoCategoria');
@@ -718,7 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // AÇÃO: LANÇAR NO SISTEMA FINANCEIRO (PÁGINA 2 DO PDF)
     if (btnLancarSistema) {
         btnLancarSistema.addEventListener('click', async () => {
             if (!latestExtractedJson) {
@@ -743,12 +715,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const result = await resp.json();
 
-                // 5. INFORMAR AO USUÁRIO QUE REGISTRO FOI LANÇADO COM SUCESSO.
                 launchFeedbackText.textContent = result.message || 'REGISTRO FOI LANÇADO COM SUCESSO.';
                 launchFeedback.classList.remove('hidden');
                 showToast(result.message || 'REGISTRO FOI LANÇADO COM SUCESSO.', 'success');
 
-                // Atualizar badges imediatamente no painel
                 await executarAnaliseBanco(latestExtractedJson);
 
             } catch (err) {
@@ -761,7 +731,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Tabs Resultados
     if (tabFormattedBtn && tabJsonBtn) {
         tabFormattedBtn.addEventListener('click', () => {
             tabFormattedBtn.classList.add('active');
@@ -808,9 +777,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================================
-    // MÓDULO: GESTÃO DE PESSOAS (CRUD UniRV)
-    // =========================================================================
     const buscaPessoasInput = document.getElementById('buscaPessoasInput');
     const filtroTipoPessoas = document.getElementById('filtroTipoPessoas');
     const filtroStatusPessoas = document.getElementById('filtroStatusPessoas');
@@ -917,7 +883,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Modais de Pessoa
     function abrirModalPessoa(pessoa = null) {
         formPessoa.reset();
         if (pessoa) {
@@ -1000,9 +965,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // =========================================================================
-    // MÓDULO: CLASSIFICAÇÃO FINANCEIRA (CRUD UniRV)
-    // =========================================================================
     const buscaClassifInput = document.getElementById('buscaClassifInput');
     const filtroTipoClassif = document.getElementById('filtroTipoClassif');
     const filtroStatusClassif = document.getElementById('filtroStatusClassif');
@@ -1159,9 +1121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // =========================================================================
-    // MÓDULO: GESTÃO DE PRODUTOS & INSUMOS (CRUD UniRV)
-    // =========================================================================
     const buscaProdutosInput = document.getElementById('buscaProdutosInput');
     const filtroStatusProdutos = document.getElementById('filtroStatusProdutos');
     const btnBuscarProdutos = document.getElementById('btnBuscarProdutos');
@@ -1333,9 +1292,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // =========================================================================
-    // MÓDULO: REGISTRAR CONTAS (CRUD UniRV)
-    // =========================================================================
     const buscaContasInput = document.getElementById('buscaContasInput');
     const filtroTipoContas = document.getElementById('filtroTipoContas');
     const filtroStatusContas = document.getElementById('filtroStatusContas');
@@ -1433,7 +1389,6 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarContas('', true);
     });
 
-    // Abrir Modal de Nova Conta e preencher selects de Pessoas e Classificações
     async function abrirModalConta() {
         formConta.reset();
         const hoje = new Date().toISOString().split('T')[0];
@@ -1480,7 +1435,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const pessoaId = parseInt(contaPessoaSelect.value, 10);
             const classifId = parseInt(contaClassifSelect.value, 10);
 
-            // Gerar parcelas com datas de vencimento mensalmente distintas
             const parcelas = [];
             const valorParcela = valorTotal / qtdParcelas;
             const emissaoDate = dataEmissao ? new Date(dataEmissao + 'T00:00:00') : new Date();
@@ -1612,7 +1566,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Ordenação clicável de colunas nas tabelas
     document.querySelectorAll('.data-table th.sortable').forEach(th => {
         th.addEventListener('click', () => {
             const table = th.closest('table');
@@ -1643,9 +1596,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // =========================================================================
-    // MODAL DE CHAVE GEMINI & TOASTS
-    // =========================================================================
     if (btnConfigModal) btnConfigModal.addEventListener('click', () => apiModal.classList.remove('hidden'));
     function fecharModalApi() { apiModal.classList.add('hidden'); }
     if (btnCloseModal) btnCloseModal.addEventListener('click', fecharModalApi);
@@ -1716,7 +1666,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sincronizar dinamicamente o link para o commit mais recente do GitHub na sidebar
     async function sincronizarVersaoGithub() {
         try {
             const res = await fetch('https://api.github.com/repos/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/commits/main');
@@ -1736,7 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (txt) txt.textContent = `${shaShort} · ${commitDate}`;
             }
         } catch (e) {
-            // Fallback gracioso mantendo o commit padrão
+            
         }
     }
     sincronizarVersaoGithub();

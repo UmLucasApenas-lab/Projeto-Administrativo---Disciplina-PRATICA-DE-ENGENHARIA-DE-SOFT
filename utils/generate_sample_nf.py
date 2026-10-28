@@ -12,18 +12,15 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
     c = canvas.Canvas(filename, pagesize=letter)
     width, height = letter
 
-    # Cabeçalho
     c.setFont("Helvetica-Bold", 16)
     c.drawString(50, height - 50, "DANFE - DOCUMENTO AUXILIAR DA NOTA FISCAL ELETRÔNICA")
     c.setFont("Helvetica", 9)
     c.drawString(50, height - 65, "CHAVE DE ACESSO: 5225 0913 1425 9700 0746 5500 1000 0084 3819 8490 0945")
 
-    # Linha divisória
     c.setLineWidth(1)
     c.setStrokeColor(colors.gray)
     c.line(50, height - 75, width - 50, height - 75)
 
-    # Dados do Emitente
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, height - 95, "EMITENTE: IGUAÇU MÁQUINAS AGRÍCOLAS LTDA")
     c.setFont("Helvetica", 10)
@@ -31,7 +28,6 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
     c.drawString(50, height - 125, "CNPJ: 33.656.729/0023-85   Inscrição Estadual: 10.293.847-1")
     c.drawString(50, height - 140, "Endereço: Rodovia BR-060, Km 385 - Zona Rural, Rio Verde - GO, 75900-000")
 
-    # Quadro da Nota
     c.rect(width - 220, height - 150, 170, 60)
     c.setFont("Helvetica-Bold", 11)
     c.drawString(width - 210, height - 105, "NF-e Nº: 000.084.682")
@@ -41,7 +37,6 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
 
     c.line(50, height - 160, width - 50, height - 160)
 
-    # Dados do Destinatário / Faturado
     c.setFont("Helvetica-Bold", 12)
     c.drawString(50, height - 180, "DESTINATÁRIO / FATURADO")
     c.setFont("Helvetica", 10)
@@ -52,11 +47,9 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
 
     c.line(50, height - 255, width - 50, height - 255)
 
-    # Tabela de Produtos / Serviços
     c.setFont("Helvetica-Bold", 11)
     c.drawString(50, height - 275, "DADOS DOS PRODUTOS / SERVIÇOS")
     
-    # Cabeçalho da tabela
     c.setFillColor(colors.whitesmoke)
     c.rect(50, height - 300, width - 100, 20, fill=1)
     c.setFillColor(colors.black)
@@ -67,7 +60,6 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
     c.drawString(430, height - 295, "VL. UNIT")
     c.drawString(490, height - 295, "VL. TOTAL")
 
-    # Linhas dos produtos
     itens = [
         ("001", "GRAXA DE POLIUREIA MP SD 400G", "4 UN", "48,50", "194,00"),
         ("002", "ANEL DE VEDAÇÃO HIDRÁULICO 50MM", "6 UN", "32,00", "192,00"),
@@ -91,7 +83,6 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
 
     c.line(50, y - 10, width - 50, y - 10)
 
-    # Fatura / Parcelas e Totais
     c.setFont("Helvetica-Bold", 10)
     c.drawString(50, y - 30, "FATURA / DUPLICATA")
     c.setFont("Helvetica", 9)
@@ -102,7 +93,6 @@ def create_sample_nf_manutencao(filename="exemplo_nf_manutencao.pdf"):
     c.drawString(width - 210, y - 40, "VALOR TOTAL DA NOTA:")
     c.drawString(width - 210, y - 55, "R$ 3.086,75")
 
-    # Rodapé
     c.setFont("Helvetica-Oblique", 8)
     c.drawString(50, 40, "UniRV - Universidade de Rio Verde - Engenharia de Software - Projeto Prático N2")
     c.drawString(50, 28, "Documento simulado para extração e classificação de notas fiscais via IA")
