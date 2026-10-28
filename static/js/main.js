@@ -17,13 +17,46 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarUserName.textContent = authUser.name;
     }
 
+    // Iniciais no avatar
+    const userAvatarSpan = document.querySelector('.user-avatar-circle span');
+    if (userAvatarSpan && authUser.name) {
+        const parts = authUser.name.trim().split(/\s+/);
+        const initials = parts.length > 1 
+            ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+            : parts[0].slice(0, 2).toUpperCase();
+        userAvatarSpan.textContent = initials;
+    }
+
     const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? ''
         : 'https://fineasy.onrender.com';
 
     // =========================================================================
-    // SPA NAVIGATION (SIDEBAR)
+    // SPA NAVIGATION & SIDEBAR RETRÁTIL (PREMIUM SIDEBAR UI)
     // =========================================================================
+    const appSidebar = document.getElementById('appSidebar');
+    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+    const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+
+    // Restaurar estado recolhido salvo da sidebar
+    if (localStorage.getItem('SIDEBAR_COLLAPSED') === 'true' && appSidebar) {
+        appSidebar.classList.add('collapsed');
+        if (sidebarToggleIcon) {
+            sidebarToggleIcon.className = 'fa-solid fa-chevron-right';
+        }
+    }
+
+    if (btnToggleSidebar && appSidebar) {
+        btnToggleSidebar.addEventListener('click', () => {
+            appSidebar.classList.toggle('collapsed');
+            const isCollapsed = appSidebar.classList.contains('collapsed');
+            localStorage.setItem('SIDEBAR_COLLAPSED', isCollapsed ? 'true' : 'false');
+            if (sidebarToggleIcon) {
+                sidebarToggleIcon.className = isCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left';
+            }
+        });
+    }
+
     const navItems = document.querySelectorAll('.nav-item');
     const spaViews = document.querySelectorAll('.spa-view');
 
@@ -120,6 +153,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (dashSubtextCadastros) {
                 dashSubtextCadastros.textContent = `${data.total_pessoas || 0} pessoas · ${data.total_classificacoes || 0} categorias · ${data.total_produtos || 0} produtos`;
+            }
+
+            // Projeção Proporcional de Balanço Operacional (Receber vs Pagar)
+            const totalPagar = parseFloat(data.total_pagar || 0);
+            const totalReceber = parseFloat(data.total_receber || 0);
+            const somaTotal = totalPagar + totalReceber;
+
+            let pctReceber = 50;
+            let pctPagar = 50;
+            if (somaTotal > 0) {
+                pctReceber = Math.round((totalReceber / somaTotal) * 100);
+                pctPagar = 100 - pctReceber;
+            }
+
+            const ratioBarReceber = document.getElementById('ratioBarReceber');
+            const ratioBarPagar = document.getElementById('ratioBarPagar');
+            const ratioValReceber = document.getElementById('ratioValReceber');
+            const ratioValPagar = document.getElementById('ratioValPagar');
+            const ratioPctReceber = document.getElementById('ratioPctReceber');
+            const ratioPctPagar = document.getElementById('ratioPctPagar');
+            const ratioBadgeText = document.getElementById('ratioBadgeText');
+
+            if (ratioBarReceber) ratioBarReceber.style.width = `${pctReceber}%`;
+            if (ratioBarPagar) ratioBarPagar.style.width = `${pctPagar}%`;
+            if (ratioValReceber) ratioValReceber.textContent = totalReceber.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            if (ratioValPagar) ratioValPagar.textContent = totalPagar.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            if (ratioPctReceber) ratioPctReceber.textContent = `${pctReceber}%`;
+            if (ratioPctPagar) ratioPctPagar.textContent = `${pctPagar}%`;
+
+            if (ratioBadgeText) {
+                if (totalReceber > totalPagar) {
+                    ratioBadgeText.className = 'badge-status-ativo';
+                    ratioBadgeText.innerHTML = '<i class="fa-solid fa-arrow-trend-up"></i> Superávit Operacional';
+                } else if (totalPagar > totalReceber) {
+                    ratioBadgeText.className = 'badge-status-inativo';
+                    ratioBadgeText.innerHTML = '<i class="fa-solid fa-arrow-trend-down"></i> Déficit Previsto';
+                } else {
+                    ratioBadgeText.className = 'badge-status-ativo';
+                    ratioBadgeText.textContent = 'Equilibrado';
+                }
             }
 
             // Distribuição de Despesas (Inspirado no Rateio Farm-Fin)
@@ -221,6 +294,56 @@ document.addEventListener('DOMContentLoaded', () => {
         switchView('viewContas');
         carregarContas('', true);
     });
+
+    // Interações com os KPIs Clicáveis do Dashboard (Atalhos rápidos com filtros)
+    const clickableKpis = document.querySelectorAll('.clickable-kpi');
+    clickableKpis.forEach(card => {
+        card.addEventListener('click', () => {
+            const targetNav = card.dataset.nav;
+            const filter = card.dataset.filter;
+            if (targetNav) {
+                switchView(targetNav);
+                if (targetNav === 'viewContas') {
+                    const fTipo = document.getElementById('filtroTipoContas');
+                    const bBusca = document.getElementById('buscaContasInput');
+                    if (fTipo && filter) fTipo.value = filter;
+                    if (bBusca) bBusca.value = '';
+                    if (typeof carregarContas === 'function') carregarContas('', true);
+                } else if (targetNav === 'viewPessoas') {
+                    if (typeof carregarPessoas === 'function') carregarPessoas('', true);
+                }
+            }
+        });
+    });
+
+    // Abas de Filtros de Período do Dashboard
+    const dashTabs = document.querySelectorAll('.dash-tab');
+    const dashRefreshIcon = document.getElementById('dashRefreshIcon');
+    const btnRefreshDashboard = document.getElementById('btnRefreshDashboard');
+
+    dashTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            dashTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            if (dashRefreshIcon) dashRefreshIcon.classList.add('fa-spin');
+            carregarDashboard().finally(() => {
+                if (dashRefreshIcon) dashRefreshIcon.classList.remove('fa-spin');
+            });
+        });
+    });
+
+    if (btnRefreshDashboard) {
+        btnRefreshDashboard.addEventListener('click', () => {
+            if (dashRefreshIcon) dashRefreshIcon.classList.add('fa-spin');
+            btnRefreshDashboard.classList.add('spinning');
+            carregarDashboard().finally(() => {
+                setTimeout(() => {
+                    if (dashRefreshIcon) dashRefreshIcon.classList.remove('fa-spin');
+                    btnRefreshDashboard.classList.remove('spinning');
+                }, 400);
+            });
+        });
+    }
 
     // Carregar Dashboard imediatamente ao iniciar
     carregarDashboard();

@@ -17,6 +17,7 @@
             }
         })();
     </script>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -28,9 +29,9 @@
     <header class="app-header">
         <div class="header-container">
             <div class="brand-group">
-                <div class="brand-badge">FINEASY</div>
+                <img src="/static/img/logo.png" alt="FINEASY Logo" class="brand-logo-img">
                 <div class="brand-info">
-                    <span class="brand-title">FINEASY · Prática de Engenharia de Software</span>
+                    <span class="brand-title"><span class="brand-fin">FIN</span><span class="brand-easy">EASY</span> · Prática de Engenharia de Software</span>
                     <span class="brand-subtitle">UniRV · Sistema Integrado Administrativo-Financeiro (2ª Etapa)</span>
                 </div>
             </div>
@@ -55,60 +56,74 @@
     </header>
 
     <div class="app-layout">
-        <!-- SIDEBAR DE NAVEGAÇÃO (CONFORME MODELO DA UNIRV - PÁGINA 5) -->
-        <aside class="app-sidebar">
-            <div class="sidebar-brand-box">
-                <span class="sidebar-project-title">FINEASY</span>
-            </div>
-
-            <div class="sidebar-user-card">
-                <div class="user-avatar-circle">
-                    <i class="fa-solid fa-user"></i>
+        <!-- SIDEBAR DE NAVEGAÇÃO PREMIUM FLUTUANTE (ESTILO PREMIUM SIDEBAR UI) -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header-bar">
+                <div class="sidebar-brand-box">
+                    <img src="/static/img/logo.png" alt="FINEASY" class="sidebar-logo-img">
+                    <div class="sidebar-brand-text">
+                        <span class="brand-fin">FIN</span><span class="brand-easy">EASY</span>
+                    </div>
                 </div>
-                <div class="user-role-badge" id="sidebarUserRole">COORDENADOR</div>
-                <div class="user-name-label" id="sidebarUserName">Administrador UniRV</div>
-                <button type="button" class="btn-sidebar-logout" id="btnLogout" title="Encerrar Sessão">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                <button type="button" class="btn-sidebar-collapse" id="btnToggleSidebar" title="Recolher / Expandir Menu">
+                    <i class="fa-solid fa-chevron-left" id="sidebarToggleIcon"></i>
                 </button>
             </div>
 
             <nav class="sidebar-nav">
-                <button type="button" class="nav-item active" data-view="viewDashboard" id="navDashboard">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
+                <button type="button" class="nav-item active" data-view="viewDashboard" id="navDashboard" data-tooltip="Dashboard">
+                    <div class="nav-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                    <span class="nav-text">Dashboard</span>
                 </button>
-                <button type="button" class="nav-item" data-view="viewExtractor" id="navExtractor">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Processador de NF</span>
+                <button type="button" class="nav-item" data-view="viewExtractor" id="navExtractor" data-tooltip="Processador de NF">
+                    <div class="nav-icon-box"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <span class="nav-text">Processador de NF</span>
                 </button>
-                <button type="button" class="nav-item" data-view="viewPessoas" id="navPessoas">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Pessoas</span>
+                <button type="button" class="nav-item" data-view="viewPessoas" id="navPessoas" data-tooltip="Pessoas">
+                    <div class="nav-icon-box"><i class="fa-solid fa-users"></i></div>
+                    <span class="nav-text">Pessoas</span>
                 </button>
-                <button type="button" class="nav-item" data-view="viewClassificacoes" id="navClassificacoes">
-                    <i class="fa-solid fa-tags"></i>
-                    <span>Classificação</span>
+                <button type="button" class="nav-item" data-view="viewClassificacoes" id="navClassificacoes" data-tooltip="Classificações">
+                    <div class="nav-icon-box"><i class="fa-solid fa-tags"></i></div>
+                    <span class="nav-text">Classificação</span>
                 </button>
-                <button type="button" class="nav-item" data-view="viewProdutos" id="navProdutos">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                    <span>Produtos & Insumos</span>
+                <button type="button" class="nav-item" data-view="viewProdutos" id="navProdutos" data-tooltip="Produtos & Insumos">
+                    <div class="nav-icon-box"><i class="fa-solid fa-boxes-stacked"></i></div>
+                    <span class="nav-text">Produtos & Insumos</span>
                 </button>
-                <button type="button" class="nav-item" data-view="viewContas" id="navContas">
-                    <i class="fa-solid fa-wallet"></i>
-                    <span>Contas Financeiras</span>
+                <button type="button" class="nav-item" data-view="viewContas" id="navContas" data-tooltip="Contas Financeiras">
+                    <div class="nav-icon-box"><i class="fa-solid fa-wallet"></i></div>
+                    <span class="nav-text">Contas Financeiras</span>
                 </button>
             </nav>
 
-            <div class="sidebar-footer">
-                <div class="sidebar-status-pill">
-                    <span class="status-dot-green"></span>
-                    <span>Sistema Operacional</span>
+            <div class="sidebar-user-card" id="sidebarUserCard">
+                <div class="user-avatar-circle" title="Administrador UniRV">
+                    <span>AU</span>
                 </div>
+                <div class="user-info-text">
+                    <div class="user-name-label" id="sidebarUserName">Administrador UniRV</div>
+                    <div class="user-role-badge" id="sidebarUserRole">CO-ADMIN</div>
+                </div>
+                <button type="button" class="btn-sidebar-logout" id="btnLogout" title="Encerrar Sessão">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/releases/tag/v2.2.0" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="sidebar-version-pill" 
+                   title="Ver versão v2.2.0 (27/10/2026) no GitHub">
+                    <i class="fa-brands fa-github"></i>
+                    <span class="sidebar-version-text">v2.2.0 · 27/10/2026</span>
+                </a>
             </div>
         </aside>
 
         <!-- CONTEÚDO PRINCIPAL (SPA VIEWS) -->
-        <main class="main-content">
+        <main class="main-content" id="mainContent">
             
             <!-- VIEW 1: DASHBOARD GERAL (TELA INICIAL COERENTE E PROFISSIONAL) -->
             <section class="spa-view active" id="viewDashboard">
@@ -119,48 +134,93 @@
                             <p class="page-subtitle">Visão consolidada do fluxo financeiro, cadastros e processamentos</p>
                         </div>
                         <div class="header-quick-actions">
+                            <div class="dashboard-period-filters" id="dashPeriodFilters">
+                                <button type="button" class="dash-tab active" data-period="safra">
+                                    <i class="fa-solid fa-wheat-awn"></i> Safra 25/26
+                                </button>
+                                <button type="button" class="dash-tab" data-period="mes">
+                                    <i class="fa-solid fa-calendar-day"></i> Este Mês
+                                </button>
+                                <button type="button" class="dash-tab" data-period="todos">
+                                    <i class="fa-solid fa-infinity"></i> Todos
+                                </button>
+                            </div>
+                            <button type="button" class="btn-dash-refresh" id="btnRefreshDashboard" title="Atualizar dados do Dashboard em tempo real">
+                                <i class="fa-solid fa-rotate" id="dashRefreshIcon"></i>
+                            </button>
                             <button type="button" class="btn-primary" id="btnDashProcessarNf">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> Processar Nova NF
                             </button>
                         </div>
                     </div>
 
-                    <!-- CARDS DE METRICAS (KPIs) -->
+                    <!-- CARD INTERATIVO DE PROJEÇÃO DE BALANÇO (RECEBER vs PAGAR) -->
+                    <div class="card card-ratio-balance">
+                        <div class="ratio-header">
+                            <div class="ratio-title">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                                <span>Balanço Operacional Proporcional</span>
+                            </div>
+                            <div class="ratio-badge-container">
+                                <span class="badge-status-ativo" id="ratioBadgeText">Superávit Projetado</span>
+                            </div>
+                        </div>
+                        <div class="ratio-bar-track">
+                            <div class="ratio-bar-receber" id="ratioBarReceber" style="width: 50%" title="Contas a Receber"></div>
+                            <div class="ratio-bar-pagar" id="ratioBarPagar" style="width: 50%" title="Contas a Pagar"></div>
+                        </div>
+                        <div class="ratio-footer">
+                            <span class="ratio-legend legend-receber">
+                                <span class="legend-dot dot-green"></span>
+                                A Receber: <strong id="ratioValReceber">R$ 0,00</strong> (<span id="ratioPctReceber">0%</span>)
+                            </span>
+                            <span class="ratio-legend legend-pagar">
+                                <span class="legend-dot dot-red"></span>
+                                A Pagar: <strong id="ratioValPagar">R$ 0,00</strong> (<span id="ratioPctPagar">0%</span>)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- CARDS DE METRICAS (KPIs) COM MICRO-INTERAÇÕES -->
                     <div class="dashboard-kpi-grid">
-                        <div class="kpi-card card-danger">
+                        <div class="kpi-card card-danger clickable-kpi" id="kpiCardPagar" data-nav="viewContas" data-filter="APAGAR" title="Clique para filtrar Contas a Pagar">
                             <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
                             <div class="kpi-info">
                                 <span class="kpi-label">Contas a Pagar</span>
                                 <h3 class="kpi-value" id="dashTotalPagar">R$ 0,00</h3>
                                 <span class="kpi-subtext" id="dashQtdPagar">0 lançamentos pendentes</span>
                             </div>
+                            <div class="kpi-action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
 
-                        <div class="kpi-card card-success">
+                        <div class="kpi-card card-success clickable-kpi" id="kpiCardReceber" data-nav="viewContas" data-filter="ARECEBER" title="Clique para filtrar Contas a Receber">
                             <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
                             <div class="kpi-info">
                                 <span class="kpi-label">Contas a Receber</span>
                                 <h3 class="kpi-value" id="dashTotalReceber">R$ 0,00</h3>
                                 <span class="kpi-subtext" id="dashQtdReceber">0 títulos a receber</span>
                             </div>
+                            <div class="kpi-action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
 
-                        <div class="kpi-card card-balance">
+                        <div class="kpi-card card-balance clickable-kpi" id="kpiCardSaldo" data-nav="viewContas" data-filter="TODOS" title="Clique para consultar todas as Contas">
                             <div class="kpi-icon"><i class="fa-solid fa-scale-balanced"></i></div>
                             <div class="kpi-info">
                                 <span class="kpi-label">Saldo Projetado</span>
                                 <h3 class="kpi-value" id="dashSaldoProjetado">R$ 0,00</h3>
                                 <span class="kpi-subtext" id="dashSaldoBadge"><span class="badge-status-ativo">Equilibrado</span></span>
                             </div>
+                            <div class="kpi-action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
 
-                        <div class="kpi-card card-info">
+                        <div class="kpi-card card-info clickable-kpi" id="kpiCardCadastros" data-nav="viewPessoas" title="Clique para ver Pessoas e Cadastros">
                             <div class="kpi-icon"><i class="fa-solid fa-cubes"></i></div>
                             <div class="kpi-info">
                                 <span class="kpi-label">Cadastros Ativos</span>
                                 <h3 class="kpi-value" id="dashTotalCadastros">0</h3>
                                 <span class="kpi-subtext" id="dashSubtextCadastros">Pessoas, Categorias e Produtos</span>
                             </div>
+                            <div class="kpi-action-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                     </div>
 

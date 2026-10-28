@@ -14,6 +14,7 @@
             }
         })();
     </script>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -25,9 +26,9 @@
     <header class="app-header">
         <div class="header-container">
             <div class="brand-group">
-                <div class="brand-badge">FINEASY</div>
+                <img src="/static/img/logo.png" alt="FINEASY" class="brand-logo-img">
                 <div class="brand-info">
-                    <span class="brand-title">FINEASY · Prática de Engenharia de Software</span>
+                    <span class="brand-title"><span class="brand-fin">FIN</span><span class="brand-easy">EASY</span> · Prática de Engenharia de Software</span>
                     <span class="brand-subtitle">Avaliação N2 - Processamento Inteligente com LLM Gemini</span>
                 </div>
             </div>
@@ -45,11 +46,11 @@
     <main class="login-wrapper">
         <div class="login-card">
             <div class="login-header">
-                <div class="login-icon-badge">
-                    <i class="fa-solid fa-user-plus"></i>
+                <div class="login-brand-container">
+                    <img src="/static/img/logo.png" alt="FINEASY Logo" class="login-brand-logo-img">
+                    <h1 class="login-brand-title"><span class="brand-fin">FIN</span><span class="brand-easy">EASY</span></h1>
+                    <p class="login-brand-tagline">Criar Nova Conta no Sistema</p>
                 </div>
-                <h1 class="login-title">Criar Nova Conta</h1>
-                <p class="login-subtitle">Cadastre-se para acessar o sistema de processamento de notas fiscais</p>
             </div>
 
             <form class="login-body" id="registerForm">
@@ -129,6 +130,22 @@
                     Já possui uma conta? <a href="/login.html">Fazer login</a>
                 </div>
             </form>
+
+            <!-- VERSIONAMENTO COM REDIRECIONAMENTO AO GITHUB COM DATA -->
+            <div class="login-version-container">
+                <a href="https://github.com/UmLucasApenas-lab/Projeto-Administrativo---Disciplina-PRATICA-DE-ENGENHARIA-DE-SOFT/releases/tag/v2.2.0" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="version-github-pill" 
+                   title="Ver versão v2.2.0 (27/10/2026) no repositório GitHub">
+                    <i class="fa-brands fa-github"></i>
+                    <span class="version-label">Versão v2.2.0</span>
+                    <span class="version-sep">•</span>
+                    <span class="version-date">27/10/2026</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square version-ext-icon"></i>
+                </a>
+                <span class="version-subtext">Prática de Engenharia de Software · UniRV 2026</span>
+            </div>
         </div>
     </main>
 
